@@ -12,8 +12,9 @@ import (
 )
 
 var (
-	mode   = flag.String("m", "server", "command mode")
-	device = flag.String("d", "eth0", "network device")
+	mode       = flag.String("m", "server", "command mode")
+	device     = flag.String("d", "eth0", "network device")
+	listenPort = flag.String("lp", "50000", "select listen port")
 )
 
 func init() {
@@ -98,17 +99,44 @@ func scan(iface *net.Interface) error {
 		var packet gopacket.Packet
 		select {
 		case packet = <-in:
-			ipLayer := packet.Layer(layers.LayerTypeIPv4)
-			if ipLayer == nil {
-				log.Println("This packet is not matched ip v4")
+			if !ipRecvFilter(addr, packet) {
 				continue
 			}
-			ipv4 := ipLayer.(*layers.IPv4)
-
-			dstIP := ipv4.DstIP.String()
-			if dstIP == addr.IP.String() {
-				log.Printf("IP is src: %v, dst: %v\n", ipv4.SrcIP.String(), ipv4.DstIP.String())
+			if !tcpRecvFilter(*listenPort, packet) {
+				continue
 			}
 		}
 	}
+}
+
+func ipRecvFilter(addr *net.IPNet, packet gopacket.Packet) bool {
+	ipLayer := packet.Layer(layers.LayerTypeIPv4)
+	if ipLayer == nil {
+		log.Println("This packet is not matched ip v4")
+		return false
+	}
+	ipv4 := ipLayer.(*layers.IPv4)
+	dstIP := ipv4.DstIP.String()
+	if dstIP == addr.IP.String() {
+		log.Printf("IP is src: %v, dst: %v\n", ipv4.SrcIP.String(), ipv4.DstIP.String())
+		return true
+	}
+	return false
+}
+
+func tcpRecvFilter(port string, packet gopacket.Packet) bool {
+	log.Println("filter tcp")
+	tcpLayer := packet.Layer(layers.LayerTypeTCP)
+	if tcpLayer == nil {
+		log.Println("This packet is not matched tcp")
+		return false
+	}
+	tcp := tcpLayer.(*layers.TCP)
+	dstPort := tcp.DstPort.String()
+	if dstPort == port {
+		log.Printf("TCP Port is src: %v, dst: %v\n", tcp.SrcPort.String(), dstPort)
+		return true
+	}
+	log.Println(port, dstPort)
+	return false
 }
