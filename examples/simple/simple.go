@@ -103,7 +103,9 @@ func scan(iface *net.Interface) error {
 				continue
 			}
 			if !tcpRecvFilter(*listenPort, packet) {
-				continue
+				if !udpRecvFilter(*listenPort, packet) {
+					continue
+				}
 			}
 		}
 	}
@@ -125,7 +127,6 @@ func ipRecvFilter(addr *net.IPNet, packet gopacket.Packet) bool {
 }
 
 func tcpRecvFilter(port string, packet gopacket.Packet) bool {
-	log.Println("filter tcp")
 	tcpLayer := packet.Layer(layers.LayerTypeTCP)
 	if tcpLayer == nil {
 		log.Println("This packet is not matched tcp")
@@ -137,6 +138,20 @@ func tcpRecvFilter(port string, packet gopacket.Packet) bool {
 		log.Printf("TCP Port is src: %v, dst: %v\n", tcp.SrcPort.String(), dstPort)
 		return true
 	}
-	log.Println(port, dstPort)
+	return false
+}
+
+func udpRecvFilter(port string, packet gopacket.Packet) bool {
+	udpLayer := packet.Layer(layers.LayerTypeUDP)
+	if udpLayer == nil {
+		log.Println("This packet is not matched udp")
+		return false
+	}
+	udp := udpLayer.(*layers.UDP)
+	dstPort := udp.DstPort.String()
+	if dstPort == port {
+		log.Printf("UDP Port is src: %v, dst: %v\n", udp.SrcPort.String(), dstPort)
+		return true
+	}
 	return false
 }
