@@ -3,13 +3,37 @@
 
 [[projects]]
   name = "github.com/google/gopacket"
-  packages = [".","examples/util","layers","pcap","routing"]
+  packages = [".","layers","pcap"]
   revision = "7f3fc6cbbb499248dca53da7fe3ed6c25a78d22f"
   version = "v1.1.16"
+
+[[projects]]
+  name = "github.com/k0kubun/pp"
+  packages = ["."]
+  revision = "027a6d1765d673d337e687394dbe780dd64e2a1e"
+  version = "v2.3.0"
+
+[[projects]]
+  name = "github.com/mattn/go-colorable"
+  packages = ["."]
+  revision = "3a70a971f94a22f2fa562ffcc7a0eb45f5daf045"
+  version = "v0.1.1"
+
+[[projects]]
+  name = "github.com/mattn/go-isatty"
+  packages = ["."]
+  revision = "a6dda38a851a575e6799957cdd53ffe0b3fdd90f"
+  version = "v0.0.5"
+
+[[projects]]
+  branch = "master"
+  name = "golang.org/x/sys"
+  packages = ["unix"]
+  revision = "cd391775e71e684db52b63df9affd58269495083"
 
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "9989fd633bfb409a4a0f29c00a2613dde7c1218e60b155d3c371c95032d4623b"
+  inputs-digest = "fdbb80de479faddedfd813326ad5104364f1660e9da6468e635df846b02ca0b3"
   solver-name = "gps-cdcl"
   solver-version = 1

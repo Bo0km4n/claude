@@ -6,6 +6,9 @@ import (
 	"log"
 	"net"
 
+	"github.com/k0kubun/pp"
+
+	pClaude "github.com/Bo0km4n/claude/packet"
 	"github.com/google/gopacket"
 	"github.com/google/gopacket/layers"
 	"github.com/google/gopacket/pcap"
@@ -105,6 +108,8 @@ func scan(iface *net.Interface) error {
 			if !tcpRecvFilter(*listenPort, packet) {
 				if !udpRecvFilter(*listenPort, packet) {
 					continue
+				} else {
+					claudeRecvFilter(packet)
 				}
 			}
 		}
@@ -154,4 +159,14 @@ func udpRecvFilter(port string, packet gopacket.Packet) bool {
 		return true
 	}
 	return false
+}
+
+func claudeRecvFilter(packet gopacket.Packet) bool {
+	pp.Println(packet.Data())
+	claudeLayer := packet.Layer(pClaude.LayerTypeClaude)
+	if claudeLayer == nil {
+		log.Println("This packet is not matched claude")
+		return false
+	}
+	return true
 }
