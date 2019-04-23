@@ -16,10 +16,10 @@ func main() {
 		panic(err)
 	}
 	defer conn.Close()
-	fmt.Println("サーバへメッセージを送信.")
+	fmt.Println("Send message to server")
 	conn.Write(buildClaudeHeader())
 
-	fmt.Println("サーバからメッセージを受信。")
+	fmt.Println("Receive message from server")
 	buffer := make([]byte, 1500)
 	length, _ := conn.Read(buffer)
 	fmt.Printf("Receive: %s \n", string(buffer[:length]))

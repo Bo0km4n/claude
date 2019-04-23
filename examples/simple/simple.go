@@ -116,6 +116,8 @@ func scan(iface *net.Interface) error {
 	}
 }
 
+var SrcIP string
+
 func ipRecvFilter(addr *net.IPNet, packet gopacket.Packet) bool {
 	ipLayer := packet.Layer(layers.LayerTypeIPv4)
 	if ipLayer == nil {
@@ -128,6 +130,7 @@ func ipRecvFilter(addr *net.IPNet, packet gopacket.Packet) bool {
 		log.Printf("IP is src: %v, dst: %v\n", ipv4.SrcIP.String(), ipv4.DstIP.String())
 		return true
 	}
+	SrcIP = ipv4.SrcIP.String()
 	return false
 }
 
