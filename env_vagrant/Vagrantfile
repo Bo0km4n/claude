@@ -67,18 +67,22 @@ Vagrant.configure("2") do |config|
   #   apt-get update
   #   apt-get install -y apache2
   # SHELL
-  config.vm.synced_folder "/Users/bo0km4n/dev/c", "/home/vagrant/dev/c", owner: "vagrant", group: "vagrant"
-  config.vm.synced_folder "/Users/bo0km4n/dev/dsu", "/home/vagrant/dev/dsu", owner: "vagrant", group: "vagrant"
-  config.vm.synced_folder "/Users/bo0km4n/go/src/github.com/Bo0km4n/dummy-9cc", "/home/vagrant/dev/dummy-9cc", owner: "vagrant", group: "vagrant"
   config.vm.synced_folder "/Users/bo0km4n/go/src/github.com/Bo0km4n/claude", "/home/vagrant/go/src/github.com/Bo0km4n/claude", owner: "vagrant", group: "vagrant"
 
-  config.vm.define :proxy1 do |proxy1|
-      proxy1.vm.hostname = "proxy1"
-      proxy1.vm.network :private_network, ip: "192.168.10.100", virtual__intnet: "intnet"
+  config.vm.define :proxyA do |proxyA|
+      proxyA.vm.hostname = "proxyA"
+      proxyA.vm.network :private_network, ip: "192.168.10.100", virtual__intnet: "intnet"
   end
 
-  config.vm.define :peer1 do |peer1|
-      peer1.vm.hostname = "peer1"
-      peer1.vm.network :private_network, ip: "192.168.10.101", virtual__intnet: "intnet"
+  config.vm.define :peerA do |peerA|
+      peerA.vm.hostname = "peerA"
+      peerA.vm.network :private_network, ip: "192.168.10.101", virtual__intnet: "intnet"
+      peerA.vm.provision :shell do |s|
+          s.name = "claude_peer_sh"
+          s.env = {
+              :CLAUDE_PROXY_ADDRESS => "192.168.10.100"
+          }
+          s.path = "claude_peer_env.sh"
+      end
   end
 end
