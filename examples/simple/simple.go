@@ -16,7 +16,7 @@ import (
 
 var (
 	mode       = flag.String("m", "server", "command mode")
-	device     = flag.String("d", "eth0", "network device")
+	device     = flag.String("d", "eth1", "network device")
 	listenPort = flag.String("lp", "50000", "select listen port")
 )
 
@@ -105,12 +105,11 @@ func scan(iface *net.Interface) error {
 			if !ipRecvFilter(addr, packet) {
 				continue
 			}
-			if !tcpRecvFilter(*listenPort, packet) {
-				if !udpRecvFilter(*listenPort, packet) {
-					continue
-				} else {
-					claudeRecvFilter(packet)
-				}
+			switch {
+			case tcpRecvFilter(*listenPort, packet):
+				pp.Println("Received tcp packet")
+			case udpRecvFilter(*listenPort, packet):
+				pp.Println("Received udp packet")
 			}
 		}
 	}
@@ -121,7 +120,6 @@ var SrcIP string
 func ipRecvFilter(addr *net.IPNet, packet gopacket.Packet) bool {
 	ipLayer := packet.Layer(layers.LayerTypeIPv4)
 	if ipLayer == nil {
-		log.Println("This packet is not matched ip v4")
 		return false
 	}
 	ipv4 := ipLayer.(*layers.IPv4)
@@ -137,7 +135,6 @@ func ipRecvFilter(addr *net.IPNet, packet gopacket.Packet) bool {
 func tcpRecvFilter(port string, packet gopacket.Packet) bool {
 	tcpLayer := packet.Layer(layers.LayerTypeTCP)
 	if tcpLayer == nil {
-		log.Println("This packet is not matched tcp")
 		return false
 	}
 	tcp := tcpLayer.(*layers.TCP)
@@ -152,11 +149,11 @@ func tcpRecvFilter(port string, packet gopacket.Packet) bool {
 func udpRecvFilter(port string, packet gopacket.Packet) bool {
 	udpLayer := packet.Layer(layers.LayerTypeUDP)
 	if udpLayer == nil {
-		log.Println("This packet is not matched udp")
 		return false
 	}
 	udp := udpLayer.(*layers.UDP)
 	dstPort := udp.DstPort.String()
+	pp.Println(udp.Payload)
 	if dstPort == port {
 		log.Printf("UDP Port is src: %v, dst: %v\n", udp.SrcPort.String(), dstPort)
 		return true
