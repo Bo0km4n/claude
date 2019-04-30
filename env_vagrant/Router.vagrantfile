@@ -1,0 +1,43 @@
+VAGRANTFILE_API_VERSION = "2"
+Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
+   # 1台目管理マシン（マシン名：pc1）
+   config.vm.define "pc1" do |pc1|
+      pc1.vm.box = "bento/ubuntu-18.04"
+      pc1.vm.hostname = "pc1"
+      pc1.vm.network "private_network", ip: "192.168.10.10", virtualbox__intnet: "pc1"
+      pc1.vm.provider "virtualbox" do |v|
+         v.memory = "512"
+         v.name = "pc1"
+      end
+   end
+   # 2台目 コンテナホスト（マシン名：router）
+   config.vm.define "router" do |router|
+      router.vm.box = "bento/ubuntu-18.04"
+      router.vm.hostname = "router"
+      #  ホストとゲストでフォルダをシェア 
+      #router.vm.synced_folder "./src", "/Projects/src"
+      router.vm.synced_folder "./projects", "/home/vagrant/projects"
+      #  ホストマシンとポートをフォワーディング
+      #  router.vm.network :forwarded_port, guest: 8080, host: 8080
+      router.vm.network "private_network", ip: "192.168.10.20", virtualbox__intnet: "pc1"
+      router.vm.network "private_network", ip: "192.168.30.20", virtualbox__intnet: "pc3"
+      router.vm.provider "virtualbox" do |v|
+         # v.gui = true
+         v.customize ["modifyvm", :id, "--cpus", "2"]
+         v.customize ["modifyvm", :id, "--ioapic", "on"]
+         v.customize ["modifyvm", :id, "--memory", "1024"]
+         v.customize ["modifyvm", :id, "--vram", "128"]
+         v.customize ["modifyvm", :id, "--accelerate3d", "on"]
+      end
+   end
+   # 3台目 コンテナホスト（マシン名：pc2）
+   config.vm.define "pc3" do |pc3|
+      pc3.vm.box = "bento/ubuntu-18.04"
+      pc3.vm.hostname = "pc3"
+      pc3.vm.network "private_network", ip: "192.168.30.30", virtualbox__intnet: "pc3"
+      pc3.vm.provider "virtualbox" do |v|
+         v.memory = "512"
+         v.name = "pc2"
+      end
+   end
+end

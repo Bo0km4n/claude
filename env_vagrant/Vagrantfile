@@ -69,20 +69,35 @@ Vagrant.configure("2") do |config|
   # SHELL
   config.vm.synced_folder "/Users/bo0km4n/go/src/github.com/Bo0km4n/claude", "/home/vagrant/go/src/github.com/Bo0km4n/claude", owner: "vagrant", group: "vagrant"
 
+
+  # Network A
   config.vm.define :proxyA do |proxyA|
       proxyA.vm.hostname = "proxyA"
-      proxyA.vm.network :private_network, ip: "192.168.10.100", virtual__intnet: "intnet"
+      proxyA.vm.network :private_network, ip: "192.168.10.100", virtual__intnet: "intnetA"
   end
 
   config.vm.define :peerA do |peerA|
       peerA.vm.hostname = "peerA"
-      peerA.vm.network :private_network, ip: "192.168.10.101", virtual__intnet: "intnet"
-      peerA.vm.provision :shell do |s|
-          s.name = "claude_peer_sh"
-          s.env = {
-              :CLAUDE_PROXY_ADDRESS => "192.168.10.100"
-          }
-          s.path = "claude_peer_env.sh"
-      end
+      peerA.vm.network :private_network, ip: "192.168.10.101", virtual__intnet: "intnetA"
   end
+
+  # Internal router
+  config.vm.define "router" do |router|
+    router.vm.hostname = "router"
+    router.vm.network :private_network, ip: "192.168.10.10", virtua__intnet: "intnetA"
+    router.vm.network :private_network, ip: "172.168.10.10", virtua__intnet: "intnetB"
+  end  
+  
+  # Network B
+  config.vm.define :proxyB do |proxyB|
+      proxyB.vm.hostname = "proxyB"
+      proxyB.vm.network :private_network, ip: "172.168.10.100", virtual__intnet: "intnetB"
+  end
+
+  config.vm.define :peerB do |peerB|
+      peerB.vm.hostname = "peerB"
+      peerB.vm.network :private_network, ip: "172.168.10.101", virtual__intnet: "intnetB"
+  end
+
+  
 end
