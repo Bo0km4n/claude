@@ -1,16 +1,12 @@
-# Use root/example as user/password credentials
-version: '3.1'
-
+version: '3.3'
 services:
-
-  mongo:
-    image: mongo
+  db:
+    image: mysql:5.7
     restart: always
     environment:
-      MONGO_INITDB_ROOT_USERNAME: root
-      MONGO_INITDB_ROOT_PASSWORD: example
+      MYSQL_DATABASE: claude
+      MYSQL_USER: claude
+      MYSQL_PASSWORD: password
+      MYSQL_ROOT_PASSWORD: password
     ports:
-      - 27017:27017
-    # volumes:
-    #   - ./db:/data/db
-    #   - ./configdb:/data/configdb
+      - "3306:3306"
