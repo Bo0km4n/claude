@@ -5,4 +5,17 @@ import "empty.proto";
 // import "github.com/golang/protobuf/ptypes/timestamp";
 service LR {
     rpc Heartbeat(Empty) returns(Empty);
+    rpc PeerJoinRPC(PeerJoinRequest) returns(PeerJoinResponse);
+}
+
+message PeerJoinRequest {
+    string peer_id = 1;
+    string local_ip = 2;
+    string local_port = 3;
+    float latitude = 4;
+    float longitude = 5;
+}
+
+message PeerJoinResponse {
+    bool success = 1;
 }

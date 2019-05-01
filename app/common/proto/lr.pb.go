@@ -23,6 +23,119 @@ var _ = math.Inf
 // proto package needs to be updated.
 const _ = proto.ProtoPackageIsVersion2 // please upgrade the proto package
 
+type PeerJoinRequest struct {
+	PeerId               string   `protobuf:"bytes,1,opt,name=peer_id,json=peerId" json:"peer_id,omitempty"`
+	LocalIp              string   `protobuf:"bytes,2,opt,name=local_ip,json=localIp" json:"local_ip,omitempty"`
+	LocalPort            string   `protobuf:"bytes,3,opt,name=local_port,json=localPort" json:"local_port,omitempty"`
+	Latitude             float32  `protobuf:"fixed32,4,opt,name=latitude" json:"latitude,omitempty"`
+	Longitude            float32  `protobuf:"fixed32,5,opt,name=longitude" json:"longitude,omitempty"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *PeerJoinRequest) Reset()         { *m = PeerJoinRequest{} }
+func (m *PeerJoinRequest) String() string { return proto.CompactTextString(m) }
+func (*PeerJoinRequest) ProtoMessage()    {}
+func (*PeerJoinRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_lr_9df25e2efd75fd4c, []int{0}
+}
+func (m *PeerJoinRequest) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_PeerJoinRequest.Unmarshal(m, b)
+}
+func (m *PeerJoinRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_PeerJoinRequest.Marshal(b, m, deterministic)
+}
+func (dst *PeerJoinRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_PeerJoinRequest.Merge(dst, src)
+}
+func (m *PeerJoinRequest) XXX_Size() int {
+	return xxx_messageInfo_PeerJoinRequest.Size(m)
+}
+func (m *PeerJoinRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_PeerJoinRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_PeerJoinRequest proto.InternalMessageInfo
+
+func (m *PeerJoinRequest) GetPeerId() string {
+	if m != nil {
+		return m.PeerId
+	}
+	return ""
+}
+
+func (m *PeerJoinRequest) GetLocalIp() string {
+	if m != nil {
+		return m.LocalIp
+	}
+	return ""
+}
+
+func (m *PeerJoinRequest) GetLocalPort() string {
+	if m != nil {
+		return m.LocalPort
+	}
+	return ""
+}
+
+func (m *PeerJoinRequest) GetLatitude() float32 {
+	if m != nil {
+		return m.Latitude
+	}
+	return 0
+}
+
+func (m *PeerJoinRequest) GetLongitude() float32 {
+	if m != nil {
+		return m.Longitude
+	}
+	return 0
+}
+
+type PeerJoinResponse struct {
+	Success              bool     `protobuf:"varint,1,opt,name=success" json:"success,omitempty"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *PeerJoinResponse) Reset()         { *m = PeerJoinResponse{} }
+func (m *PeerJoinResponse) String() string { return proto.CompactTextString(m) }
+func (*PeerJoinResponse) ProtoMessage()    {}
+func (*PeerJoinResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_lr_9df25e2efd75fd4c, []int{1}
+}
+func (m *PeerJoinResponse) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_PeerJoinResponse.Unmarshal(m, b)
+}
+func (m *PeerJoinResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_PeerJoinResponse.Marshal(b, m, deterministic)
+}
+func (dst *PeerJoinResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_PeerJoinResponse.Merge(dst, src)
+}
+func (m *PeerJoinResponse) XXX_Size() int {
+	return xxx_messageInfo_PeerJoinResponse.Size(m)
+}
+func (m *PeerJoinResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_PeerJoinResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_PeerJoinResponse proto.InternalMessageInfo
+
+func (m *PeerJoinResponse) GetSuccess() bool {
+	if m != nil {
+		return m.Success
+	}
+	return false
+}
+
+func init() {
+	proto.RegisterType((*PeerJoinRequest)(nil), "proto.PeerJoinRequest")
+	proto.RegisterType((*PeerJoinResponse)(nil), "proto.PeerJoinResponse")
+}
+
 // Reference imports to suppress errors if they are not otherwise used.
 var _ context.Context
 var _ grpc.ClientConn
@@ -36,6 +149,7 @@ const _ = grpc.SupportPackageIsVersion4
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
 type LRClient interface {
 	Heartbeat(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*Empty, error)
+	PeerJoinRPC(ctx context.Context, in *PeerJoinRequest, opts ...grpc.CallOption) (*PeerJoinResponse, error)
 }
 
 type lRClient struct {
@@ -55,10 +169,20 @@ func (c *lRClient) Heartbeat(ctx context.Context, in *Empty, opts ...grpc.CallOp
 	return out, nil
 }
 
+func (c *lRClient) PeerJoinRPC(ctx context.Context, in *PeerJoinRequest, opts ...grpc.CallOption) (*PeerJoinResponse, error) {
+	out := new(PeerJoinResponse)
+	err := c.cc.Invoke(ctx, "/proto.LR/PeerJoinRPC", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // Server API for LR service
 
 type LRServer interface {
 	Heartbeat(context.Context, *Empty) (*Empty, error)
+	PeerJoinRPC(context.Context, *PeerJoinRequest) (*PeerJoinResponse, error)
 }
 
 func RegisterLRServer(s *grpc.Server, srv LRServer) {
@@ -83,6 +207,24 @@ func _LR_Heartbeat_Handler(srv interface{}, ctx context.Context, dec func(interf
 	return interceptor(ctx, in, info, handler)
 }
 
+func _LR_PeerJoinRPC_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(PeerJoinRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(LRServer).PeerJoinRPC(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/proto.LR/PeerJoinRPC",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(LRServer).PeerJoinRPC(ctx, req.(*PeerJoinRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 var _LR_serviceDesc = grpc.ServiceDesc{
 	ServiceName: "proto.LR",
 	HandlerType: (*LRServer)(nil),
@@ -91,19 +233,33 @@ var _LR_serviceDesc = grpc.ServiceDesc{
 			MethodName: "Heartbeat",
 			Handler:    _LR_Heartbeat_Handler,
 		},
+		{
+			MethodName: "PeerJoinRPC",
+			Handler:    _LR_PeerJoinRPC_Handler,
+		},
 	},
 	Streams:  []grpc.StreamDesc{},
 	Metadata: "lr.proto",
 }
 
-func init() { proto.RegisterFile("lr.proto", fileDescriptor_lr_3661a2edbcd7620f) }
+func init() { proto.RegisterFile("lr.proto", fileDescriptor_lr_9df25e2efd75fd4c) }
 
-var fileDescriptor_lr_3661a2edbcd7620f = []byte{
-	// 81 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xe2, 0xe2, 0xc8, 0x29, 0xd2, 0x2b,
-	0x28, 0xca, 0x2f, 0xc9, 0x17, 0x62, 0x05, 0x53, 0x52, 0xdc, 0xa9, 0xb9, 0x05, 0x25, 0x95, 0x10,
-	0x31, 0x23, 0x5d, 0x2e, 0x26, 0x9f, 0x20, 0x21, 0x75, 0x2e, 0x4e, 0x8f, 0xd4, 0xc4, 0xa2, 0x92,
-	0xa4, 0xd4, 0xc4, 0x12, 0x21, 0x1e, 0x88, 0x94, 0x9e, 0x2b, 0x48, 0x99, 0x14, 0x0a, 0x2f, 0x89,
-	0x0d, 0xcc, 0x31, 0x06, 0x04, 0x00, 0x00, 0xff, 0xff, 0x5d, 0x84, 0x15, 0x10, 0x55, 0x00, 0x00,
-	0x00,
+var fileDescriptor_lr_9df25e2efd75fd4c = []byte{
+	// 243 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x64, 0x90, 0xc1, 0x4a, 0xc3, 0x40,
+	0x10, 0x86, 0x49, 0xb4, 0x4d, 0x32, 0x15, 0x94, 0x39, 0xd8, 0x35, 0x28, 0x94, 0x5e, 0xec, 0x41,
+	0x7a, 0xd0, 0xbb, 0x17, 0x11, 0xac, 0x78, 0x08, 0xfb, 0x02, 0x25, 0x4d, 0x06, 0x09, 0x6c, 0xb3,
+	0xeb, 0xee, 0xe4, 0xe0, 0xcb, 0xf8, 0xac, 0xd2, 0x59, 0x6d, 0xd1, 0x9e, 0xc2, 0xf7, 0x7d, 0x10,
+	0xfe, 0x59, 0xc8, 0x8d, 0x5f, 0x3a, 0x6f, 0xd9, 0xe2, 0x48, 0x3e, 0xe5, 0x84, 0xb6, 0x8e, 0x3f,
+	0xa3, 0x9b, 0x7f, 0x25, 0x70, 0x5e, 0x11, 0xf9, 0x57, 0xdb, 0xf5, 0x9a, 0x3e, 0x06, 0x0a, 0x8c,
+	0x53, 0xc8, 0x1c, 0x91, 0x5f, 0x77, 0xad, 0x4a, 0x66, 0xc9, 0xa2, 0xd0, 0xe3, 0x1d, 0xae, 0x5a,
+	0xbc, 0x82, 0xdc, 0xd8, 0xa6, 0x36, 0xeb, 0xce, 0xa9, 0x54, 0x4a, 0x26, 0xbc, 0x72, 0x78, 0x03,
+	0x10, 0x93, 0xb3, 0x9e, 0xd5, 0x89, 0xc4, 0x42, 0x4c, 0x65, 0x3d, 0x63, 0x09, 0xb9, 0xa9, 0xb9,
+	0xe3, 0xa1, 0x25, 0x75, 0x3a, 0x4b, 0x16, 0xa9, 0xde, 0x33, 0x5e, 0x43, 0x61, 0x6c, 0xff, 0x1e,
+	0xe3, 0x48, 0xe2, 0x41, 0xcc, 0xef, 0xe0, 0xe2, 0xb0, 0x2f, 0x38, 0xdb, 0x07, 0x42, 0x05, 0x59,
+	0x18, 0x9a, 0x86, 0x42, 0x90, 0x81, 0xb9, 0xfe, 0xc5, 0xfb, 0x2d, 0xa4, 0x6f, 0x1a, 0x6f, 0xa1,
+	0x78, 0xa1, 0xda, 0xf3, 0x86, 0x6a, 0xc6, 0xb3, 0x78, 0xe9, 0xf2, 0x79, 0x77, 0x75, 0xf9, 0x87,
+	0xf0, 0x11, 0x26, 0xfb, 0x9f, 0x57, 0x4f, 0x78, 0xf9, 0x13, 0xff, 0x3d, 0x48, 0x39, 0x3d, 0xf2,
+	0x71, 0xc8, 0x66, 0x2c, 0xfe, 0xe1, 0x3b, 0x00, 0x00, 0xff, 0xff, 0x3f, 0x03, 0xaf, 0xba, 0x64,
+	0x01, 0x00, 0x00,
 }

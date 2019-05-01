@@ -16,7 +16,7 @@ import (
 
 func ListenUDPBcastFromPeer() {
 	addr := fmt.Sprintf("%s:%s", config.Config.UDP.Address, config.Config.UDP.Port)
-	fmt.Printf("Server is Running at %s\n", addr)
+	log.Printf("UDP Process is Running at %s\n", addr)
 	udpAddr, err := net.ResolveUDPAddr("udp", addr)
 	if err != nil {
 		panic(err)

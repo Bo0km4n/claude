@@ -10,5 +10,6 @@ func init() {
 }
 
 func main() {
-	service.ListenUDPBcastFromPeer()
+	go service.ListenUDPBcastFromPeer()
+	service.LaunchGRPCService()
 }
