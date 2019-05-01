@@ -4,10 +4,10 @@ package proto;
 import "empty.proto";
 
 service Peer {
-    rpc NoticeFromLRRPC(NoticeLRRequest) returns(Empty);
+    rpc NoticeFromLRRPC(NoticeFromLRRequest) returns(Empty);
 }
 
-message NoticeLRRequest {
+message NoticeFromLRRequest {
     string port = 1;
     string addr = 2;
 }

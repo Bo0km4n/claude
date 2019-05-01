@@ -44,6 +44,7 @@ func ListenUDPBcastFromPeer() {
 		}
 
 		log.Printf("Received from %v: %v\n", remoteAddr, request)
+		request.ListenAddr = remoteAddr.IP.String()
 		sendNoticeToPeer(request)
 	}
 }
@@ -56,7 +57,7 @@ func sendNoticeToPeer(m *message.UDPBcastMessage) {
 	}
 	defer conn.Close()
 	client := proto.NewPeerClient(conn)
-	if _, err := client.NoticeFromLRRPC(context.Background(), &proto.NoticeLRRequest{
+	if _, err := client.NoticeFromLRRPC(context.Background(), &proto.NoticeFromLRRequest{
 		Port: config.Config.GRPC.Port,
 		Addr: config.Config.GRPC.Addr,
 	}); err != nil {

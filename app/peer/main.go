@@ -1,39 +1,24 @@
 package main
 
 import (
-	"log"
-	"net"
+	"time"
+
+	"github.com/Bo0km4n/claude/app/peer/config"
+	"github.com/Bo0km4n/claude/app/peer/service"
 )
 
+func init() {
+	config.InitConfig()
+}
+
 func main() {
-	remoteUDPAddr, err := net.ResolveUDPAddr("udp", "224.0.0.1:9000")
-	if err != nil {
-		log.Fatal(err)
-	}
+	done := make(chan int)
+	wait := make(chan struct{})
 
-	// Get local eth1 address
-	ief, err := net.InterfaceByName("eth1")
-	if err != nil {
-		log.Fatal(err)
-	}
-	addrs, err := ief.Addrs()
-	if err != nil {
-		log.Fatal(err)
-	}
+	go service.LaunchGRPCService(done)
+	<-done
 
-	localUDPAddr := &net.UDPAddr{
-		IP: addrs[0].(*net.IPNet).IP,
-	}
-
-	conn, err := net.DialUDP("udp", localUDPAddr, remoteUDPAddr)
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer conn.Close()
-
-	_, err = conn.Write([]byte(`{"port":"6000"}`))
-	if err != nil {
-		log.Fatal(err)
-	}
-	log.Println("Send multicast")
+	time.Sleep(2)
+	service.UDPBcast()
+	<-wait
 }

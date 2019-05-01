@@ -23,7 +23,7 @@ var _ = math.Inf
 // proto package needs to be updated.
 const _ = proto.ProtoPackageIsVersion2 // please upgrade the proto package
 
-type NoticeLRRequest struct {
+type NoticeFromLRRequest struct {
 	Port                 string   `protobuf:"bytes,1,opt,name=port" json:"port,omitempty"`
 	Addr                 string   `protobuf:"bytes,2,opt,name=addr" json:"addr,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
@@ -31,38 +31,38 @@ type NoticeLRRequest struct {
 	XXX_sizecache        int32    `json:"-"`
 }
 
-func (m *NoticeLRRequest) Reset()         { *m = NoticeLRRequest{} }
-func (m *NoticeLRRequest) String() string { return proto.CompactTextString(m) }
-func (*NoticeLRRequest) ProtoMessage()    {}
-func (*NoticeLRRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_peer_77bc79d806131108, []int{0}
+func (m *NoticeFromLRRequest) Reset()         { *m = NoticeFromLRRequest{} }
+func (m *NoticeFromLRRequest) String() string { return proto.CompactTextString(m) }
+func (*NoticeFromLRRequest) ProtoMessage()    {}
+func (*NoticeFromLRRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_peer_0a2b3ec50a9cacb1, []int{0}
 }
-func (m *NoticeLRRequest) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_NoticeLRRequest.Unmarshal(m, b)
+func (m *NoticeFromLRRequest) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_NoticeFromLRRequest.Unmarshal(m, b)
 }
-func (m *NoticeLRRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_NoticeLRRequest.Marshal(b, m, deterministic)
+func (m *NoticeFromLRRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_NoticeFromLRRequest.Marshal(b, m, deterministic)
 }
-func (dst *NoticeLRRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_NoticeLRRequest.Merge(dst, src)
+func (dst *NoticeFromLRRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_NoticeFromLRRequest.Merge(dst, src)
 }
-func (m *NoticeLRRequest) XXX_Size() int {
-	return xxx_messageInfo_NoticeLRRequest.Size(m)
+func (m *NoticeFromLRRequest) XXX_Size() int {
+	return xxx_messageInfo_NoticeFromLRRequest.Size(m)
 }
-func (m *NoticeLRRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_NoticeLRRequest.DiscardUnknown(m)
+func (m *NoticeFromLRRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_NoticeFromLRRequest.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_NoticeLRRequest proto.InternalMessageInfo
+var xxx_messageInfo_NoticeFromLRRequest proto.InternalMessageInfo
 
-func (m *NoticeLRRequest) GetPort() string {
+func (m *NoticeFromLRRequest) GetPort() string {
 	if m != nil {
 		return m.Port
 	}
 	return ""
 }
 
-func (m *NoticeLRRequest) GetAddr() string {
+func (m *NoticeFromLRRequest) GetAddr() string {
 	if m != nil {
 		return m.Addr
 	}
@@ -70,7 +70,7 @@ func (m *NoticeLRRequest) GetAddr() string {
 }
 
 func init() {
-	proto.RegisterType((*NoticeLRRequest)(nil), "proto.NoticeLRRequest")
+	proto.RegisterType((*NoticeFromLRRequest)(nil), "proto.NoticeFromLRRequest")
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -85,7 +85,7 @@ const _ = grpc.SupportPackageIsVersion4
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
 type PeerClient interface {
-	NoticeFromLRRPC(ctx context.Context, in *NoticeLRRequest, opts ...grpc.CallOption) (*Empty, error)
+	NoticeFromLRRPC(ctx context.Context, in *NoticeFromLRRequest, opts ...grpc.CallOption) (*Empty, error)
 }
 
 type peerClient struct {
@@ -96,7 +96,7 @@ func NewPeerClient(cc *grpc.ClientConn) PeerClient {
 	return &peerClient{cc}
 }
 
-func (c *peerClient) NoticeFromLRRPC(ctx context.Context, in *NoticeLRRequest, opts ...grpc.CallOption) (*Empty, error) {
+func (c *peerClient) NoticeFromLRRPC(ctx context.Context, in *NoticeFromLRRequest, opts ...grpc.CallOption) (*Empty, error) {
 	out := new(Empty)
 	err := c.cc.Invoke(ctx, "/proto.Peer/NoticeFromLRRPC", in, out, opts...)
 	if err != nil {
@@ -108,7 +108,7 @@ func (c *peerClient) NoticeFromLRRPC(ctx context.Context, in *NoticeLRRequest, o
 // Server API for Peer service
 
 type PeerServer interface {
-	NoticeFromLRRPC(context.Context, *NoticeLRRequest) (*Empty, error)
+	NoticeFromLRRPC(context.Context, *NoticeFromLRRequest) (*Empty, error)
 }
 
 func RegisterPeerServer(s *grpc.Server, srv PeerServer) {
@@ -116,7 +116,7 @@ func RegisterPeerServer(s *grpc.Server, srv PeerServer) {
 }
 
 func _Peer_NoticeFromLRRPC_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(NoticeLRRequest)
+	in := new(NoticeFromLRRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -128,7 +128,7 @@ func _Peer_NoticeFromLRRPC_Handler(srv interface{}, ctx context.Context, dec fun
 		FullMethod: "/proto.Peer/NoticeFromLRRPC",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(PeerServer).NoticeFromLRRPC(ctx, req.(*NoticeLRRequest))
+		return srv.(PeerServer).NoticeFromLRRPC(ctx, req.(*NoticeFromLRRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -146,17 +146,17 @@ var _Peer_serviceDesc = grpc.ServiceDesc{
 	Metadata: "peer.proto",
 }
 
-func init() { proto.RegisterFile("peer.proto", fileDescriptor_peer_77bc79d806131108) }
+func init() { proto.RegisterFile("peer.proto", fileDescriptor_peer_0a2b3ec50a9cacb1) }
 
-var fileDescriptor_peer_77bc79d806131108 = []byte{
-	// 136 bytes of a gzipped FileDescriptorProto
+var fileDescriptor_peer_0a2b3ec50a9cacb1 = []byte{
+	// 135 bytes of a gzipped FileDescriptorProto
 	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xe2, 0xe2, 0x2a, 0x48, 0x4d, 0x2d,
 	0xd2, 0x2b, 0x28, 0xca, 0x2f, 0xc9, 0x17, 0x62, 0x05, 0x53, 0x52, 0xdc, 0xa9, 0xb9, 0x05, 0x25,
-	0x95, 0x10, 0x31, 0x25, 0x4b, 0x2e, 0x7e, 0xbf, 0xfc, 0x92, 0xcc, 0xe4, 0x54, 0x9f, 0xa0, 0xa0,
-	0xd4, 0xc2, 0xd2, 0xd4, 0xe2, 0x12, 0x21, 0x21, 0x2e, 0x96, 0x82, 0xfc, 0xa2, 0x12, 0x09, 0x46,
-	0x05, 0x46, 0x0d, 0xce, 0x20, 0x30, 0x1b, 0x24, 0x96, 0x98, 0x92, 0x52, 0x24, 0xc1, 0x04, 0x11,
-	0x03, 0xb1, 0x8d, 0xec, 0xb9, 0x58, 0x02, 0x52, 0x53, 0x8b, 0x84, 0xcc, 0x61, 0x46, 0xb8, 0x15,
-	0xe5, 0xe7, 0xfa, 0x04, 0x05, 0x05, 0x38, 0x0b, 0x89, 0x41, 0x4c, 0xd7, 0x43, 0x33, 0x5a, 0x8a,
-	0x07, 0x2a, 0xee, 0x0a, 0x72, 0x41, 0x12, 0x1b, 0x98, 0x63, 0x0c, 0x08, 0x00, 0x00, 0xff, 0xff,
-	0xcb, 0x33, 0xfa, 0x5d, 0xa4, 0x00, 0x00, 0x00,
+	0x95, 0x10, 0x31, 0x25, 0x5b, 0x2e, 0x61, 0xbf, 0xfc, 0x92, 0xcc, 0xe4, 0x54, 0xb7, 0xa2, 0xfc,
+	0x5c, 0x9f, 0xa0, 0xa0, 0xd4, 0xc2, 0xd2, 0xd4, 0xe2, 0x12, 0x21, 0x21, 0x2e, 0x96, 0x82, 0xfc,
+	0xa2, 0x12, 0x09, 0x46, 0x05, 0x46, 0x0d, 0xce, 0x20, 0x30, 0x1b, 0x24, 0x96, 0x98, 0x92, 0x52,
+	0x24, 0xc1, 0x04, 0x11, 0x03, 0xb1, 0x8d, 0x9c, 0xb9, 0x58, 0x02, 0x52, 0x53, 0x8b, 0x84, 0xac,
+	0xb9, 0xf8, 0x51, 0x8c, 0x09, 0x70, 0x16, 0x92, 0x82, 0xd8, 0xa0, 0x87, 0xc5, 0x78, 0x29, 0x1e,
+	0xa8, 0x9c, 0x2b, 0xc8, 0x25, 0x49, 0x6c, 0x60, 0x8e, 0x31, 0x20, 0x00, 0x00, 0xff, 0xff, 0x72,
+	0x63, 0xa4, 0x06, 0xac, 0x00, 0x00, 0x00,
 }
