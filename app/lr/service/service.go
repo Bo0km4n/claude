@@ -7,6 +7,7 @@ import (
 
 	"github.com/Bo0km4n/claude/app/common/proto"
 	"github.com/Bo0km4n/claude/app/lr/config"
+	"github.com/Bo0km4n/claude/app/lr/db"
 	"google.golang.org/grpc"
 )
 
@@ -17,7 +18,16 @@ func (p *LRService) Heartbeat(ctx context.Context, in *proto.Empty) (*proto.Empt
 }
 
 func (p *LRService) PeerJoinRPC(ctx context.Context, in *proto.PeerJoinRequest) (*proto.PeerJoinResponse, error) {
-	return nil, nil
+	entry := &proto.PeerEntry{
+		PeerId:    in.PeerId,
+		LocalIp:   in.LocalIp,
+		LocalPort: in.LocalPort,
+		Latitude:  in.Latitude,
+		Longitude: in.Longitude,
+	}
+	db.InsertEntry(entry.PeerId, entry)
+	// db.Dump()
+	return &proto.PeerJoinResponse{Success: true}, nil
 }
 
 func LaunchGRPCService() {

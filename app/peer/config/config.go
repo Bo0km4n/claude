@@ -9,15 +9,23 @@ import (
 var Config *conf
 
 type Peer struct {
-	GRPC GRPC
+	Iface  string `required:"true" default:"eth1"`
+	GRPC   GRPC
+	Claude Claude
 }
 
 type GRPC struct {
 	Port string `required:"true" default:"50051"`
 }
 
+type Claude struct {
+	Port string `required:"true" default:"9610"`
+}
+
 type conf struct {
-	GRPC GRPC
+	Iface  string
+	GRPC   GRPC
+	Claude Claude
 }
 
 func InitConfig() {
@@ -27,6 +35,8 @@ func InitConfig() {
 	}
 
 	Config = &conf{
-		GRPC: peer.GRPC,
+		Iface:  peer.Iface,
+		GRPC:   peer.GRPC,
+		Claude: peer.Claude,
 	}
 }

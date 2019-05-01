@@ -26,8 +26,6 @@ func ListenUDPBcastFromPeer() {
 		panic(err)
 	}
 
-	// set sock option
-
 	conn, err := net.ListenMulticastUDP("udp", inf, udpAddr)
 	if err != nil {
 		panic(err)

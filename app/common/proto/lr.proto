@@ -19,3 +19,11 @@ message PeerJoinRequest {
 message PeerJoinResponse {
     bool success = 1;
 }
+
+message PeerEntry {
+    string peer_id = 1;
+    string local_ip = 2;
+    string local_port = 3;
+    float latitude = 4;
+    float longitude = 5; 
+}
