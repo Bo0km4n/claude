@@ -27,8 +27,8 @@ type UDP struct {
 }
 
 type Claude struct {
-	TcpPort string `required:"true" default:"19610"`
-	UdpPort string `required:"true" default:"29610"`
+	TcpPort string `required:"true" default:"9610"`
+	UdpPort string `required:"true" default:"9611"`
 }
 
 type conf struct {

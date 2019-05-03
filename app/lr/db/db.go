@@ -1,6 +1,7 @@
 package db
 
 import (
+	"encoding/hex"
 	"fmt"
 	"sync"
 
@@ -14,11 +15,13 @@ func InitDB() {
 }
 
 func InsertEntry(key []byte, value *proto.PeerEntry) {
-	memcache.Store(key, value)
+	keyStr := hex.EncodeToString(key)
+	memcache.Store(keyStr, value)
 }
 
 func FetchEntry(key []byte) (*proto.PeerEntry, error) {
-	v, ok := memcache.Load(key)
+	keyStr := hex.EncodeToString(key)
+	v, ok := memcache.Load(keyStr)
 	if !ok {
 		return nil, fmt.Errorf("Not found key: %s", key)
 	}

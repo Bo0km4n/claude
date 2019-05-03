@@ -13,5 +13,6 @@ func init() {
 
 func main() {
 	go service.ListenUDPBcastFromPeer()
+	service.LaunchPacketFilter()
 	service.LaunchGRPCService()
 }
