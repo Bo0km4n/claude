@@ -11,6 +11,7 @@ var Config *conf
 
 type LR struct {
 	Interface string `required:"true" default:"eth1"`
+	Claude    Claude
 	GRPC      GRPC
 	UDP       UDP
 }
@@ -25,7 +26,13 @@ type UDP struct {
 	Port    string `required:"true" default:"9000"`
 }
 
+type Claude struct {
+	TcpPort string `required:"true" default:"19610"`
+	UdpPort string `required:"true" default:"29610"`
+}
+
 type conf struct {
+	Claude    Claude
 	Interface string
 	GRPC      GRPC
 	UDP       UDP
@@ -61,6 +68,7 @@ func InitConfig() {
 	lr.GRPC.Addr = addr.IP.String()
 
 	Config = &conf{
+		Claude:    lr.Claude,
 		Interface: lr.Interface,
 		GRPC:      lr.GRPC,
 		UDP:       lr.UDP,

@@ -56,8 +56,10 @@ func sendNoticeToPeer(m *message.UDPBcastMessage) {
 	defer conn.Close()
 	client := proto.NewPeerClient(conn)
 	if _, err := client.NoticeFromLRRPC(context.Background(), &proto.NoticeFromLRRequest{
-		Port: config.Config.GRPC.Port,
-		Addr: config.Config.GRPC.Addr,
+		TcpPort:  config.Config.Claude.TcpPort,
+		UdpPort:  config.Config.Claude.UdpPort,
+		GrpcPort: config.Config.GRPC.Port,
+		Addr:     config.Config.GRPC.Addr,
 	}); err != nil {
 		log.Println(err)
 		return

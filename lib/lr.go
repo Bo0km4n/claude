@@ -1,17 +1,12 @@
-package main
+package lib
 
 import (
 	"time"
 
-	"github.com/Bo0km4n/claude/app/peer/config"
 	"github.com/Bo0km4n/claude/app/peer/service"
 )
 
-func init() {
-	config.InitConfig()
-}
-
-func main() {
+func SetLR() {
 	done := make(chan int)
 	go service.LaunchGRPCService(done)
 	<-done

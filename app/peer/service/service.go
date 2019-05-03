@@ -14,27 +14,32 @@ import (
 
 // global variable
 type remoteLR struct {
-	Addr string
-	Port string
+	Addr     string
+	GrpcPort string
+	TcpPort  string
+	UdpPort  string
 }
 
 var RemoteLR remoteLR
+var IsCompletedJoinToLR bool
 
 type PeerService struct{}
 
 func (p *PeerService) NoticeFromLRRPC(ctx context.Context, in *proto.NoticeFromLRRequest) (*proto.Empty, error) {
-	if in.Addr == "" || in.Port == "" {
+	if in.Addr == "" || in.GrpcPort == "" || in.TcpPort == "" || in.UdpPort == "" {
 		return nil, errors.New("LR information is invalid")
 	}
 
-	if RemoteLR.Addr != "" && RemoteLR.Port != "" {
+	if RemoteLR.Addr != "" && RemoteLR.GrpcPort != "" && RemoteLR.TcpPort != "" && RemoteLR.UdpPort != "" {
 		return &proto.Empty{}, nil
 	}
 
 	RemoteLR.Addr = in.Addr
-	RemoteLR.Port = in.Port
+	RemoteLR.GrpcPort = in.GrpcPort
+	RemoteLR.TcpPort = in.TcpPort
+	RemoteLR.UdpPort = in.UdpPort
 
-	log.Printf("Registered LR | Addr: %s, Port: %s\n", RemoteLR.Addr, RemoteLR.Port)
+	log.Printf("Registered LR | Addr: %s, GrpcPort: %s\n", RemoteLR.Addr, RemoteLR.GrpcPort)
 
 	if err := peerJoin(); err != nil {
 		log.Fatalf("Failed join to LR: %+v\n", err)
@@ -63,13 +68,13 @@ func LaunchGRPCService(done chan<- int) {
 func peerJoin() error {
 	latitude, longitude := geo.GetLocation()
 	request := &proto.PeerJoinRequest{
-		PeerId:    getPeerID(),
+		PeerId:    GetPeerID(),
 		LocalIp:   getLocalIP(config.Config.Iface),
 		LocalPort: config.Config.Claude.Port,
 		Latitude:  latitude,
 		Longitude: longitude,
 	}
-	conn, err := grpc.Dial(RemoteLR.Addr+":"+RemoteLR.Port, grpc.WithInsecure())
+	conn, err := grpc.Dial(RemoteLR.Addr+":"+RemoteLR.GrpcPort, grpc.WithInsecure())
 	if err != nil {
 		return err
 	}
@@ -78,5 +83,9 @@ func peerJoin() error {
 	if _, err := client.PeerJoinRPC(context.Background(), request); err != nil {
 		return err
 	}
+
+	// Set flag to decide finised the process of joining to LR
+	IsCompletedJoinToLR = true
+
 	return nil
 }

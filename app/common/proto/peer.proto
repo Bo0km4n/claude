@@ -8,6 +8,8 @@ service Peer {
 }
 
 message NoticeFromLRRequest {
-    string port = 1;
-    string addr = 2;
+    string grpc_port = 1;
+    string tcp_port = 2;
+    string udp_port = 3;
+    string addr = 4;
 }

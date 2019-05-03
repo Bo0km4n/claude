@@ -3,7 +3,6 @@ package service
 import (
 	"bytes"
 	"crypto/sha256"
-	"encoding/hex"
 	"log"
 	"net"
 )
@@ -33,7 +32,7 @@ func getLocalIP(dev string) string {
 	return addr.IP.String()
 }
 
-func getPeerID() string {
+func GetPeerID() []byte {
 	var macAddr string
 	interfaces, err := net.Interfaces()
 	if err == nil {
@@ -46,5 +45,5 @@ func getPeerID() string {
 		}
 	}
 	peerID := sha256.Sum256([]byte(macAddr))
-	return hex.EncodeToString(peerID[:])
+	return peerID[:]
 }
