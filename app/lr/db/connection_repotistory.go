@@ -1,21 +1,39 @@
 package db
 
 import (
-	"errors"
 	"net"
 	"sync"
 )
 
-var connectionRepository sync.Map
+// peerConnectionRepository has connections between LR and Peer
+var peerConnectionRepository sync.Map
 
-func RegisterConnection(key string, value net.Conn) {
-	connectionRepository.Store(key, value)
-}
-
-func LoadConnection(key string) (net.Conn, error) {
-	v, ok := connectionRepository.Load(key)
-	if !ok {
-		return nil, errors.New("Not found connection")
+func RegisterPeerConnection(key string, protocol string, value net.Conn) {
+	switch protocol {
+	case "tcp":
+		conn := value.(*net.TCPConn)
+		peerConnectionRepository.Store(key, conn)
+	case "udp":
+		conn := value.(*net.UDPConn)
+		peerConnectionRepository.Store(key, conn)
 	}
-	return v.(net.Conn), nil
 }
+
+func LoadPeerConnection(key, protocol string) (net.Conn, bool) {
+	v, ok := peerConnectionRepository.Load(key)
+	if !ok {
+		return nil, false
+	}
+	switch protocol {
+	case "tcp":
+		conn := v.(*net.TCPConn)
+		return conn, ok
+	case "udp":
+		conn := v.(*net.UDPConn)
+		return conn, ok
+	}
+	return nil, false
+}
+
+// lrConnectionRepository has connections between itself and remote LR
+var lrConnectionRepository sync.Map

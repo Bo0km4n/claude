@@ -2,6 +2,7 @@ package service
 
 import (
 	"errors"
+	"fmt"
 	"log"
 	"net"
 
@@ -33,7 +34,7 @@ func LaunchPacketFilter() {
 			if err != nil {
 				log.Fatal(err)
 			}
-			db.RegisterConnection(conn.RemoteAddr().String(), conn)
+			db.RegisterPeerConnection(conn.RemoteAddr().String(), "tcp", conn)
 			n, err := conn.Read(buf)
 			if err != nil {
 				log.Fatal(err)
@@ -43,17 +44,26 @@ func LaunchPacketFilter() {
 		}
 	}()
 
-	// // Debug udp listener
-	// go func() {
-	// 	conn, _ := net.ListenPacket("udp", ":"+config.Config.Claude.UdpPort)
-	// 	defer conn.Close()
-
-	// 	buffer := make([]byte, 1024)
-	// 	for {
-	// 		length, remoteAddr, _ := conn.ReadFrom(buffer)
-	// 		fmt.Printf("Received from %v: %v\n", remoteAddr, buffer[:length])
-	// 	}
-	// }()
+	// Debug udp listener
+	go func() {
+		laddr, err := net.ResolveUDPAddr("udp", ":"+config.Config.Claude.UdpPort)
+		if err != nil {
+			log.Fatal(err)
+		}
+		conn, err := net.ListenUDP("udp", laddr)
+		if err != nil {
+			log.Fatal(err)
+		}
+		defer conn.Close()
+		buffer := make([]byte, 1024)
+		for {
+			length, remoteAddr, _ := conn.ReadFrom(buffer)
+			if _, ok := db.LoadPeerConnection(remoteAddr.String(), "udp"); !ok {
+				db.RegisterPeerConnection(remoteAddr.String(), "udp", conn)
+			}
+			fmt.Printf("Received from %v: %v\n", remoteAddr, buffer[:length])
+		}
+	}()
 
 	go filterPacket()
 }
@@ -138,6 +148,7 @@ func scan(iface *net.Interface) error {
 }
 
 var SrcIP string
+var protocol string
 
 func ipRecvFilter(addr *net.IPNet, packet gopacket.Packet) bool {
 	ipLayer := packet.Layer(layers.LayerTypeIPv4)
@@ -162,6 +173,7 @@ func tcpRecvFilter(port string, packet gopacket.Packet) []byte {
 		log.Printf("TCP Port is src: %v, dst: %v\n", tcp.SrcPort.String(), dstPort)
 		pp.Printf("ACK: %v, PSH: %v, SYN: %v, FIN: %v\n", tcp.ACK, tcp.PSH, tcp.SYN, tcp.FIN)
 		pp.Println(len(tcp.Payload))
+		protocol = "tcp"
 		return tcp.Payload
 	}
 	return []byte{}
@@ -171,9 +183,9 @@ func udpRecvFilter(port string, packet gopacket.Packet) []byte {
 	udpLayer := packet.Layer(layers.LayerTypeUDP)
 	udp := udpLayer.(*layers.UDP)
 	dstPort := udp.DstPort.String()
-	pp.Println(udp.Payload)
 	if dstPort == port && len(udp.Payload) > 0 {
 		log.Printf("UDP Port is src: %v, dst: %v\n", udp.SrcPort.String(), dstPort)
+		protocol = "udp"
 		return udp.Payload
 	}
 	return []byte{}
@@ -208,5 +220,31 @@ func forwardPayload(payload []byte) {
 		log.Println(err)
 		return
 	}
-	pp.Println(claudePacket)
+	peer, err := db.FetchEntry(claudePacket.DestinationPeerID[:])
+	if err != nil {
+		// Maybe this destination is located in remote network.
+		forwardToRemote(claudePacket)
+	}
+	forwardToLocal(peer.LocalIp, peer.LocalPort, claudePacket)
+}
+
+func forwardToRemote(claudePacket *lib.ClaudePacket) {
+
+}
+
+func forwardToLocal(ip, port string, claudePacket *lib.ClaudePacket) {
+	addr := ip + ":" + port
+	peerConn, ok := db.LoadPeerConnection(addr, protocol)
+	if !ok {
+		log.Printf("Not found connection %s\n", addr)
+		return
+	}
+	if protocol == "udp" {
+		udpConn := peerConn.(*net.UDPConn)
+		udpAddr, _ := net.ResolveUDPAddr("udp", addr)
+		udpConn.WriteTo(claudePacket.Serialize(), udpAddr)
+	} else if protocol == "tcp" {
+		tcpConn := peerConn.(*net.TCPConn)
+		tcpConn.Write(claudePacket.Serialize())
+	}
 }

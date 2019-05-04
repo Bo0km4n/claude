@@ -5,6 +5,7 @@ import (
 	"errors"
 	"log"
 	"net"
+	"strings"
 
 	"github.com/Bo0km4n/claude/app/common/proto"
 	"github.com/Bo0km4n/claude/app/peer/config"
@@ -20,6 +21,8 @@ type remoteLR struct {
 	UdpPort  string
 }
 
+var Protocol string
+var NetConn net.Conn
 var RemoteLR remoteLR
 var IsCompletedJoinToLR bool
 
@@ -48,7 +51,8 @@ func (p *PeerService) NoticeFromLRRPC(ctx context.Context, in *proto.NoticeFromL
 	return &proto.Empty{}, nil
 }
 
-func LaunchGRPCService(done chan<- int) {
+func LaunchGRPCService(done chan<- int, protocol string) {
+	Protocol = protocol
 	port, err := net.Listen("tcp", ":"+config.Config.GRPC.Port)
 	if err != nil {
 		log.Fatal(err)
@@ -70,7 +74,6 @@ func peerJoin() error {
 	request := &proto.PeerJoinRequest{
 		PeerId:    GetPeerID(),
 		LocalIp:   getLocalIP(config.Config.Iface),
-		LocalPort: config.Config.Claude.Port,
 		Latitude:  latitude,
 		Longitude: longitude,
 	}
@@ -80,6 +83,15 @@ func peerJoin() error {
 	}
 	defer conn.Close()
 	client := proto.NewLRClient(conn)
+
+	// create tcp or udp connection. and set listen port number
+	netConn, port, err := createNetConn()
+	if err != nil {
+		return err
+	}
+	NetConn = netConn
+	request.LocalPort = port
+
 	if _, err := client.PeerJoinRPC(context.Background(), request); err != nil {
 		return err
 	}
@@ -88,4 +100,32 @@ func peerJoin() error {
 	IsCompletedJoinToLR = true
 
 	return nil
+}
+
+// return
+func createNetConn() (net.Conn, string, error) {
+	switch Protocol {
+	case "tcp":
+		conn, err := net.Dial("tcp", RemoteLR.Addr+":"+RemoteLR.TcpPort)
+		if err != nil {
+			return nil, "", err
+		}
+		addr := conn.LocalAddr().String()
+		port := extractPort(addr)
+		return conn, port, nil
+	case "udp":
+		conn, err := net.Dial("udp", RemoteLR.Addr+":"+RemoteLR.UdpPort)
+		if err != nil {
+			return nil, "", err
+		}
+		addr := conn.LocalAddr().String()
+		port := extractPort(addr)
+		return conn, port, nil
+	}
+	return nil, "", nil
+}
+
+// Only ipv4
+func extractPort(addr string) string {
+	return strings.Split(addr, ":")[1]
 }

@@ -6,9 +6,10 @@ import (
 	"github.com/Bo0km4n/claude/app/peer/service"
 )
 
-func SetLR() {
+func SetLR(protocol string) {
 	done := make(chan int)
-	go service.LaunchGRPCService(done)
+
+	go service.LaunchGRPCService(done, protocol)
 	<-done
 
 	time.Sleep(2)

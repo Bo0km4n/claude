@@ -1,6 +1,7 @@
 package lib
 
 import (
+	"encoding/binary"
 	"errors"
 	"log"
 	"net"
@@ -24,34 +25,24 @@ type ClaudePacket struct {
 	Payload           []byte
 }
 
-func InitEnv() {
+func InitEnv(protocol string) {
 	peerConfig.InitConfig()
-	SetLR()
+	SetLR(protocol)
 }
 
 func NewConnection(protocol string, dest []byte) (*Connection, error) {
 
 	switch protocol {
 	case "udp":
-		conn, err := net.Dial("udp", service.RemoteLR.Addr+":"+service.RemoteLR.UdpPort)
-		if err != nil {
-			return nil, err
-		}
-
 		return &Connection{
-			NetConn:           conn,
+			NetConn:           service.NetConn,
 			Protocol:          "udp",
 			DestinationPeerID: dest,
 			SourcePeerID:      service.GetPeerID(),
 		}, nil
 	case "tcp":
-		conn, err := net.Dial("tcp", service.RemoteLR.Addr+":"+service.RemoteLR.TcpPort)
-		if err != nil {
-			return nil, err
-		}
-
 		return &Connection{
-			NetConn:           conn,
+			NetConn:           service.NetConn,
 			Protocol:          "tcp",
 			DestinationPeerID: dest,
 			SourcePeerID:      service.GetPeerID(),
@@ -67,7 +58,7 @@ func (c *Connection) Ping() {
 		log.Printf("Packet is empty")
 		return
 	}
-	// buf := make([]byte, 1024)
+	buf := make([]byte, 1024)
 	for _, p := range packets {
 		n, err := c.NetConn.Write(p)
 		if err != nil {
@@ -75,13 +66,22 @@ func (c *Connection) Ping() {
 		} else {
 			log.Printf("Send packets: %d\n", n)
 		}
-		// for {
-		// 	n, err = c.NetConn.Read(buf)
-		// 	if err != nil {
-		// 		log.Fatal(err)
-		// 	} else {
-		// 		log.Printf("Received msg: %s", string(buf))
-		// 	}
-		// }
+		for {
+			n, err = c.NetConn.Read(buf)
+			if err != nil {
+				log.Fatal(err)
+			} else {
+				log.Printf("Received msg: %s", string(buf))
+			}
+		}
 	}
+}
+
+func (cp *ClaudePacket) Serialize() []byte {
+	b := append(cp.SourcePeerID[:], cp.DestinationPeerID[:]...)
+	checkSumBytes := make([]byte, 2)
+	binary.BigEndian.PutUint16(checkSumBytes, cp.CheckSum)
+	b = append(b, checkSumBytes...)
+	b = append(b, cp.Payload...)
+	return b
 }
