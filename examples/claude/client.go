@@ -1,16 +1,16 @@
 package main
 
 import (
+	"crypto/sha256"
 	"log"
 
-	peerService "github.com/Bo0km4n/claude/app/peer/service"
 	"github.com/Bo0km4n/claude/lib"
 )
 
 func main() {
 	lib.InitEnv()
-	dest := peerService.GetPeerID()
-	conn, err := lib.NewConnection("udp", dest)
+	dest := sha256.Sum256([]byte(`hoge`))
+	conn, err := lib.NewConnection("tcp", dest[:])
 	if err != nil {
 		log.Fatal(err)
 	}

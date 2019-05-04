@@ -108,3 +108,11 @@ func convert8To16(header []byte) ([]uint16, error) {
 	}
 	return u16, nil
 }
+
+func validCheckSum(checkSum uint16, srcID, dstID []byte) bool {
+	u16IDs, err := convert8To16(append(srcID, dstID...))
+	if err != nil {
+		return false
+	}
+	return checkSum == calcCheckSum(u16IDs)
+}

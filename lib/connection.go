@@ -17,6 +17,13 @@ type Connection struct {
 	SourcePeerID      []byte
 }
 
+type ClaudePacket struct {
+	DestinationPeerID [32]byte
+	SourcePeerID      [32]byte
+	CheckSum          uint16
+	Payload           []byte
+}
+
 func InitEnv() {
 	peerConfig.InitConfig()
 	SetLR()
@@ -60,12 +67,21 @@ func (c *Connection) Ping() {
 		log.Printf("Packet is empty")
 		return
 	}
+	// buf := make([]byte, 1024)
 	for _, p := range packets {
 		n, err := c.NetConn.Write(p)
 		if err != nil {
 			log.Fatal(err)
 		} else {
-			log.Printf("Send packates: %d\n", n)
+			log.Printf("Send packets: %d\n", n)
 		}
+		// for {
+		// 	n, err = c.NetConn.Read(buf)
+		// 	if err != nil {
+		// 		log.Fatal(err)
+		// 	} else {
+		// 		log.Printf("Received msg: %s", string(buf))
+		// 	}
+		// }
 	}
 }
