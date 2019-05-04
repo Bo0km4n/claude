@@ -13,14 +13,10 @@ import (
 	"github.com/google/gopacket"
 	"github.com/google/gopacket/layers"
 	"github.com/google/gopacket/pcap"
-	"github.com/k0kubun/pp"
 )
 
 func LaunchPacketFilter() {
 
-	// TODO: Implement the filter by using the GoPacket.
-
-	// Debug tcp listener
 	go func() {
 		listen, err := net.Listen("tcp", ":"+config.Config.Claude.TcpPort)
 		if err != nil {
@@ -44,7 +40,6 @@ func LaunchPacketFilter() {
 		}
 	}()
 
-	// Debug udp listener
 	go func() {
 		laddr, err := net.ResolveUDPAddr("udp", ":"+config.Config.Claude.UdpPort)
 		if err != nil {
@@ -136,12 +131,6 @@ func scan(iface *net.Interface) error {
 			if !ipRecvFilter(addr, packet) {
 				continue
 			}
-			// switch {
-			// case tcpRecvFilter(config.Config.Claude.TcpPort, packet):
-			// 	pp.Println("Received tcp packet")
-			// case udpRecvFilter(config.Config.Claude.UdpPort, packet):
-			// 	pp.Println("Received udp packet")
-			// }
 			forward(packet)
 		}
 	}
@@ -171,8 +160,6 @@ func tcpRecvFilter(port string, packet gopacket.Packet) []byte {
 	dstPort := tcp.DstPort.String()
 	if dstPort == port && len(tcp.Payload) > 0 {
 		log.Printf("TCP Port is src: %v, dst: %v\n", tcp.SrcPort.String(), dstPort)
-		pp.Printf("ACK: %v, PSH: %v, SYN: %v, FIN: %v\n", tcp.ACK, tcp.PSH, tcp.SYN, tcp.FIN)
-		pp.Println(len(tcp.Payload))
 		protocol = "tcp"
 		return tcp.Payload
 	}
@@ -241,7 +228,10 @@ func forwardToLocal(ip, port string, claudePacket *lib.ClaudePacket) {
 	}
 	if protocol == "udp" {
 		udpConn := peerConn.(*net.UDPConn)
-		udpAddr, _ := net.ResolveUDPAddr("udp", addr)
+		udpAddr, err := net.ResolveUDPAddr("udp", addr)
+		if err != nil {
+			log.Printf("forwardToLocal() error: %v\n", err)
+		}
 		udpConn.WriteTo(claudePacket.Serialize(), udpAddr)
 	} else if protocol == "tcp" {
 		tcpConn := peerConn.(*net.TCPConn)
