@@ -24,15 +24,7 @@ func LoadPeerConnection(key, protocol string) (net.Conn, bool) {
 	if !ok {
 		return nil, false
 	}
-	switch protocol {
-	case "tcp":
-		conn := v.(*net.TCPConn)
-		return conn, ok
-	case "udp":
-		conn := v.(*net.UDPConn)
-		return conn, ok
-	}
-	return nil, false
+	return v.(net.Conn), ok
 }
 
 // lrConnectionRepository has connections between itself and remote LR

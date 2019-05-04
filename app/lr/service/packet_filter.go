@@ -131,7 +131,7 @@ func scan(iface *net.Interface) error {
 			if !ipRecvFilter(addr, packet) {
 				continue
 			}
-			forward(packet)
+			forward(handle, packet)
 		}
 	}
 }
@@ -188,7 +188,7 @@ func isUdpPacket(packet gopacket.Packet) bool {
 	return udpLayer != nil
 }
 
-func forward(packet gopacket.Packet) {
+func forward(handle *pcap.Handle, packet gopacket.Packet) {
 	var payload []byte
 	if isTcpPacket(packet) {
 		payload = tcpRecvFilter(config.Config.Claude.TcpPort, packet)
@@ -197,11 +197,11 @@ func forward(packet gopacket.Packet) {
 	}
 
 	if len(payload) > 0 {
-		forwardPayload(payload)
+		forwardPayload(handle, payload)
 	}
 }
 
-func forwardPayload(payload []byte) {
+func forwardPayload(handle *pcap.Handle, payload []byte) {
 	claudePacket, err := lib.ParseHeader(payload)
 	if err != nil {
 		log.Println(err)
@@ -210,13 +210,42 @@ func forwardPayload(payload []byte) {
 	peer, err := db.FetchEntry(claudePacket.DestinationPeerID[:])
 	if err != nil {
 		// Maybe this destination is located in remote network.
-		forwardToRemote(claudePacket)
+		forwardToRemote(handle, claudePacket)
+	} else {
+		forwardToLocal(peer.LocalIp, peer.LocalPort, claudePacket)
 	}
-	forwardToLocal(peer.LocalIp, peer.LocalPort, claudePacket)
 }
 
-func forwardToRemote(claudePacket *lib.ClaudePacket) {
+func forwardToRemote(handle *pcap.Handle, claudePacket *lib.ClaudePacket) {
+	log.Println("Forward to remote")
 
+	// TODO: Fix example
+	b := claudePacket.Serialize()
+	buffer := gopacket.NewSerializeBuffer()
+	gopacket.SerializeLayers(
+		buffer,
+		gopacket.SerializeOptions{
+			ComputeChecksums: true,
+		},
+		&layers.Ethernet{},
+		&layers.IPv4{
+			SrcIP: net.IPv4(0xc0, 0xa8, 0x0a, 0x64),
+			DstIP: net.IPv4(0xc0, 0xa8, 0x0a, 0x0a),
+		},
+		&layers.UDP{
+			SrcPort: layers.UDPPort(9610),
+			DstPort: layers.UDPPort(9611),
+		},
+		gopacket.Payload(b),
+	)
+	outgoingPacket := buffer.Bytes()
+	// Send our packet
+	err := handle.WritePacketData(outgoingPacket)
+	if err != nil {
+		log.Printf("forwardToRemote() is failed: %v\n", err)
+	}
+
+	log.Println("Forwarded packet")
 }
 
 func forwardToLocal(ip, port string, claudePacket *lib.ClaudePacket) {
