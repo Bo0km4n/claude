@@ -219,7 +219,8 @@ func forwardPayload(handle *pcap.Handle, payload []byte) {
 func forwardToRemote(handle *pcap.Handle, claudePacket *lib.ClaudePacket) {
 	log.Println("Forward to remote")
 
-	// TODO: Fix example
+	// TODO: Fix example,
+	// implement the process what fetches a information of remote LR and build packet
 	b := claudePacket.Serialize()
 	buffer := gopacket.NewSerializeBuffer()
 	gopacket.SerializeLayers(
@@ -230,7 +231,7 @@ func forwardToRemote(handle *pcap.Handle, claudePacket *lib.ClaudePacket) {
 		&layers.Ethernet{},
 		&layers.IPv4{
 			SrcIP: net.IPv4(0xc0, 0xa8, 0x0a, 0x64),
-			DstIP: net.IPv4(0xc0, 0xa8, 0x0a, 0x0a),
+			DstIP: net.IPv4(0x64, 0x64, 0x64, 0xc8),
 		},
 		&layers.UDP{
 			SrcPort: layers.UDPPort(9610),

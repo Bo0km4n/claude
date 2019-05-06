@@ -8,7 +8,6 @@ import (
 
 func SetLR(protocol string) {
 	done := make(chan int)
-
 	go service.LaunchGRPCService(done, protocol)
 	<-done
 
