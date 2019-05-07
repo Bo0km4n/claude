@@ -8,10 +8,13 @@ import (
 )
 
 func main() {
-	lib.InitEnv("tcp")
-	dest := sha256.Sum256([]byte(`hoge`))
+	lib.InitEnv("udp")
+
+	// dest PeerB = efgh
+	// dest PeerA = abcd
+	dest := sha256.Sum256([]byte(`efgh`))
 	// dest := service.GetPeerID()
-	conn, err := lib.NewConnection("tcp", dest[:])
+	conn, err := lib.NewConnection("udp", dest[:])
 	if err != nil {
 		log.Fatal(err)
 	}

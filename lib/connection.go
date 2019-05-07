@@ -71,7 +71,11 @@ func (c *Connection) Ping() {
 			if err != nil {
 				log.Fatal(err)
 			} else {
-				log.Printf("Received msg: %s", string(buf))
+				resp, err := ParseHeader(buf)
+				if err != nil {
+					log.Fatal(err)
+				}
+				log.Printf("Received msg: %s", string(resp.Payload))
 			}
 		}
 	}

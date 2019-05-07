@@ -26,4 +26,5 @@ message PeerEntry {
     string local_port = 3;
     float latitude = 4;
     float longitude = 5; 
+    bool is_remote = 6;
 }

@@ -1,10 +1,11 @@
 package service
 
 import (
-	"bytes"
 	"crypto/sha256"
 	"log"
 	"net"
+
+	"github.com/Bo0km4n/claude/app/peer/config"
 )
 
 func getLocalIP(dev string) string {
@@ -33,17 +34,6 @@ func getLocalIP(dev string) string {
 }
 
 func GetPeerID() []byte {
-	var macAddr string
-	interfaces, err := net.Interfaces()
-	if err == nil {
-		for _, i := range interfaces {
-			if i.Flags&net.FlagUp != 0 && bytes.Compare(i.HardwareAddr, nil) != 0 {
-				// Don't use random as we have a real address
-				macAddr = i.HardwareAddr.String()
-				break
-			}
-		}
-	}
-	peerID := sha256.Sum256([]byte(macAddr))
+	peerID := sha256.Sum256([]byte(config.Config.Claude.Credential))
 	return peerID[:]
 }

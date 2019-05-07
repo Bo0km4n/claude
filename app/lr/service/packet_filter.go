@@ -6,14 +6,19 @@ import (
 	"log"
 	"net"
 
+	"github.com/Bo0km4n/claude/app/common/proto"
 	"github.com/Bo0km4n/claude/app/lr/db"
 	"github.com/Bo0km4n/claude/lib"
+	"github.com/k0kubun/pp"
 
 	"github.com/Bo0km4n/claude/app/lr/config"
 	"github.com/google/gopacket"
 	"github.com/google/gopacket/layers"
 	"github.com/google/gopacket/pcap"
 )
+
+var TcpConn net.Conn
+var UdpConn *net.UDPConn
 
 func LaunchPacketFilter() {
 
@@ -26,12 +31,12 @@ func LaunchPacketFilter() {
 
 		buf := make([]byte, 1024)
 		for {
-			conn, err := listen.Accept()
+			TcpConn, err = listen.Accept()
 			if err != nil {
 				log.Fatal(err)
 			}
-			db.RegisterPeerConnection(conn.RemoteAddr().String(), "tcp", conn)
-			n, err := conn.Read(buf)
+			db.RegisterPeerConnection(TcpConn.RemoteAddr().String(), "tcp", TcpConn)
+			n, err := TcpConn.Read(buf)
 			if err != nil {
 				log.Fatal(err)
 			}
@@ -45,16 +50,16 @@ func LaunchPacketFilter() {
 		if err != nil {
 			log.Fatal(err)
 		}
-		conn, err := net.ListenUDP("udp", laddr)
+		UdpConn, err = net.ListenUDP("udp", laddr)
 		if err != nil {
 			log.Fatal(err)
 		}
-		defer conn.Close()
+		defer UdpConn.Close()
 		buffer := make([]byte, 1024)
 		for {
-			length, remoteAddr, _ := conn.ReadFrom(buffer)
+			length, remoteAddr, _ := UdpConn.ReadFrom(buffer)
 			if _, ok := db.LoadPeerConnection(remoteAddr.String(), "udp"); !ok {
-				db.RegisterPeerConnection(remoteAddr.String(), "udp", conn)
+				db.RegisterPeerConnection(remoteAddr.String(), "udp", UdpConn)
 			}
 			fmt.Printf("Received from %v: %v\n", remoteAddr, buffer[:length])
 		}
@@ -207,47 +212,42 @@ func forwardPayload(handle *pcap.Handle, payload []byte) {
 		log.Println(err)
 		return
 	}
-	peer, err := db.FetchEntry(claudePacket.DestinationPeerID[:])
+
+	// Debug insert
+	db.DebugInsertEntryPeerB()
+	db.DebugInsertEntryPeerA()
+
+	peer, err := db.FetchPeerEntry(claudePacket.DestinationPeerID[:])
+
 	if err != nil {
+		// TODO: implement process fetches entry from Tablet server.
+		return
+	}
+	pp.Println(peer)
+	if peer.IsRemote {
 		// Maybe this destination is located in remote network.
-		forwardToRemote(handle, claudePacket)
+		forwardToRemote(handle, peer, claudePacket)
 	} else {
 		forwardToLocal(peer.LocalIp, peer.LocalPort, claudePacket)
 	}
 }
 
-func forwardToRemote(handle *pcap.Handle, claudePacket *lib.ClaudePacket) {
+func forwardToRemote(handle *pcap.Handle, peer *proto.PeerEntry, claudePacket *lib.ClaudePacket) {
 	log.Println("Forward to remote")
 
 	// TODO: Fix example,
 	// implement the process what fetches a information of remote LR and build packet
-	b := claudePacket.Serialize()
-	buffer := gopacket.NewSerializeBuffer()
-	gopacket.SerializeLayers(
-		buffer,
-		gopacket.SerializeOptions{
-			ComputeChecksums: true,
-		},
-		&layers.Ethernet{},
-		&layers.IPv4{
-			SrcIP: net.IPv4(0xc0, 0xa8, 0x0a, 0x64),
-			DstIP: net.IPv4(0x64, 0x64, 0x64, 0xc8),
-		},
-		&layers.UDP{
-			SrcPort: layers.UDPPort(9610),
-			DstPort: layers.UDPPort(9611),
-		},
-		gopacket.Payload(b),
-	)
-	outgoingPacket := buffer.Bytes()
-	// Send our packet
-	err := handle.WritePacketData(outgoingPacket)
-	if err != nil {
-		log.Printf("forwardToRemote() is failed: %v\n", err)
-	}
 
-	log.Println("Forwarded packet")
+	if protocol == "tcp" {
+		// TODO: implement tcp
+	} else if protocol == "udp" {
+		addr, _ := net.ResolveUDPAddr("udp4", peer.GetLocalIp()+":"+peer.GetLocalPort())
+		UdpConn.WriteTo(claudePacket.Serialize(), addr)
+		log.Println("Forwarded packet")
+	}
 }
+
+// func forwardUdpPacket(packet []byte)
 
 func forwardToLocal(ip, port string, claudePacket *lib.ClaudePacket) {
 	addr := ip + ":" + port

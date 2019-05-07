@@ -19,7 +19,8 @@ type GRPC struct {
 }
 
 type Claude struct {
-	Port string `required:"true" default:"9610"`
+	Credential string `required:"true"`
+	Port       string `required:"true" default:"9610"`
 }
 
 type conf struct {

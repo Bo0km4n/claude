@@ -13,7 +13,7 @@ func init() {
 
 func main() {
 	done := make(chan int)
-	go service.LaunchGRPCService(done)
+	go service.LaunchGRPCService(done, "udp")
 	<-done
 
 	time.Sleep(2)
