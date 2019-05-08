@@ -219,7 +219,7 @@ func forwardPayload(handle *pcap.Handle, payload []byte) {
 	peer, err := db.FetchPeerEntry(claudePacket.DestinationPeerID[:])
 
 	if err != nil {
-		// TODO: implement process fetches entry from Tablet server.
+		log.Println(err)
 		return
 	}
 	if peer.IsRemote {
