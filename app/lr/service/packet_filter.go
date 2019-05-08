@@ -9,7 +9,6 @@ import (
 	"github.com/Bo0km4n/claude/app/common/proto"
 	"github.com/Bo0km4n/claude/app/lr/db"
 	"github.com/Bo0km4n/claude/lib"
-	"github.com/k0kubun/pp"
 
 	"github.com/Bo0km4n/claude/app/lr/config"
 	"github.com/google/gopacket"
@@ -223,34 +222,38 @@ func forwardPayload(handle *pcap.Handle, payload []byte) {
 		// TODO: implement process fetches entry from Tablet server.
 		return
 	}
-	pp.Println(peer)
 	if peer.IsRemote {
 		// Maybe this destination is located in remote network.
-		forwardToRemote(handle, peer, claudePacket)
+		forwardToRemote(peer, claudePacket)
 	} else {
-		forwardToLocal(peer.LocalIp, peer.LocalPort, claudePacket)
+		forwardToLocal(peer, claudePacket)
 	}
 }
 
-func forwardToRemote(handle *pcap.Handle, peer *proto.PeerEntry, claudePacket *lib.ClaudePacket) {
+func forwardToRemote(peer *proto.PeerEntry, claudePacket *lib.ClaudePacket) {
 	log.Println("Forward to remote")
 
 	// TODO: Fix example,
 	// implement the process what fetches a information of remote LR and build packet
 
 	if protocol == "tcp" {
-		// TODO: implement tcp
+		conn, err := net.Dial("tcp", peer.GetLocalIp()+":"+peer.GetLocalPort())
+		if err != nil {
+			return
+		}
+		defer conn.Close()
+		conn.Write(claudePacket.Serialize())
 	} else if protocol == "udp" {
 		addr, _ := net.ResolveUDPAddr("udp4", peer.GetLocalIp()+":"+peer.GetLocalPort())
 		UdpConn.WriteTo(claudePacket.Serialize(), addr)
-		log.Println("Forwarded packet")
 	}
+	log.Println("Forwarded packet")
 }
 
 // func forwardUdpPacket(packet []byte)
 
-func forwardToLocal(ip, port string, claudePacket *lib.ClaudePacket) {
-	addr := ip + ":" + port
+func forwardToLocal(peer *proto.PeerEntry, claudePacket *lib.ClaudePacket) {
+	addr := peer.GetLocalIp() + ":" + peer.GetLocalPort()
 	peerConn, ok := db.LoadPeerConnection(addr, protocol)
 	if !ok {
 		log.Printf("Not found connection %s\n", addr)

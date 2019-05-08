@@ -45,7 +45,7 @@ func DebugInsertEntryPeerA() {
 	v := &proto.PeerEntry{
 		PeerId:    keyB,
 		LocalIp:   "100.100.100.100",
-		LocalPort: "9611",
+		LocalPort: "9610",
 		IsRemote:  true,
 	}
 	memcache.Store(key, v)
@@ -54,7 +54,7 @@ func DebugInsertEntryPeerA() {
 func DebugInsertEntryPeerB() {
 	key := "5eCIoLZhY6Cial4FPSpEltwWq24OPdGt8tFqqEoHjJ0="
 	if _, ok := memcache.Load(key); ok {
-		pp.Println("Skip debug insert peerA")
+		pp.Println("Skip debug insert peerB")
 		return
 	}
 
@@ -62,7 +62,7 @@ func DebugInsertEntryPeerB() {
 	v := &proto.PeerEntry{
 		PeerId:    keyB,
 		LocalIp:   "100.100.100.200",
-		LocalPort: "9611",
+		LocalPort: "9610",
 		IsRemote:  true,
 	}
 	memcache.Store(key, v)
