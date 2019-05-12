@@ -5,7 +5,7 @@ import (
 	"log"
 	"time"
 
-	"github.com/Bo0km4n/claude/app/common/proto"
+	"github.com/Bo0km4n/claude/app/tablet/model"
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/mysql"
 )
@@ -16,7 +16,7 @@ func InitMysql(dbName string) {
 	dialect := "mysql"
 	host := "127.0.0.1"
 	port := "3306"
-	user := "claude"
+	user := "root"
 	password := "password"
 	database := dbName
 	url := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?parseTime=true&charset=utf8mb4", user, password, host, port, database)
@@ -35,7 +35,7 @@ func InitMysql(dbName string) {
 
 func MigrateMysql() {
 	Mysql.AutoMigrate(
-		&proto.LREntry{},
+		&model.LREntry{},
 	)
 }
 

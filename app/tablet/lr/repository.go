@@ -3,6 +3,8 @@ package lr
 import (
 	"context"
 
+	"github.com/Bo0km4n/claude/app/tablet/model"
+
 	"github.com/Bo0km4n/claude/app/common/proto"
 	"github.com/jinzhu/gorm"
 )
@@ -23,13 +25,23 @@ func NewLRRepository(db *gorm.DB) LRRepository {
 }
 
 func (lrr *lrRepository) StoreLR(ctx context.Context, in *proto.LREntry) error {
-	return lrr.db.Create(in).Error
+	query := &model.LREntry{}
+	query.ParseProto(in)
+	return lrr.db.Create(query).Error
 }
 
 func (lrr *lrRepository) LoadLRs(ctx context.Context, in *proto.LREntry) (*proto.LREntries, error) {
-	result := &proto.LREntries{}
-	if err := lrr.db.Where(in).Find(&result.Entries).Error; err != nil {
+	result := []model.LREntry{}
+	query := &model.LREntry{}
+	query.ParseProto(in)
+
+	if err := lrr.db.Where(query).Find(&result).Error; err != nil {
 		return nil, err
 	}
-	return result, nil
+
+	protoResult := &proto.LREntries{}
+	for i := range result {
+		protoResult.Entries = append(protoResult.Entries, result[i].SerializeToProto())
+	}
+	return protoResult, nil
 }
