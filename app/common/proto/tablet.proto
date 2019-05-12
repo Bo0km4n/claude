@@ -18,6 +18,7 @@ message LRJoinResponse {
 }
 
 message LREntry {
+    uint32 id  = 7;
     string global_ip = 1;
     string global_port = 2;
     float latitude = 3;
