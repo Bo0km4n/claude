@@ -2,7 +2,7 @@ package main
 
 import (
 	"github.com/Bo0km4n/claude/app/tablet/config"
-	"github.com/Bo0km4n/claude/app/tablet/db"
+	"github.com/Bo0km4n/claude/app/tablet/pkg/db"
 )
 
 func init() {

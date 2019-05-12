@@ -5,7 +5,7 @@ import (
 	"log"
 	"time"
 
-	"github.com/Bo0km4n/claude/app/tablet/model"
+	"github.com/Bo0km4n/claude/app/tablet/pkg/model"
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/mysql"
 )

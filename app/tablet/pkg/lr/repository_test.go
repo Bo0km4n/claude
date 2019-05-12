@@ -7,7 +7,7 @@ import (
 	"time"
 
 	"github.com/Bo0km4n/claude/app/common/proto"
-	"github.com/Bo0km4n/claude/app/tablet/db"
+	"github.com/Bo0km4n/claude/app/tablet/pkg/db"
 )
 
 func TestMain(m *testing.M) {

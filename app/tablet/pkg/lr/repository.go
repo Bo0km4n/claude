@@ -3,7 +3,7 @@ package lr
 import (
 	"context"
 
-	"github.com/Bo0km4n/claude/app/tablet/model"
+	"github.com/Bo0km4n/claude/app/tablet/pkg/model"
 
 	"github.com/Bo0km4n/claude/app/common/proto"
 	"github.com/jinzhu/gorm"
