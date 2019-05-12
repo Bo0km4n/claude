@@ -30,5 +30,13 @@ func (ts *TabletService) LRJoinRPC(ctx context.Context, in *proto.LRJoinRequest)
 		return &proto.LREntry{}, err
 	}
 
+	// TODO: Send notification of order that exchange information about peer entries
+	// between each LR
+	go ts.sendNotification(row)
+
 	return row, nil
+}
+
+func (ts *TabletService) sendNotification(entry *proto.LREntry) {
+	// TODO: implement the function that looks up some LR entries near argument's location.
 }
