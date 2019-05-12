@@ -3,18 +3,13 @@ package proto;
 
 // import "github.com/golang/protobuf/ptypes/timestamp";
 service Tablet {
-    rpc LRJoinRPC(LRJoinRequest) returns(LRJoinResponse);
+    rpc LRJoinRPC(LRJoinRequest) returns(LREntry);
 }
 
 message LRJoinRequest {
-    string global_ip = 1;
     string global_port = 2;
     float latitude = 3;
     float longtitude = 4;
-}
-
-message LRJoinResponse {
-    bool success = 1;
 }
 
 message LREntry {
