@@ -19,8 +19,8 @@ type Connection struct {
 }
 
 type ClaudePacket struct {
-	DestinationPeerID [32]byte
-	SourcePeerID      [32]byte
+	DestinationPeerID [36]byte
+	SourcePeerID      [36]byte
 	CheckSum          uint16
 	Payload           []byte
 }

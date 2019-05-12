@@ -19,19 +19,22 @@ func TestCalcCheckSum(t *testing.T) {
 }
 
 func TestBuildHeader(t *testing.T) {
-	s := sha256.Sum256([]byte("abcd"))
-	d := sha256.Sum256([]byte("efgh"))
+	srcPeerID := sha256.Sum256([]byte("abcd"))
+	dstPeerID := sha256.Sum256([]byte("efgh"))
+	srcLRID := []byte{0x00, 0x00, 0x00, 0x01}
+	dstLRID := []byte{0x00, 0x00, 0x00, 0x02}
+
 	in := &Connection{
-		SourcePeerID:      s[:],
-		DestinationPeerID: d[:],
+		SourcePeerID:      append(srcLRID, srcPeerID[:]...),
+		DestinationPeerID: append(dstLRID, dstPeerID[:]...),
 	}
 
 	header, err := buildHeader(in)
 	if err != nil {
 		t.Fatal(err)
 	}
-	if len(header) != 66 {
-		t.Errorf("expected len(header) is 66, but got = %d", len(header))
+	if len(header) != 74 {
+		t.Errorf("expected len(header) is 74, but got = %d", len(header))
 	}
 }
 
@@ -39,11 +42,13 @@ func TestWrapHeader(t *testing.T) {
 	in := [][]byte{
 		[]byte(`Hello world!`),
 	}
-	s := sha256.Sum256([]byte("abcd"))
-	d := sha256.Sum256([]byte("efgh"))
+	srcPeerID := sha256.Sum256([]byte("abcd"))
+	dstPeerID := sha256.Sum256([]byte("efgh"))
+	srcLRID := []byte{0x00, 0x00, 0x00, 0x01}
+	dstLRID := []byte{0x00, 0x00, 0x00, 0x02}
 	conn := &Connection{
-		SourcePeerID:      s[:],
-		DestinationPeerID: d[:],
+		SourcePeerID:      append(srcLRID, srcPeerID[:]...),
+		DestinationPeerID: append(dstLRID, dstPeerID[:]...),
 	}
 	packets, err := addHeader(conn, in)
 	if err != nil {
@@ -52,7 +57,7 @@ func TestWrapHeader(t *testing.T) {
 	if len(packets) != 1 {
 		t.Errorf("expected len(packets) = 1, but got = %d", len(packets))
 	}
-	if len(packets[0]) != 78 {
-		t.Errorf("expected len(packets[0]) = 78, but got = %d", len(packets[0]))
+	if len(packets[0]) != 86 {
+		t.Errorf("expected len(packets[0]) = 86, but got = %d", len(packets[0]))
 	}
 }

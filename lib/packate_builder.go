@@ -58,8 +58,8 @@ func buildHeader(conn *Connection) ([]byte, error) {
 	srcID := conn.SourcePeerID
 	dstID := conn.DestinationPeerID
 
-	if len(dstID) != 32 || len(srcID) != 32 {
-		return []byte{}, fmt.Errorf("ID's length is not 32, got = %d, %d", len(dstID), len(srcID))
+	if len(dstID) != 36 || len(srcID) != 36 {
+		return []byte{}, fmt.Errorf("ID's length is not 36, got = %d, %d", len(dstID), len(srcID))
 	}
 
 	buff := append(srcID, dstID...)

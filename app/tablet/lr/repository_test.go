@@ -10,10 +10,10 @@ import (
 )
 
 func TestMain(m *testing.M) {
-	db.TestInitMysql()
+	db.InitMysql("claude_test")
 	db.MigrateMysql()
 	code := m.Run()
-	db.TestCloseMysql()
+	db.CloseMysql()
 	os.Exit(code)
 }
 
