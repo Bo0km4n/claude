@@ -20,7 +20,7 @@ func TestMain(m *testing.M) {
 
 func TestStoreLR(t *testing.T) {
 	repo := NewLRRepository(db.Mysql)
-	if err := repo.StoreLR(context.Background(), &proto.LREntry{
+	if _, err := repo.StoreLR(context.Background(), &proto.LREntry{
 		GlobalIp:   "100.10.10.10",
 		GlobalPort: "7000",
 		CreatedAt:  time.Now().Unix(),
@@ -32,7 +32,7 @@ func TestStoreLR(t *testing.T) {
 
 func TestLoadLR(t *testing.T) {
 	repo := NewLRRepository(db.Mysql)
-	if err := repo.StoreLR(context.Background(), &proto.LREntry{
+	if _, err := repo.StoreLR(context.Background(), &proto.LREntry{
 		GlobalIp:   "200.10.10.10",
 		GlobalPort: "7000",
 		CreatedAt:  time.Now().Unix(),

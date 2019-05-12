@@ -10,7 +10,7 @@ import (
 )
 
 type LRRepository interface {
-	StoreLR(ctx context.Context, lr *proto.LREntry) error
+	StoreLR(ctx context.Context, lr *proto.LREntry) (*proto.LREntry, error)
 	LoadLRs(ctx context.Context, lr *proto.LREntry) (*proto.LREntries, error)
 }
 
@@ -24,10 +24,13 @@ func NewLRRepository(db *gorm.DB) LRRepository {
 	}
 }
 
-func (lrr *lrRepository) StoreLR(ctx context.Context, in *proto.LREntry) error {
+func (lrr *lrRepository) StoreLR(ctx context.Context, in *proto.LREntry) (*proto.LREntry, error) {
 	query := &model.LREntry{}
 	query.ParseProto(in)
-	return lrr.db.Create(query).Error
+	if err := lrr.db.Create(query).Error; err != nil {
+		return &proto.LREntry{}, err
+	}
+	return query.SerializeToProto(), nil
 }
 
 func (lrr *lrRepository) LoadLRs(ctx context.Context, in *proto.LREntry) (*proto.LREntries, error) {
