@@ -17,6 +17,7 @@ type LREntry struct {
 }
 
 func (lr *LREntry) ParseProto(in *proto.LREntry) {
+	lr.ID = in.Id
 	lr.GlobalIp = in.GlobalIp
 	lr.GlobalPort = in.GlobalPort
 	lr.Latitude = in.Latitude
@@ -32,6 +33,7 @@ func (lr *LREntry) ParseProto(in *proto.LREntry) {
 
 func (lr *LREntry) SerializeToProto() *proto.LREntry {
 	return &proto.LREntry{
+		Id:         lr.ID,
 		GlobalIp:   lr.GlobalIp,
 		GlobalPort: lr.GlobalPort,
 		Longtitude: lr.Longtitude,

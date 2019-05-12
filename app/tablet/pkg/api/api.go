@@ -4,14 +4,15 @@ import (
 	"log"
 	"net"
 
+	"github.com/Bo0km4n/claude/app/tablet/config"
 	"github.com/Bo0km4n/claude/app/tablet/pkg/db"
 	"github.com/Bo0km4n/claude/app/tablet/pkg/lr"
 
 	"github.com/Bo0km4n/claude/app/common/proto"
 
-	"github.com/Bo0km4n/claude/app/tablet/config"
 	"github.com/Bo0km4n/claude/app/tablet/pkg/tablet"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/reflection"
 )
 
 func GRPC() {
@@ -34,5 +35,6 @@ func GRPC() {
 	}
 
 	log.Println("Start grpc services...")
+	reflection.Register(server)
 	server.Serve(port)
 }
