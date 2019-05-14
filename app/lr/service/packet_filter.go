@@ -7,7 +7,7 @@ import (
 	"net"
 
 	"github.com/Bo0km4n/claude/app/common/proto"
-	"github.com/Bo0km4n/claude/app/lr/db"
+	"github.com/Bo0km4n/claude/app/lr/repository"
 	"github.com/Bo0km4n/claude/lib"
 
 	"github.com/Bo0km4n/claude/app/lr/config"
@@ -34,7 +34,7 @@ func launchPacketFilter() {
 			if err != nil {
 				log.Fatal(err)
 			}
-			db.RegisterPeerConnection(TcpConn.RemoteAddr().String(), "tcp", TcpConn)
+			repository.RegisterPeerConnection(TcpConn.RemoteAddr().String(), "tcp", TcpConn)
 			n, err := TcpConn.Read(buf)
 			if err != nil {
 				log.Fatal(err)
@@ -57,8 +57,8 @@ func launchPacketFilter() {
 		buffer := make([]byte, 1024)
 		for {
 			length, remoteAddr, _ := UdpConn.ReadFrom(buffer)
-			if _, ok := db.LoadPeerConnection(remoteAddr.String(), "udp"); !ok {
-				db.RegisterPeerConnection(remoteAddr.String(), "udp", UdpConn)
+			if _, ok := repository.LoadPeerConnection(remoteAddr.String(), "udp"); !ok {
+				repository.RegisterPeerConnection(remoteAddr.String(), "udp", UdpConn)
 			}
 			fmt.Printf("Received from %v: %v\n", remoteAddr, buffer[:length])
 		}
@@ -213,10 +213,10 @@ func forwardPayload(handle *pcap.Handle, payload []byte) {
 	}
 
 	// Debug insert
-	db.DebugInsertEntryPeerB()
-	db.DebugInsertEntryPeerA()
+	repository.DebugInsertEntryPeerB()
+	repository.DebugInsertEntryPeerA()
 
-	peer, err := db.FetchPeerEntry(claudePacket.DestinationPeerID[:])
+	peer, err := repository.FetchPeerEntry(claudePacket.DestinationPeerID[:])
 
 	if err != nil {
 		log.Println(err)
@@ -254,7 +254,7 @@ func forwardToRemote(peer *proto.PeerEntry, claudePacket *lib.ClaudePacket) {
 
 func forwardToLocal(peer *proto.PeerEntry, claudePacket *lib.ClaudePacket) {
 	addr := peer.GetLocalIp() + ":" + peer.GetLocalPort()
-	peerConn, ok := db.LoadPeerConnection(addr, protocol)
+	peerConn, ok := repository.LoadPeerConnection(addr, protocol)
 	if !ok {
 		log.Printf("Not found connection %s\n", addr)
 		return

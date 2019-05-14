@@ -4,7 +4,7 @@ import (
 	"context"
 
 	"github.com/Bo0km4n/claude/app/common/proto"
-	"github.com/Bo0km4n/claude/app/lr/db"
+	"github.com/Bo0km4n/claude/app/lr/repository"
 )
 
 var LRSvc *LRService
@@ -25,6 +25,6 @@ func (p *LRService) PeerJoinRPC(ctx context.Context, in *proto.PeerJoinRequest) 
 		Latitude:  in.Latitude,
 		Longitude: in.Longitude,
 	}
-	db.InsertPeerEntry(entry.PeerId, entry)
+	repository.InsertPeerEntry(entry.PeerId, entry)
 	return &proto.PeerJoinResponse{Success: true}, nil
 }
