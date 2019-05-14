@@ -32,7 +32,7 @@ func FetchPeerEntry(key []byte) (*proto.PeerEntry, error) {
 
 func fetchPeerEntryFromTablet(id uint32) (*proto.PeerEntry, error) {
 	pp.Println(id)
-	return nil, errors.New("Not foune key in tablet server")
+	return nil, errors.New("Not found key in tablet server")
 }
 
 // PeerA: iNQmb9TmM40TuEX88olXnSCciXgjuSF9o+Fhk28DFYk=

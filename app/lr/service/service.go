@@ -9,7 +9,14 @@ import (
 	"google.golang.org/grpc"
 )
 
-func LaunchGRPCService() {
+func LaunchService() {
+	initService()
+	go LRSvc.ListenUDPBcastFromPeer()
+	launchPacketFilter()
+	launchGRPCService()
+}
+
+func launchGRPCService() {
 	port, err := net.Listen("tcp", ":"+config.Config.GRPC.Port)
 	if err != nil {
 		log.Fatal(err)
@@ -18,7 +25,7 @@ func LaunchGRPCService() {
 
 	proto.RegisterLRServer(
 		server,
-		&LRService{},
+		LRSvc,
 	)
 
 	log.Println("Start grpc services...")

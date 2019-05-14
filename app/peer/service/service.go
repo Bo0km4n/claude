@@ -15,6 +15,7 @@ import (
 
 // global variable
 type remoteLR struct {
+	ID       uint32
 	Addr     string
 	GrpcPort string
 	TcpPort  string
@@ -37,6 +38,7 @@ func (p *PeerService) NoticeFromLRRPC(ctx context.Context, in *proto.NoticeFromL
 		return &proto.Empty{}, nil
 	}
 
+	RemoteLR.ID = in.Id
 	RemoteLR.Addr = in.Addr
 	RemoteLR.GrpcPort = in.GrpcPort
 	RemoteLR.TcpPort = in.TcpPort

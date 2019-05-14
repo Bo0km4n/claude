@@ -8,6 +8,7 @@ service Peer {
 }
 
 message NoticeFromLRRequest {
+    uint32 id = 5;
     string grpc_port = 1;
     string tcp_port = 2;
     string udp_port = 3;

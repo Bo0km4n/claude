@@ -7,12 +7,12 @@ import (
 )
 
 func ParseHeader(payload []byte) (*ClaudePacket, error) {
-	if len(payload) < 66 {
+	if len(payload) < 74 {
 		return nil, fmt.Errorf("Packet's length is too short, got = %d", len(payload))
 	}
-	srcID := payload[0:32]
-	dstID := payload[32:64]
-	checkSum := binary.BigEndian.Uint16(payload[64:66])
+	srcID := payload[0:36]
+	dstID := payload[36:72]
+	checkSum := binary.BigEndian.Uint16(payload[72:74])
 
 	if !validCheckSum(checkSum, srcID, dstID) {
 		return nil, errors.New("Invalid checksum")

@@ -2,6 +2,7 @@ package service
 
 import (
 	"crypto/sha256"
+	"encoding/binary"
 	"log"
 	"net"
 
@@ -34,6 +35,10 @@ func getLocalIP(dev string) string {
 }
 
 func GetPeerID() []byte {
-	peerID := sha256.Sum256([]byte(config.Config.Claude.Credential))
-	return peerID[:]
+	lrID := make([]byte, 4)
+	id := sha256.Sum256([]byte(config.Config.Claude.Credential))
+	binary.BigEndian.PutUint32(lrID, RemoteLR.ID)
+	peerID := append([]byte{}, lrID[:]...)
+	peerID = append(peerID, id[:]...)
+	return peerID[0:36]
 }

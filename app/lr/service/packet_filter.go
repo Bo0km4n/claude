@@ -19,7 +19,7 @@ import (
 var TcpConn net.Conn
 var UdpConn *net.UDPConn
 
-func LaunchPacketFilter() {
+func launchPacketFilter() {
 
 	go func() {
 		listen, err := net.Listen("tcp", ":"+config.Config.Claude.TcpPort)

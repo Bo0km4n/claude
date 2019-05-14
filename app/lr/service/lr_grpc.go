@@ -7,7 +7,11 @@ import (
 	"github.com/Bo0km4n/claude/app/lr/db"
 )
 
-type LRService struct{}
+var LRSvc *LRService
+
+type LRService struct {
+	ID uint32
+}
 
 func (p *LRService) Heartbeat(ctx context.Context, in *proto.Empty) (*proto.Empty, error) {
 	return &proto.Empty{}, nil

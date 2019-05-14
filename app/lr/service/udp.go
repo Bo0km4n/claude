@@ -14,7 +14,7 @@ import (
 	"google.golang.org/grpc"
 )
 
-func ListenUDPBcastFromPeer() {
+func (lrs *LRService) ListenUDPBcastFromPeer() {
 	addr := fmt.Sprintf("%s:%s", config.Config.UDP.Address, config.Config.UDP.Port)
 	log.Printf("UDP Process is Running at %s\n", addr)
 	udpAddr, err := net.ResolveUDPAddr("udp", addr)
@@ -43,11 +43,11 @@ func ListenUDPBcastFromPeer() {
 
 		log.Printf("Received from %v: %v\n", remoteAddr, request)
 		request.ListenAddr = remoteAddr.IP.String()
-		sendNoticeToPeer(request)
+		lrs.sendNoticeToPeer(request)
 	}
 }
 
-func sendNoticeToPeer(m *message.UDPBcastMessage) {
+func (lrs *LRService) sendNoticeToPeer(m *message.UDPBcastMessage) {
 	conn, err := grpc.Dial(m.ListenAddr+":"+m.ListenPort, grpc.WithInsecure())
 	if err != nil {
 		log.Println(err)
@@ -56,6 +56,7 @@ func sendNoticeToPeer(m *message.UDPBcastMessage) {
 	defer conn.Close()
 	client := proto.NewPeerClient(conn)
 	if _, err := client.NoticeFromLRRPC(context.Background(), &proto.NoticeFromLRRequest{
+		Id:       lrs.ID,
 		TcpPort:  config.Config.Claude.TcpPort,
 		UdpPort:  config.Config.Claude.UdpPort,
 		GrpcPort: config.Config.GRPC.Port,

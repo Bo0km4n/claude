@@ -4,6 +4,7 @@ import (
 	"encoding/binary"
 	"errors"
 	"fmt"
+	"log"
 )
 
 const (
@@ -34,7 +35,8 @@ func buildPacket(conn *Connection, body []byte) [][]byte {
 
 	wrappedPackets, err := addHeader(conn, plainPackets)
 	if err != nil {
-		return [][]byte{}
+		log.Fatal(err)
+		// return [][]byte{}
 	}
 
 	return wrappedPackets
