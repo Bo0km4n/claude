@@ -26,7 +26,7 @@ const _ = proto.ProtoPackageIsVersion2 // please upgrade the proto package
 type LRJoinRequest struct {
 	GlobalPort           string   `protobuf:"bytes,2,opt,name=global_port,json=globalPort" json:"global_port,omitempty"`
 	Latitude             float32  `protobuf:"fixed32,3,opt,name=latitude" json:"latitude,omitempty"`
-	Longtitude           float32  `protobuf:"fixed32,4,opt,name=longtitude" json:"longtitude,omitempty"`
+	Longitude           float32  `protobuf:"fixed32,4,opt,name=longtitude" json:"longtitude,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -70,9 +70,9 @@ func (m *LRJoinRequest) GetLatitude() float32 {
 	return 0
 }
 
-func (m *LRJoinRequest) GetLongtitude() float32 {
+func (m *LRJoinRequest) GetLongitude() float32 {
 	if m != nil {
-		return m.Longtitude
+		return m.Longitude
 	}
 	return 0
 }
@@ -82,7 +82,7 @@ type LREntry struct {
 	GlobalIp             string   `protobuf:"bytes,1,opt,name=global_ip,json=globalIp" json:"global_ip,omitempty"`
 	GlobalPort           string   `protobuf:"bytes,2,opt,name=global_port,json=globalPort" json:"global_port,omitempty"`
 	Latitude             float32  `protobuf:"fixed32,3,opt,name=latitude" json:"latitude,omitempty"`
-	Longtitude           float32  `protobuf:"fixed32,4,opt,name=longtitude" json:"longtitude,omitempty"`
+	Longitude           float32  `protobuf:"fixed32,4,opt,name=longtitude" json:"longtitude,omitempty"`
 	CreatedAt            int64    `protobuf:"varint,5,opt,name=created_at,json=createdAt" json:"created_at,omitempty"`
 	UpdatedAt            int64    `protobuf:"varint,6,opt,name=updated_at,json=updatedAt" json:"updated_at,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
@@ -142,9 +142,9 @@ func (m *LREntry) GetLatitude() float32 {
 	return 0
 }
 
-func (m *LREntry) GetLongtitude() float32 {
+func (m *LREntry) GetLongitude() float32 {
 	if m != nil {
-		return m.Longtitude
+		return m.Longitude
 	}
 	return 0
 }

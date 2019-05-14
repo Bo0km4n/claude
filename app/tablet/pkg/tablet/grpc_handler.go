@@ -22,7 +22,7 @@ func (ts *TabletService) LRJoinRPC(ctx context.Context, in *proto.LRJoinRequest)
 	entry := &proto.LREntry{
 		GlobalIp:   util.GetRemoteIp(ctx),
 		GlobalPort: in.GlobalPort,
-		Longtitude: in.Longtitude,
+		Longitude: in.Longitude,
 		Latitude:   in.Latitude,
 	}
 	row, err := ts.lrRepository.StoreLR(ctx, entry)

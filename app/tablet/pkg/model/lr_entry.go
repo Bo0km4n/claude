@@ -11,7 +11,7 @@ type LREntry struct {
 	GlobalIp   string    `json:"global_ip,omitempty"`
 	GlobalPort string    `json:"global_port,omitempty"`
 	Latitude   float32   `json:"latitude,omitempty"`
-	Longtitude float32   `json:"longtitude,omitempty"`
+	Longitude  float32   `json:"longtitude,omitempty"`
 	CreatedAt  time.Time `json:"created_at,omitempty"`
 	UpdatedAt  time.Time `json:"updated_at,omitempty"`
 }
@@ -21,7 +21,7 @@ func (lr *LREntry) ParseProto(in *proto.LREntry) {
 	lr.GlobalIp = in.GlobalIp
 	lr.GlobalPort = in.GlobalPort
 	lr.Latitude = in.Latitude
-	lr.Longtitude = in.Longtitude
+	lr.Longitude = in.Longitude
 
 	if in.CreatedAt != 0 {
 		lr.CreatedAt = time.Unix(in.CreatedAt, 0)
@@ -36,7 +36,7 @@ func (lr *LREntry) SerializeToProto() *proto.LREntry {
 		Id:         lr.ID,
 		GlobalIp:   lr.GlobalIp,
 		GlobalPort: lr.GlobalPort,
-		Longtitude: lr.Longtitude,
+		Longitude:  lr.Longitude,
 		Latitude:   lr.Latitude,
 		CreatedAt:  lr.CreatedAt.Unix(),
 		UpdatedAt:  lr.UpdatedAt.Unix(),
