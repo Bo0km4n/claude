@@ -26,6 +26,5 @@ func (p *LRService) PeerJoinRPC(ctx context.Context, in *proto.PeerJoinRequest) 
 		Longitude: in.Longitude,
 	}
 	db.InsertPeerEntry(entry.PeerId, entry)
-	// db.Dump()
 	return &proto.PeerJoinResponse{Success: true}, nil
 }
