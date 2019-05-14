@@ -2,6 +2,7 @@ package db
 
 import (
 	"encoding/base64"
+	"encoding/binary"
 	"errors"
 	"sync"
 
@@ -24,12 +25,13 @@ func FetchPeerEntry(key []byte) (*proto.PeerEntry, error) {
 	keyStr := base64.StdEncoding.EncodeToString(key)
 	v, ok := peerRepository.Load(keyStr)
 	if !ok {
-		return fetchPeerEntryFromTablet(keyStr)
+		return fetchPeerEntryFromTablet(binary.BigEndian.Uint32(key[0:4]))
 	}
 	return v.(*proto.PeerEntry), nil
 }
 
-func fetchPeerEntryFromTablet(key string) (*proto.PeerEntry, error) {
+func fetchPeerEntryFromTablet(id uint32) (*proto.PeerEntry, error) {
+	pp.Println(id)
 	return nil, errors.New("Not foune key in tablet server")
 }
 
