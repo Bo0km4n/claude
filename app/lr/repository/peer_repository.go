@@ -10,10 +10,39 @@ import (
 	"github.com/k0kubun/pp"
 )
 
-var peerRepository sync.Map
+type peerBucket struct {
+	mu sync.Mutex
+	b  map[string]*proto.PeerEntry
+}
+
+func (pb *peerBucket) Store(key string, v *proto.PeerEntry) {
+	pb.mu.Lock()
+	defer pb.mu.Unlock()
+	pb.b[key] = v
+}
+
+func (pb *peerBucket) Load(key string) (*proto.PeerEntry, bool) {
+	pb.mu.Lock()
+	defer pb.mu.Unlock()
+	v, ok := pb.b[key]
+	return v, ok
+}
+
+func (pb *peerBucket) Values() []*proto.PeerEntry {
+	values := []*proto.PeerEntry{}
+	for _, v := range pb.b {
+		values = append(values, v)
+	}
+	return values
+}
+
+var peerRepository peerBucket
 
 func InitDB() {
-	peerRepository = sync.Map{}
+	peerRepository = peerBucket{
+		mu: sync.Mutex{},
+		b:  make(map[string]*proto.PeerEntry, 1024),
+	}
 }
 
 func InsertPeerEntry(key []byte, value *proto.PeerEntry) {
@@ -27,11 +56,22 @@ func FetchPeerEntry(key []byte) (*proto.PeerEntry, error) {
 	if !ok {
 		return fetchPeerEntryFromTablet(binary.BigEndian.Uint32(key[0:4]))
 	}
-	return v.(*proto.PeerEntry), nil
+	return v, nil
+}
+
+func FetchLocalPeers() []*proto.PeerEntry {
+	peers := []*proto.PeerEntry{}
+	values := peerRepository.Values()
+	for _, v := range values {
+		if !v.IsRemote {
+			peers = append(peers, v)
+		}
+	}
+
+	return peers
 }
 
 func fetchPeerEntryFromTablet(id uint32) (*proto.PeerEntry, error) {
-	pp.Println(id)
 	return nil, errors.New("Not found key in tablet server")
 }
 

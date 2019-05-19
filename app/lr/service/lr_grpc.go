@@ -5,6 +5,7 @@ import (
 
 	"github.com/Bo0km4n/claude/app/common/proto"
 	"github.com/Bo0km4n/claude/app/lr/repository"
+	"google.golang.org/grpc"
 )
 
 var LRSvc *LRService
@@ -30,9 +31,38 @@ func (p *LRService) PeerJoinRPC(ctx context.Context, in *proto.PeerJoinRequest) 
 }
 
 func (p *LRService) ExchangeEntriesStubRPC(ctx context.Context, in *proto.ExchangeEntriesNotification) (*proto.Empty, error) {
-	return nil, nil
+	localPeers := repository.FetchLocalPeers()
+	req := &proto.ExchangeEntriesRequest{
+		Entries: localPeers,
+	}
+	for _, dst := range in.Destinations {
+		conn, err := grpc.Dial(dst.GlobalIp+":"+dst.GlobalPort, grpc.WithInsecure())
+		if err != nil {
+			return nil, err
+		}
+		defer conn.Close()
+		client := proto.NewLRClient(conn)
+		resp, err := client.ExchangeEntriesDriverRPC(ctx, req)
+		if err != nil {
+			continue
+		}
+		p.registerRemotePeers(resp.Entries)
+	}
+	return &proto.Empty{}, nil
 }
 
 func (p *LRService) ExchangeEntriesDriverRPC(ctx context.Context, in *proto.ExchangeEntriesRequest) (*proto.ExchangeEntriesResponse, error) {
-	return nil, nil
+	p.registerRemotePeers(in.Entries)
+	localPeers := repository.FetchLocalPeers()
+	res := &proto.ExchangeEntriesResponse{
+		Entries: localPeers,
+	}
+	return res, nil
+}
+
+func (p *LRService) registerRemotePeers(peers []*proto.PeerEntry) {
+	for _, peer := range peers {
+		peer.IsRemote = true
+		repository.InsertPeerEntry(peer.PeerId, peer)
+	}
 }
