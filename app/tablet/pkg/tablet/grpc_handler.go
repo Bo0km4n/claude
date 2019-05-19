@@ -52,6 +52,7 @@ func (ts *TabletService) LookUpRPC(ctx context.Context, in *proto.LookUpRequest)
 	return result.Entries[0], nil
 }
 
+// sendNotification sends notification LR nodes neer by argument's entry.
 func (ts *TabletService) sendNotification(entry *proto.LREntry) {
 	// TODO: implement the function that looks up some LR entries near argument's location.
 }

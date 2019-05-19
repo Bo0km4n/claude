@@ -28,3 +28,11 @@ func (p *LRService) PeerJoinRPC(ctx context.Context, in *proto.PeerJoinRequest) 
 	repository.InsertPeerEntry(entry.PeerId, entry)
 	return &proto.PeerJoinResponse{Success: true}, nil
 }
+
+func (p *LRService) ExchangeEntriesStubRPC(ctx context.Context, in *proto.ExchangeEntriesNotification) (*proto.Empty, error) {
+	return nil, nil
+}
+
+func (p *LRService) ExchangeEntriesDriverRPC(ctx context.Context, in *proto.ExchangeEntriesRequest) (*proto.ExchangeEntriesResponse, error) {
+	return nil, nil
+}

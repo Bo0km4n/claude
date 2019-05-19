@@ -38,7 +38,7 @@ func (m *PeerJoinRequest) Reset()         { *m = PeerJoinRequest{} }
 func (m *PeerJoinRequest) String() string { return proto.CompactTextString(m) }
 func (*PeerJoinRequest) ProtoMessage()    {}
 func (*PeerJoinRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_lr_61c67d4160214c2e, []int{0}
+	return fileDescriptor_lr_00bb8bed0e813d4b, []int{0}
 }
 func (m *PeerJoinRequest) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_PeerJoinRequest.Unmarshal(m, b)
@@ -104,7 +104,7 @@ func (m *PeerJoinResponse) Reset()         { *m = PeerJoinResponse{} }
 func (m *PeerJoinResponse) String() string { return proto.CompactTextString(m) }
 func (*PeerJoinResponse) ProtoMessage()    {}
 func (*PeerJoinResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_lr_61c67d4160214c2e, []int{1}
+	return fileDescriptor_lr_00bb8bed0e813d4b, []int{1}
 }
 func (m *PeerJoinResponse) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_PeerJoinResponse.Unmarshal(m, b)
@@ -147,7 +147,7 @@ func (m *PeerEntry) Reset()         { *m = PeerEntry{} }
 func (m *PeerEntry) String() string { return proto.CompactTextString(m) }
 func (*PeerEntry) ProtoMessage()    {}
 func (*PeerEntry) Descriptor() ([]byte, []int) {
-	return fileDescriptor_lr_61c67d4160214c2e, []int{2}
+	return fileDescriptor_lr_00bb8bed0e813d4b, []int{2}
 }
 func (m *PeerEntry) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_PeerEntry.Unmarshal(m, b)
@@ -209,10 +209,127 @@ func (m *PeerEntry) GetIsRemote() bool {
 	return false
 }
 
+type ExchangeEntriesNotification struct {
+	Destinations         []*LREntry `protobuf:"bytes,1,rep,name=destinations" json:"destinations,omitempty"`
+	XXX_NoUnkeyedLiteral struct{}   `json:"-"`
+	XXX_unrecognized     []byte     `json:"-"`
+	XXX_sizecache        int32      `json:"-"`
+}
+
+func (m *ExchangeEntriesNotification) Reset()         { *m = ExchangeEntriesNotification{} }
+func (m *ExchangeEntriesNotification) String() string { return proto.CompactTextString(m) }
+func (*ExchangeEntriesNotification) ProtoMessage()    {}
+func (*ExchangeEntriesNotification) Descriptor() ([]byte, []int) {
+	return fileDescriptor_lr_00bb8bed0e813d4b, []int{3}
+}
+func (m *ExchangeEntriesNotification) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_ExchangeEntriesNotification.Unmarshal(m, b)
+}
+func (m *ExchangeEntriesNotification) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_ExchangeEntriesNotification.Marshal(b, m, deterministic)
+}
+func (dst *ExchangeEntriesNotification) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_ExchangeEntriesNotification.Merge(dst, src)
+}
+func (m *ExchangeEntriesNotification) XXX_Size() int {
+	return xxx_messageInfo_ExchangeEntriesNotification.Size(m)
+}
+func (m *ExchangeEntriesNotification) XXX_DiscardUnknown() {
+	xxx_messageInfo_ExchangeEntriesNotification.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_ExchangeEntriesNotification proto.InternalMessageInfo
+
+func (m *ExchangeEntriesNotification) GetDestinations() []*LREntry {
+	if m != nil {
+		return m.Destinations
+	}
+	return nil
+}
+
+type ExchangeEntriesRequest struct {
+	Entries              []*PeerEntry `protobuf:"bytes,1,rep,name=entries" json:"entries,omitempty"`
+	XXX_NoUnkeyedLiteral struct{}     `json:"-"`
+	XXX_unrecognized     []byte       `json:"-"`
+	XXX_sizecache        int32        `json:"-"`
+}
+
+func (m *ExchangeEntriesRequest) Reset()         { *m = ExchangeEntriesRequest{} }
+func (m *ExchangeEntriesRequest) String() string { return proto.CompactTextString(m) }
+func (*ExchangeEntriesRequest) ProtoMessage()    {}
+func (*ExchangeEntriesRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_lr_00bb8bed0e813d4b, []int{4}
+}
+func (m *ExchangeEntriesRequest) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_ExchangeEntriesRequest.Unmarshal(m, b)
+}
+func (m *ExchangeEntriesRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_ExchangeEntriesRequest.Marshal(b, m, deterministic)
+}
+func (dst *ExchangeEntriesRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_ExchangeEntriesRequest.Merge(dst, src)
+}
+func (m *ExchangeEntriesRequest) XXX_Size() int {
+	return xxx_messageInfo_ExchangeEntriesRequest.Size(m)
+}
+func (m *ExchangeEntriesRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_ExchangeEntriesRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_ExchangeEntriesRequest proto.InternalMessageInfo
+
+func (m *ExchangeEntriesRequest) GetEntries() []*PeerEntry {
+	if m != nil {
+		return m.Entries
+	}
+	return nil
+}
+
+type ExchangeEntriesResponse struct {
+	Entries              []*PeerEntry `protobuf:"bytes,1,rep,name=entries" json:"entries,omitempty"`
+	XXX_NoUnkeyedLiteral struct{}     `json:"-"`
+	XXX_unrecognized     []byte       `json:"-"`
+	XXX_sizecache        int32        `json:"-"`
+}
+
+func (m *ExchangeEntriesResponse) Reset()         { *m = ExchangeEntriesResponse{} }
+func (m *ExchangeEntriesResponse) String() string { return proto.CompactTextString(m) }
+func (*ExchangeEntriesResponse) ProtoMessage()    {}
+func (*ExchangeEntriesResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_lr_00bb8bed0e813d4b, []int{5}
+}
+func (m *ExchangeEntriesResponse) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_ExchangeEntriesResponse.Unmarshal(m, b)
+}
+func (m *ExchangeEntriesResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_ExchangeEntriesResponse.Marshal(b, m, deterministic)
+}
+func (dst *ExchangeEntriesResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_ExchangeEntriesResponse.Merge(dst, src)
+}
+func (m *ExchangeEntriesResponse) XXX_Size() int {
+	return xxx_messageInfo_ExchangeEntriesResponse.Size(m)
+}
+func (m *ExchangeEntriesResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_ExchangeEntriesResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_ExchangeEntriesResponse proto.InternalMessageInfo
+
+func (m *ExchangeEntriesResponse) GetEntries() []*PeerEntry {
+	if m != nil {
+		return m.Entries
+	}
+	return nil
+}
+
 func init() {
 	proto.RegisterType((*PeerJoinRequest)(nil), "proto.PeerJoinRequest")
 	proto.RegisterType((*PeerJoinResponse)(nil), "proto.PeerJoinResponse")
 	proto.RegisterType((*PeerEntry)(nil), "proto.PeerEntry")
+	proto.RegisterType((*ExchangeEntriesNotification)(nil), "proto.ExchangeEntriesNotification")
+	proto.RegisterType((*ExchangeEntriesRequest)(nil), "proto.ExchangeEntriesRequest")
+	proto.RegisterType((*ExchangeEntriesResponse)(nil), "proto.ExchangeEntriesResponse")
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -229,6 +346,8 @@ const _ = grpc.SupportPackageIsVersion4
 type LRClient interface {
 	Heartbeat(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*Empty, error)
 	PeerJoinRPC(ctx context.Context, in *PeerJoinRequest, opts ...grpc.CallOption) (*PeerJoinResponse, error)
+	ExchangeEntriesStubRPC(ctx context.Context, in *ExchangeEntriesNotification, opts ...grpc.CallOption) (*Empty, error)
+	ExchangeEntriesDriverRPC(ctx context.Context, in *ExchangeEntriesRequest, opts ...grpc.CallOption) (*ExchangeEntriesResponse, error)
 }
 
 type lRClient struct {
@@ -257,11 +376,31 @@ func (c *lRClient) PeerJoinRPC(ctx context.Context, in *PeerJoinRequest, opts ..
 	return out, nil
 }
 
+func (c *lRClient) ExchangeEntriesStubRPC(ctx context.Context, in *ExchangeEntriesNotification, opts ...grpc.CallOption) (*Empty, error) {
+	out := new(Empty)
+	err := c.cc.Invoke(ctx, "/proto.LR/ExchangeEntriesStubRPC", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *lRClient) ExchangeEntriesDriverRPC(ctx context.Context, in *ExchangeEntriesRequest, opts ...grpc.CallOption) (*ExchangeEntriesResponse, error) {
+	out := new(ExchangeEntriesResponse)
+	err := c.cc.Invoke(ctx, "/proto.LR/ExchangeEntriesDriverRPC", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // Server API for LR service
 
 type LRServer interface {
 	Heartbeat(context.Context, *Empty) (*Empty, error)
 	PeerJoinRPC(context.Context, *PeerJoinRequest) (*PeerJoinResponse, error)
+	ExchangeEntriesStubRPC(context.Context, *ExchangeEntriesNotification) (*Empty, error)
+	ExchangeEntriesDriverRPC(context.Context, *ExchangeEntriesRequest) (*ExchangeEntriesResponse, error)
 }
 
 func RegisterLRServer(s *grpc.Server, srv LRServer) {
@@ -304,6 +443,42 @@ func _LR_PeerJoinRPC_Handler(srv interface{}, ctx context.Context, dec func(inte
 	return interceptor(ctx, in, info, handler)
 }
 
+func _LR_ExchangeEntriesStubRPC_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ExchangeEntriesNotification)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(LRServer).ExchangeEntriesStubRPC(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/proto.LR/ExchangeEntriesStubRPC",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(LRServer).ExchangeEntriesStubRPC(ctx, req.(*ExchangeEntriesNotification))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _LR_ExchangeEntriesDriverRPC_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ExchangeEntriesRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(LRServer).ExchangeEntriesDriverRPC(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/proto.LR/ExchangeEntriesDriverRPC",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(LRServer).ExchangeEntriesDriverRPC(ctx, req.(*ExchangeEntriesRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 var _LR_serviceDesc = grpc.ServiceDesc{
 	ServiceName: "proto.LR",
 	HandlerType: (*LRServer)(nil),
@@ -316,31 +491,47 @@ var _LR_serviceDesc = grpc.ServiceDesc{
 			MethodName: "PeerJoinRPC",
 			Handler:    _LR_PeerJoinRPC_Handler,
 		},
+		{
+			MethodName: "ExchangeEntriesStubRPC",
+			Handler:    _LR_ExchangeEntriesStubRPC_Handler,
+		},
+		{
+			MethodName: "ExchangeEntriesDriverRPC",
+			Handler:    _LR_ExchangeEntriesDriverRPC_Handler,
+		},
 	},
 	Streams:  []grpc.StreamDesc{},
 	Metadata: "lr.proto",
 }
 
-func init() { proto.RegisterFile("lr.proto", fileDescriptor_lr_61c67d4160214c2e) }
+func init() { proto.RegisterFile("lr.proto", fileDescriptor_lr_00bb8bed0e813d4b) }
 
-var fileDescriptor_lr_61c67d4160214c2e = []byte{
-	// 281 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xcc, 0x91, 0xb1, 0x4e, 0xf3, 0x30,
-	0x14, 0x85, 0xe5, 0xfe, 0x7f, 0xdb, 0xf8, 0xb6, 0x12, 0xe8, 0x0e, 0xd4, 0x04, 0x90, 0xa2, 0x2c,
-	0x64, 0x40, 0x1d, 0x60, 0x67, 0x41, 0x95, 0x28, 0x62, 0x88, 0xfc, 0x02, 0x51, 0x9a, 0x5c, 0x21,
-	0x4b, 0x49, 0x6c, 0x6c, 0x67, 0xe8, 0xcb, 0xf0, 0x16, 0xbc, 0x1f, 0x8a, 0x03, 0xad, 0x80, 0x17,
-	0x60, 0x8a, 0xbe, 0xf3, 0x65, 0x38, 0xbe, 0x07, 0xa2, 0xc6, 0xae, 0x8d, 0xd5, 0x5e, 0xe3, 0x34,
-	0x7c, 0xe2, 0x05, 0xb5, 0xc6, 0xef, 0xc7, 0x2c, 0x7d, 0x63, 0x70, 0x92, 0x13, 0xd9, 0x27, 0xad,
-	0x3a, 0x49, 0xaf, 0x3d, 0x39, 0x8f, 0x2b, 0x98, 0x1b, 0x22, 0x5b, 0xa8, 0x5a, 0xb0, 0x84, 0x65,
-	0x4b, 0x39, 0x1b, 0x70, 0x5b, 0xe3, 0x39, 0x44, 0x8d, 0xae, 0xca, 0xa6, 0x50, 0x46, 0x4c, 0x12,
-	0x96, 0x71, 0x39, 0x0f, 0xbc, 0x35, 0x78, 0x05, 0x30, 0x2a, 0xa3, 0xad, 0x17, 0xff, 0x82, 0xe4,
-	0x21, 0xc9, 0xb5, 0xf5, 0x18, 0x43, 0xd4, 0x94, 0x5e, 0xf9, 0xbe, 0x26, 0xf1, 0x3f, 0x61, 0xd9,
-	0x44, 0x1e, 0x18, 0x2f, 0x81, 0x37, 0xba, 0x7b, 0x19, 0xe5, 0x34, 0xc8, 0x63, 0x90, 0xde, 0xc0,
-	0xe9, 0xb1, 0x9f, 0x33, 0xba, 0x73, 0x84, 0x02, 0xe6, 0xae, 0xaf, 0x2a, 0x72, 0x2e, 0x14, 0x8c,
-	0xe4, 0x17, 0xa6, 0xef, 0x0c, 0xf8, 0xf0, 0xfb, 0xa6, 0xf3, 0x76, 0xff, 0xa7, 0x1e, 0x82, 0x17,
-	0xc0, 0x95, 0x2b, 0x2c, 0xb5, 0xda, 0x93, 0x98, 0x85, 0xda, 0x91, 0x72, 0x32, 0xf0, 0x6d, 0x0b,
-	0x93, 0x67, 0x89, 0xd7, 0xc0, 0x1f, 0xa9, 0xb4, 0x7e, 0x47, 0xa5, 0xc7, 0xe5, 0xb8, 0xd0, 0x7a,
-	0x33, 0xac, 0x15, 0x7f, 0x23, 0xbc, 0x87, 0xc5, 0xe1, 0x28, 0xf9, 0x03, 0x9e, 0x7d, 0xca, 0x1f,
-	0x43, 0xc6, 0xab, 0x5f, 0xf9, 0x78, 0xc0, 0xdd, 0x2c, 0xe4, 0x77, 0x1f, 0x01, 0x00, 0x00, 0xff,
-	0xff, 0xa7, 0xfc, 0x0c, 0x87, 0x1c, 0x02, 0x00, 0x00,
+var fileDescriptor_lr_00bb8bed0e813d4b = []byte{
+	// 409 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xcc, 0x52, 0xcd, 0x6e, 0xd3, 0x40,
+	0x10, 0x96, 0x5d, 0x1a, 0xdb, 0x13, 0x0b, 0xaa, 0x3d, 0x34, 0xc6, 0xa5, 0x28, 0xf2, 0x05, 0x0b,
+	0xa1, 0x1e, 0xc2, 0x9d, 0x0b, 0xb5, 0x44, 0xab, 0x0a, 0x85, 0xe5, 0xc4, 0x29, 0xf2, 0xcf, 0x10,
+	0x56, 0x72, 0xbc, 0x66, 0x77, 0x8c, 0xc8, 0x7b, 0x70, 0xe6, 0x2d, 0x78, 0x3f, 0xe4, 0xb5, 0x9d,
+	0x5f, 0x72, 0xe0, 0xd6, 0x93, 0xf5, 0xfd, 0xe8, 0xf3, 0x37, 0x3b, 0x03, 0x6e, 0xa9, 0x6e, 0x6a,
+	0x25, 0x49, 0xb2, 0x73, 0xf3, 0x09, 0xc7, 0xb8, 0xaa, 0x69, 0xdd, 0x71, 0xa1, 0x4f, 0x69, 0x56,
+	0x22, 0x75, 0x28, 0xfa, 0x6d, 0xc1, 0xb3, 0x39, 0xa2, 0xba, 0x97, 0xa2, 0xe2, 0xf8, 0xbd, 0x41,
+	0x4d, 0x6c, 0x02, 0x4e, 0x8d, 0xa8, 0x16, 0xa2, 0x08, 0xac, 0xa9, 0x15, 0xfb, 0x7c, 0xd4, 0xc2,
+	0xbb, 0x82, 0x3d, 0x07, 0xb7, 0x94, 0x79, 0x5a, 0x2e, 0x44, 0x1d, 0xd8, 0x53, 0x2b, 0xf6, 0xb8,
+	0x63, 0xf0, 0x5d, 0xcd, 0xae, 0x01, 0x3a, 0xa9, 0x96, 0x8a, 0x82, 0x33, 0x23, 0x7a, 0x86, 0x99,
+	0x4b, 0x45, 0x2c, 0x04, 0xb7, 0x4c, 0x49, 0x50, 0x53, 0x60, 0xf0, 0x64, 0x6a, 0xc5, 0x36, 0xdf,
+	0x60, 0xf6, 0x02, 0xbc, 0x52, 0x56, 0xcb, 0x4e, 0x3c, 0x37, 0xe2, 0x96, 0x88, 0xde, 0xc0, 0xc5,
+	0xb6, 0x9f, 0xae, 0x65, 0xa5, 0x91, 0x05, 0xe0, 0xe8, 0x26, 0xcf, 0x51, 0x6b, 0x53, 0xd0, 0xe5,
+	0x03, 0x8c, 0xfe, 0x58, 0xe0, 0xb5, 0xf6, 0xa4, 0x22, 0xb5, 0x7e, 0x54, 0x83, 0xb0, 0x2b, 0xf0,
+	0x84, 0x5e, 0x28, 0x5c, 0x49, 0xc2, 0x60, 0x64, 0x6a, 0xbb, 0x42, 0x73, 0x83, 0xa3, 0x4f, 0x70,
+	0x95, 0xfc, 0xcc, 0xbf, 0xa5, 0xd5, 0x12, 0xdb, 0xea, 0x02, 0xf5, 0x47, 0x49, 0xe2, 0xab, 0xc8,
+	0x53, 0x12, 0xb2, 0x62, 0x33, 0xf0, 0x0b, 0xd4, 0x24, 0x2a, 0x03, 0xdb, 0xa9, 0xcf, 0xe2, 0xf1,
+	0xec, 0x69, 0xb7, 0xc3, 0x9b, 0x07, 0x6e, 0xc6, 0xe5, 0x7b, 0x9e, 0xe8, 0x16, 0x2e, 0x0f, 0x22,
+	0x87, 0xfd, 0xbe, 0x06, 0x07, 0x3b, 0xa6, 0x0f, 0xba, 0xe8, 0x83, 0x36, 0x2f, 0xc7, 0x07, 0x43,
+	0x94, 0xc0, 0xe4, 0x28, 0xa5, 0xdf, 0xc2, 0x7f, 0xc4, 0xcc, 0x7e, 0xd9, 0x60, 0x3f, 0x70, 0xf6,
+	0x0a, 0xbc, 0x0f, 0x98, 0x2a, 0xca, 0x30, 0x25, 0xe6, 0xf7, 0xf6, 0xa4, 0x3d, 0xce, 0x70, 0x0f,
+	0xb1, 0x77, 0x30, 0xde, 0x6c, 0x7d, 0xfe, 0x9e, 0x5d, 0xee, 0x24, 0xef, 0x5c, 0x6a, 0x38, 0x39,
+	0xe2, 0xfb, 0x6e, 0xf7, 0x47, 0xc3, 0x7f, 0xa6, 0x26, 0x6b, 0xa3, 0xa2, 0xe1, 0x3f, 0xa7, 0x9f,
+	0xfb, 0xa0, 0xcb, 0x17, 0x08, 0x0e, 0xcc, 0xb7, 0x4a, 0xfc, 0x40, 0xd5, 0xa6, 0x5d, 0xff, 0x3b,
+	0x6d, 0xe8, 0xf7, 0xf2, 0x94, 0xdc, 0xd5, 0xcc, 0x46, 0x46, 0x7e, 0xfb, 0x37, 0x00, 0x00, 0xff,
+	0xff, 0x86, 0xa6, 0xfa, 0xce, 0xb2, 0x03, 0x00, 0x00,
 }
