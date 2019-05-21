@@ -7,6 +7,8 @@ import (
 	"github.com/Bo0km4n/claude/app/common/proto"
 	"github.com/Bo0km4n/claude/app/tablet/pkg/lr"
 	"github.com/Bo0km4n/claude/app/tablet/pkg/util"
+	"github.com/labstack/gommon/log"
+	"google.golang.org/grpc"
 )
 
 type TabletService struct {
@@ -54,5 +56,26 @@ func (ts *TabletService) LookUpRPC(ctx context.Context, in *proto.LookUpRequest)
 
 // sendNotification sends notification LR nodes neer by argument's entry.
 func (ts *TabletService) sendNotification(entry *proto.LREntry) {
-	// TODO: implement the function that looks up some LR entries near argument's location.
+	distance := float32(1.0) // FIXME: This distance setting is temporary. We should modify to be able to operational.
+	candidates, err := ts.lrRepository.FetchLRsByDistance(context.Background(), entry.Latitude, entry.Longitude, distance)
+	if err != nil {
+		log.Warn(err)
+		return
+	}
+	if err := ts.stubExchangeEntries(context.Background(), entry, candidates); err != nil {
+		log.Warn(err)
+		return
+	}
+}
+
+func (ts *TabletService) stubExchangeEntries(ctx context.Context, newbie *proto.LREntry, candidates *proto.LREntries) error {
+	conn, err := grpc.Dial(newbie.GlobalIp+":"+newbie.GlobalPort, grpc.WithInsecure())
+	if err != nil {
+		return err
+	}
+	client := proto.NewLRClient(conn)
+	_, err = client.ExchangeEntriesStubRPC(ctx, &proto.ExchangeEntriesNotification{
+		Destinations: candidates.Entries,
+	})
+	return err
 }
