@@ -3,6 +3,7 @@ package service
 import (
 	"log"
 	"net"
+	"time"
 
 	"github.com/Bo0km4n/claude/app/common/proto"
 	"github.com/Bo0km4n/claude/app/lr/config"
@@ -11,9 +12,17 @@ import (
 
 func LaunchService() {
 	initService()
+	initDaemon()
 	go LRSvc.ListenUDPBcastFromPeer()
+	go td.start()
+
+	time.Sleep(2)
+	if err := td.syncInit(); err != nil {
+		log.Fatal(err)
+	}
 	launchPacketFilter()
 	launchGRPCService()
+
 }
 
 func launchGRPCService() {

@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+	"time"
 
 	"github.com/Bo0km4n/claude/app/common/proto"
 	"github.com/Bo0km4n/claude/app/lr/repository"
@@ -10,8 +11,15 @@ import (
 
 var LRSvc *LRService
 
+// LRService has the same information app/tablet/model/lr_entry.go
 type LRService struct {
-	ID uint32
+	ID         uint32    `gorm:"primary_key"`
+	GlobalIp   string    `json:"global_ip,omitempty"`
+	GlobalPort string    `json:"global_port,omitempty"`
+	Latitude   float32   `json:"latitude,omitempty"`
+	Longitude  float32   `json:"longtitude,omitempty"`
+	CreatedAt  time.Time `json:"created_at,omitempty"`
+	UpdatedAt  time.Time `json:"updated_at,omitempty"`
 }
 
 func (p *LRService) Heartbeat(ctx context.Context, in *proto.Empty) (*proto.Empty, error) {

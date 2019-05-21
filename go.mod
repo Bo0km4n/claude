@@ -5,5 +5,6 @@ require (
 	github.com/k0kubun/pp v2.3.0+incompatible
 	github.com/mattn/go-colorable v0.1.1
 	github.com/mattn/go-isatty v0.0.5
+	github.com/spf13/cobra v0.0.4 // indirect
 	golang.org/x/sys v0.0.0-20190222171317-cd391775e71e
 )

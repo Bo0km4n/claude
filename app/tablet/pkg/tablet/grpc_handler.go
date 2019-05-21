@@ -3,11 +3,11 @@ package tablet
 import (
 	"context"
 	"errors"
+	"log"
 
 	"github.com/Bo0km4n/claude/app/common/proto"
 	"github.com/Bo0km4n/claude/app/tablet/pkg/lr"
 	"github.com/Bo0km4n/claude/app/tablet/pkg/util"
-	"github.com/labstack/gommon/log"
 	"google.golang.org/grpc"
 )
 
@@ -59,11 +59,11 @@ func (ts *TabletService) sendNotification(entry *proto.LREntry) {
 	distance := float32(1.0) // FIXME: This distance setting is temporary. We should modify to be able to operational.
 	candidates, err := ts.lrRepository.FetchLRsByDistance(context.Background(), entry.Latitude, entry.Longitude, distance)
 	if err != nil {
-		log.Warn(err)
+		log.Println(err)
 		return
 	}
 	if err := ts.stubExchangeEntries(context.Background(), entry, candidates); err != nil {
-		log.Warn(err)
+		log.Println(err)
 		return
 	}
 }

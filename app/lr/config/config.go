@@ -14,6 +14,7 @@ type LR struct {
 	Claude    Claude
 	GRPC      GRPC
 	UDP       UDP
+	Tablet    Tablet
 }
 
 type GRPC struct {
@@ -31,11 +32,17 @@ type Claude struct {
 	UdpPort string `required:"true" default:"9611"`
 }
 
+type Tablet struct {
+	IP   string
+	Port string
+}
+
 type conf struct {
 	Claude    Claude
 	Interface string
 	GRPC      GRPC
 	UDP       UDP
+	Tablet    Tablet
 }
 
 func InitConfig() {
@@ -72,6 +79,7 @@ func InitConfig() {
 		Interface: lr.Interface,
 		GRPC:      lr.GRPC,
 		UDP:       lr.UDP,
+		Tablet:    lr.Tablet,
 	}
 
 }
