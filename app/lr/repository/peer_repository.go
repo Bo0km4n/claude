@@ -36,6 +36,10 @@ func (pb *peerBucket) Values() []*proto.PeerEntry {
 	return values
 }
 
+func (pb *peerBucket) Dump() {
+	pp.Println(pb.b)
+}
+
 var peerRepository peerBucket
 
 func InitDB() {
@@ -69,6 +73,10 @@ func FetchLocalPeers() []*proto.PeerEntry {
 	}
 
 	return peers
+}
+
+func Dump() {
+	peerRepository.Dump()
 }
 
 func fetchPeerEntryFromTablet(id uint32) (*proto.PeerEntry, error) {

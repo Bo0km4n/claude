@@ -3,6 +3,8 @@ package service
 import (
 	"log"
 	"net"
+	"os"
+	"os/signal"
 	"time"
 
 	"github.com/Bo0km4n/claude/app/common/proto"
@@ -11,18 +13,24 @@ import (
 )
 
 func LaunchService() {
+	quit := make(chan os.Signal)
+	signal.Notify(quit, os.Interrupt)
+
 	initService()
 	initDaemon()
 	go LRSvc.ListenUDPBcastFromPeer()
 	go td.start()
 
+	launchPacketFilter()
+	go launchGRPCService()
+
 	time.Sleep(2)
 	if err := td.syncInit(); err != nil {
 		log.Fatal(err)
 	}
-	launchPacketFilter()
-	launchGRPCService()
 
+	<-quit
+	log.Println("Interrupted LR Server")
 }
 
 func launchGRPCService() {

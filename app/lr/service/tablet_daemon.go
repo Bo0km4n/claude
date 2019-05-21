@@ -8,6 +8,7 @@ import (
 	"github.com/Bo0km4n/claude/app/common/proto"
 	"github.com/Bo0km4n/claude/app/lr/config"
 	"github.com/Bo0km4n/claude/app/lr/geo"
+	"github.com/k0kubun/pp"
 	"google.golang.org/grpc"
 )
 
@@ -64,9 +65,12 @@ func (t *tabletDaemon) syncInit() error {
 		return err
 	}
 
+	LRSvc.ID = resp.Id
 	LRSvc.GlobalIp = resp.GlobalIp
 	LRSvc.GlobalPort = resp.GlobalPort
 	LRSvc.Latitude = resp.Latitude
 	LRSvc.Longitude = resp.Longitude
+
+	pp.Println(LRSvc)
 	return nil
 }

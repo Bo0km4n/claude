@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+	"log"
 	"time"
 
 	"github.com/Bo0km4n/claude/app/common/proto"
@@ -46,16 +47,19 @@ func (p *LRService) ExchangeEntriesStubRPC(ctx context.Context, in *proto.Exchan
 	for _, dst := range in.Destinations {
 		conn, err := grpc.Dial(dst.GlobalIp+":"+dst.GlobalPort, grpc.WithInsecure())
 		if err != nil {
+			log.Printf("Connection create failed: %v", err)
 			return nil, err
 		}
 		defer conn.Close()
 		client := proto.NewLRClient(conn)
 		resp, err := client.ExchangeEntriesDriverRPC(ctx, req)
 		if err != nil {
+			log.Printf("client.ExchangeEntriesDriverRPC: %v", err)
 			continue
 		}
 		p.registerRemotePeers(resp.Entries)
 	}
+	repository.Dump()
 	return &proto.Empty{}, nil
 }
 

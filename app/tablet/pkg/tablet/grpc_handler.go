@@ -56,7 +56,7 @@ func (ts *TabletService) LookUpRPC(ctx context.Context, in *proto.LookUpRequest)
 
 // sendNotification sends notification LR nodes neer by argument's entry.
 func (ts *TabletService) sendNotification(entry *proto.LREntry) {
-	distance := float32(1.0) // FIXME: This distance setting is temporary. We should modify to be able to operational.
+	distance := float32(5.0) // FIXME: This distance setting is temporary. We should modify to be able to operational.
 	candidates, err := ts.lrRepository.FetchLRsByDistance(context.Background(), entry.Latitude, entry.Longitude, distance)
 	if err != nil {
 		log.Println(err)
