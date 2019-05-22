@@ -78,6 +78,7 @@ func peerJoin() error {
 		LocalIp:   getLocalIP(config.Config.Iface),
 		Latitude:  latitude,
 		Longitude: longitude,
+		Protocol:  Protocol,
 	}
 	conn, err := grpc.Dial(RemoteLR.Addr+":"+RemoteLR.GrpcPort, grpc.WithInsecure())
 	if err != nil {

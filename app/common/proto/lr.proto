@@ -17,6 +17,7 @@ message PeerJoinRequest {
     string local_port = 3;
     float latitude = 4;
     float longitude = 5;
+    string protocol = 6;
 }
 
 message PeerJoinResponse {
@@ -30,6 +31,7 @@ message PeerEntry {
     float latitude = 4;
     float longitude = 5; 
     bool is_remote = 6;
+    string protocol = 7;
 }
 
 message ExchangeEntriesNotification {

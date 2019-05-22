@@ -212,10 +212,6 @@ func forwardPayload(handle *pcap.Handle, payload []byte) {
 		return
 	}
 
-	// Debug insert
-	repository.DebugInsertEntryPeerB()
-	repository.DebugInsertEntryPeerA()
-
 	peer, err := repository.FetchPeerEntry(claudePacket.DestinationPeerID[:])
 
 	if err != nil {
@@ -239,6 +235,7 @@ func forwardToRemote(peer *proto.PeerEntry, claudePacket *lib.ClaudePacket) {
 	if protocol == "tcp" {
 		conn, err := net.Dial("tcp", peer.GetLocalIp()+":"+peer.GetLocalPort())
 		if err != nil {
+			log.Printf("TCP Forward error: %v", err)
 			return
 		}
 		defer conn.Close()
