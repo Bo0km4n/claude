@@ -9,7 +9,8 @@ import (
 )
 
 func main() {
-	lib.InitEnv(os.Args[1])
+	lib.InitConfig()
+	lib.ConnectToLR(os.Args[1])
 
 	// dest PeerB = efgh
 	// dest PeerA = abcd

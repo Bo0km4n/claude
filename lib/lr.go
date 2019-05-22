@@ -6,7 +6,7 @@ import (
 	"github.com/Bo0km4n/claude/app/peer/service"
 )
 
-func SetLR(protocol string) {
+func ConnectToLR(protocol string) {
 	done := make(chan int)
 	go service.LaunchGRPCService(done, protocol)
 	<-done

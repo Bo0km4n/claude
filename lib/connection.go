@@ -25,9 +25,8 @@ type ClaudePacket struct {
 	Payload           []byte
 }
 
-func InitEnv(protocol string) {
+func InitConfig() {
 	peerConfig.InitConfig()
-	SetLR(protocol)
 }
 
 func NewConnection(protocol string, dest []byte) (*Connection, error) {
