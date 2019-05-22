@@ -26,8 +26,12 @@ var Protocol string
 var NetConn net.Conn
 var RemoteLR remoteLR
 var IsCompletedJoinToLR bool
+var PeerSvc *PeerService
 
-type PeerService struct{}
+type PeerService struct {
+	Seed string
+	ID   string
+}
 
 func (p *PeerService) NoticeFromLRRPC(ctx context.Context, in *proto.NoticeFromLRRequest) (*proto.Empty, error) {
 	if in.Addr == "" || in.GrpcPort == "" || in.TcpPort == "" || in.UdpPort == "" {
@@ -50,6 +54,10 @@ func (p *PeerService) NoticeFromLRRPC(ctx context.Context, in *proto.NoticeFromL
 		log.Fatalf("Failed join to LR: %+v\n", err)
 	}
 
+	// set peer id
+	p.Seed = config.Config.Claude.Credential
+	p.ID = getPeerIDString()
+
 	return &proto.Empty{}, nil
 }
 
@@ -60,10 +68,10 @@ func LaunchGRPCService(done chan<- int, protocol string) {
 		log.Fatal(err)
 	}
 	server := grpc.NewServer()
-
+	PeerSvc = &PeerService{}
 	proto.RegisterPeerServer(
 		server,
-		&PeerService{},
+		PeerSvc,
 	)
 
 	log.Println("Start grpc services...")
@@ -74,7 +82,7 @@ func LaunchGRPCService(done chan<- int, protocol string) {
 func peerJoin() error {
 	latitude, longitude := geo.GetLocation()
 	request := &proto.PeerJoinRequest{
-		PeerId:    GetPeerID(),
+		PeerId:    getPeerID(),
 		LocalIp:   getLocalIP(config.Config.Iface),
 		Latitude:  latitude,
 		Longitude: longitude,

@@ -9,9 +9,10 @@ import (
 var Config *conf
 
 type Peer struct {
-	Iface  string `required:"true" default:"eth1"`
-	GRPC   GRPC
-	Claude Claude
+	Iface       string `required:"true" default:"eth1"`
+	GRPC        GRPC
+	Claude      Claude
+	NetConnFile string `required:"true" envconfig:"NET_CONN_FILE"`
 }
 
 type GRPC struct {
@@ -24,9 +25,10 @@ type Claude struct {
 }
 
 type conf struct {
-	Iface  string
-	GRPC   GRPC
-	Claude Claude
+	Iface       string
+	GRPC        GRPC
+	Claude      Claude
+	NetConnFile string
 }
 
 func InitConfig() {
@@ -36,8 +38,9 @@ func InitConfig() {
 	}
 
 	Config = &conf{
-		Iface:  peer.Iface,
-		GRPC:   peer.GRPC,
-		Claude: peer.Claude,
+		Iface:       peer.Iface,
+		GRPC:        peer.GRPC,
+		Claude:      peer.Claude,
+		NetConnFile: peer.NetConnFile,
 	}
 }
