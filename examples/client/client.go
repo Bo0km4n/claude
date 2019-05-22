@@ -6,7 +6,6 @@ import (
 	"os/signal"
 
 	"github.com/Bo0km4n/claude/lib"
-	"github.com/k0kubun/pp"
 )
 
 func main() {
@@ -21,11 +20,9 @@ func main() {
 	dest := lib.DeserializeID(os.Args[2])
 	// dest := service.GetPeerID()
 	conn, err := lib.NewConnection(os.Args[1], dest[:])
-	pp.Println(conn.NetConn.LocalAddr())
 	if err != nil {
 		log.Fatal(err)
 	}
-	pp.Println(conn)
 	go conn.Ping()
 	<-quit
 	conn.SaveConnection()
