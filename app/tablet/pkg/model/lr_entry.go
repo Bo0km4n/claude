@@ -8,6 +8,7 @@ import (
 
 type LREntry struct {
 	ID         uint32    `gorm:"primary_key"`
+	UniqueKey  string    `json:"unique_key" gorm:"unique_index;not_null"`
 	GlobalIp   string    `json:"global_ip,omitempty"`
 	GlobalPort string    `json:"global_port,omitempty"`
 	Latitude   float32   `json:"latitude,omitempty"`
@@ -22,6 +23,7 @@ func (lr *LREntry) ParseProto(in *proto.LREntry) {
 	lr.GlobalPort = in.GlobalPort
 	lr.Latitude = in.Latitude
 	lr.Longitude = in.Longitude
+	lr.UniqueKey = in.UniqueKey
 
 	if in.CreatedAt != 0 {
 		lr.CreatedAt = time.Unix(in.CreatedAt, 0)
@@ -38,6 +40,7 @@ func (lr *LREntry) SerializeToProto() *proto.LREntry {
 		GlobalPort: lr.GlobalPort,
 		Longitude:  lr.Longitude,
 		Latitude:   lr.Latitude,
+		UniqueKey:  lr.UniqueKey,
 		CreatedAt:  lr.CreatedAt.Unix(),
 		UpdatedAt:  lr.UpdatedAt.Unix(),
 	}

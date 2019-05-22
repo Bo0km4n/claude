@@ -57,7 +57,9 @@ func InsertPeerEntry(key []byte, value *proto.PeerEntry) {
 func FetchPeerEntry(key []byte) (*proto.PeerEntry, error) {
 	keyStr := base64.StdEncoding.EncodeToString(key)
 	v, ok := peerRepository.Load(keyStr)
+
 	if !ok {
+		pp.Println("Not found id:", keyStr)
 		return fetchPeerEntryFromTablet(binary.BigEndian.Uint32(key[0:4]))
 	}
 	return v, nil

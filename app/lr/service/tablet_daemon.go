@@ -57,6 +57,7 @@ func (t *tabletDaemon) start() error {
 func (t *tabletDaemon) syncInit() error {
 	latitude, longitude := geo.GetLocation()
 	resp, err := t.tabletClient.LRJoinRPC(context.Background(), &proto.LRJoinRequest{
+		UniqueKey:  getMacAddr(config.Config.Interface),
 		GlobalPort: config.Config.GRPC.Port,
 		Latitude:   latitude,
 		Longitude:  longitude,

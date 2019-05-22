@@ -28,8 +28,24 @@ func NewLRRepository(db *gorm.DB) LRRepository {
 
 func (lrr *lrRepository) StoreLR(ctx context.Context, in *proto.LREntry) (*proto.LREntry, error) {
 	query := &model.LREntry{}
-	query.ParseProto(in)
-	if err := lrr.db.Create(query).Error; err != nil {
+
+	// search existince
+	query.UniqueKey = in.UniqueKey
+	if err := lrr.db.Where("unique_key = ?", query.UniqueKey).First(query).Error; err != nil {
+		query.ParseProto(in)
+
+		if err := lrr.db.Create(query).Error; err != nil {
+			return &proto.LREntry{}, err
+		}
+		return query.SerializeToProto(), nil
+	}
+
+	// update exist row
+	query.GlobalIp = in.GlobalIp
+	query.GlobalPort = in.GlobalPort
+	query.Latitude = in.Latitude
+	query.Longitude = in.Longitude
+	if err := lrr.db.Save(query).Error; err != nil {
 		return &proto.LREntry{}, err
 	}
 	return query.SerializeToProto(), nil

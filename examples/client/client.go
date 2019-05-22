@@ -1,7 +1,6 @@
 package main
 
 import (
-	"crypto/sha256"
 	"log"
 	"os"
 
@@ -15,9 +14,7 @@ func main() {
 	// dest PeerB = efgh
 	// dest PeerA = abcd
 
-	destID := os.Args[2]
-	id := sha256.Sum256([]byte(destID))
-	dest := append([]byte{0x00, 0x00, 0x00, 0x01}, id[:]...)
+	dest := lib.DeserializeID(os.Args[2])
 	// dest := service.GetPeerID()
 	conn, err := lib.NewConnection(os.Args[1], dest[:])
 	if err != nil {

@@ -23,6 +23,7 @@ func NewTabletService(lrRepo lr.LRRepository) *TabletService {
 
 func (ts *TabletService) LRJoinRPC(ctx context.Context, in *proto.LRJoinRequest) (*proto.LREntry, error) {
 	entry := &proto.LREntry{
+		UniqueKey:  in.UniqueKey,
 		GlobalIp:   util.GetRemoteIp(ctx),
 		GlobalPort: in.GlobalPort,
 		Longitude:  in.Longitude,

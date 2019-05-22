@@ -8,6 +8,7 @@ service Tablet {
 }
 
 message LRJoinRequest {
+    string unique_key = 1;
     string global_port = 2;
     float latitude = 3;
     float longitude = 4;
@@ -19,6 +20,7 @@ message LookUpRequest {
 
 message LREntry {
     uint32 id  = 7;
+    string unique_key = 8;
     string global_ip = 1;
     string global_port = 2;
     float latitude = 3;
