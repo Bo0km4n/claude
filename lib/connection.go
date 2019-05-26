@@ -101,8 +101,9 @@ func (c *Connection) RegisterHandler(f func([]byte) error) {
 }
 
 func (c *Connection) Serve() error {
-	buf := make([]byte, BUF_SIZE)
+	c.NetConn.Write([]byte{0x00})
 	for {
+		buf := make([]byte, BUF_SIZE)
 		_, err := c.NetConn.Read(buf)
 		if err != nil {
 			return err
@@ -116,6 +117,16 @@ func (c *Connection) Serve() error {
 			}
 		}
 	}
+}
+
+func (c *Connection) Write(b []byte) error {
+	packet := buildPacket(c, b)
+	for i := range packet {
+		if _, err := c.NetConn.Write(packet[i]); err != nil {
+			return err
+		}
+	}
+	return nil
 }
 
 type netConnFormat struct {

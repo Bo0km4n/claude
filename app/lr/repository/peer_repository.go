@@ -51,6 +51,7 @@ func InitDB() {
 
 func InsertPeerEntry(key []byte, value *proto.PeerEntry) {
 	keyStr := base64.StdEncoding.EncodeToString(key)
+	pp.Println(">>> new peer:", keyStr, value.LocalPort)
 	peerRepository.Store(keyStr, value)
 }
 

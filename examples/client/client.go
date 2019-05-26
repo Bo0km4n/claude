@@ -1,6 +1,8 @@
 package main
 
 import (
+	"bufio"
+	"fmt"
 	"log"
 	"os"
 	"os/signal"
@@ -25,7 +27,23 @@ func main() {
 			return nil
 		})
 	go conn.Serve()
+	repl(conn)
 	<-quit
 	// conn.SaveConnection()
 	log.Println("exited")
+}
+
+func repl(conn *lib.Connection) {
+	stdin := bufio.NewScanner(os.Stdin)
+	fmt.Printf(">>> ")
+	for stdin.Scan() {
+		fmt.Printf(">>> ")
+		text := stdin.Text()
+		if text == "exit" {
+			os.Exit(0)
+		}
+		if err := conn.Write([]byte(text)); err != nil {
+			log.Fatal(err)
+		}
+	}
 }
