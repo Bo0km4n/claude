@@ -24,6 +24,7 @@ type Connection struct {
 	Protocol          string
 	DestinationPeerID []byte
 	SourcePeerID      []byte
+	Handler           func([]byte) error
 }
 
 type ClaudePacket struct {
@@ -32,6 +33,8 @@ type ClaudePacket struct {
 	CheckSum          uint16
 	Payload           []byte
 }
+
+const BUF_SIZE = 1024
 
 func InitConfig() {
 	peerConfig.InitConfig()
@@ -70,7 +73,7 @@ func (c *Connection) Ping() {
 		log.Printf("Packet is empty")
 		return
 	}
-	buf := make([]byte, 1024)
+	buf := make([]byte, BUF_SIZE)
 	for _, p := range packets {
 		n, err := c.NetConn.Write(p)
 		if err != nil {
@@ -88,6 +91,28 @@ func (c *Connection) Ping() {
 					log.Fatal(err)
 				}
 				log.Printf("Received msg: %s", string(resp.Payload))
+			}
+		}
+	}
+}
+
+func (c *Connection) RegisterHandler(f func([]byte) error) {
+	c.Handler = f
+}
+
+func (c *Connection) Serve() error {
+	buf := make([]byte, BUF_SIZE)
+	for {
+		_, err := c.NetConn.Read(buf)
+		if err != nil {
+			return err
+		} else {
+			resp, err := ParseHeader(buf)
+			if err != nil {
+				return err
+			}
+			if err := c.Handler(resp.Payload); err != nil {
+				return err
 			}
 		}
 	}
