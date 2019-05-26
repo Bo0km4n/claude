@@ -11,6 +11,8 @@ import (
 	"os"
 	"strconv"
 
+	"github.com/Bo0km4n/claude/app/common/proto"
+
 	"github.com/Bo0km4n/claude/app/peer/api"
 	peerConfig "github.com/Bo0km4n/claude/app/peer/config"
 
@@ -55,6 +57,10 @@ func NewConnection(protocol string, dest []byte) (*Connection, error) {
 	}
 
 	return nil, errors.New("Not found network")
+}
+
+func (c *Connection) LookUp(distance float32) []*proto.PeerEntry {
+	return nil
 }
 
 func (c *Connection) Ping() {

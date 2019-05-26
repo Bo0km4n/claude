@@ -9,6 +9,7 @@ service LR {
     rpc PeerJoinRPC(PeerJoinRequest) returns(PeerJoinResponse);
     rpc ExchangeEntriesStubRPC(ExchangeEntriesNotification) returns(Empty);
     rpc ExchangeEntriesDriverRPC(ExchangeEntriesRequest) returns(ExchangeEntriesResponse);
+    rpc LookUpPeerRPC(LookUpPeerRequest) returns(LookUpPeerResponse);
 }
 
 message PeerJoinRequest {
@@ -43,5 +44,15 @@ message ExchangeEntriesRequest {
 }
 
 message ExchangeEntriesResponse {
+    repeated PeerEntry entries = 1;
+}
+
+message LookUpPeerRequest {
+    float latitude = 1;
+    float longitude = 2;
+    float distance = 3;
+}
+
+message LookUpPeerResponse {
     repeated PeerEntry entries = 1;
 }
