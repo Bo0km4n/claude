@@ -2,7 +2,8 @@ syntax = "proto3";
 package proto;
 
 import "empty.proto";
-import "tablet.proto";
+import "entry.proto";
+import "request.proto";
 // import "github.com/golang/protobuf/ptypes/timestamp";
 service LR {
     rpc Heartbeat(Empty) returns(Empty);
@@ -25,16 +26,6 @@ message PeerJoinResponse {
     bool success = 1;
 }
 
-message PeerEntry {
-    bytes peer_id = 1;
-    string local_ip = 2;
-    string local_port = 3;
-    float latitude = 4;
-    float longitude = 5; 
-    bool is_remote = 6;
-    string protocol = 7;
-}
-
 message ExchangeEntriesNotification {
     repeated LREntry destinations = 1;
 }
@@ -44,15 +35,5 @@ message ExchangeEntriesRequest {
 }
 
 message ExchangeEntriesResponse {
-    repeated PeerEntry entries = 1;
-}
-
-message LookUpPeerRequest {
-    float latitude = 1;
-    float longitude = 2;
-    float distance = 3;
-}
-
-message LookUpPeerResponse {
     repeated PeerEntry entries = 1;
 }

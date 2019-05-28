@@ -1,0 +1,13 @@
+syntax = "proto3";
+package proto;
+import "entry.proto";
+
+message LookUpPeerRequest {
+    float latitude = 1;
+    float longitude = 2;
+    float distance = 3;
+}
+
+message LookUpPeerResponse {
+    repeated PeerEntry entries = 1;
+}
