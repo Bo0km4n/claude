@@ -40,8 +40,12 @@ func DeserializeID(id string) []byte {
 	return b
 }
 
+func LookUpPeers(latitude, longitude, distance float32) ([]*proto.PeerEntry, error) {
+	return invokeLRLookUp(latitude, longitude, distance)
+}
+
 func invokeLRLookUp(latitude, longitude, distance float32) ([]*proto.PeerEntry, error) {
-	conn, err := grpc.Dial(service.RemoteLR.Addr + ":" + service.RemoteLR.GrpcPort)
+	conn, err := grpc.Dial(service.RemoteLR.Addr+":"+service.RemoteLR.GrpcPort, grpc.WithInsecure())
 	if err != nil {
 		return nil, err
 	}
