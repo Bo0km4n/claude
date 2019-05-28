@@ -229,9 +229,6 @@ func forwardPayload(handle *pcap.Handle, payload []byte) {
 func forwardToRemote(peer *proto.PeerEntry, claudePacket *lib.ClaudePacket) {
 	log.Println("Forward to remote")
 
-	// TODO: Fix example,
-	// implement the process what fetches a information of remote LR and build packet
-
 	if protocol == "tcp" {
 		conn, err := net.Dial("tcp", peer.GetLocalIp()+":"+peer.GetLocalPort())
 		if err != nil {

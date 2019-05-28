@@ -11,6 +11,8 @@ import (
 	"os"
 	"strconv"
 
+	"github.com/Bo0km4n/claude/app/common/proto"
+
 	"github.com/Bo0km4n/claude/app/peer/api"
 	peerConfig "github.com/Bo0km4n/claude/app/peer/config"
 
@@ -22,6 +24,7 @@ type Connection struct {
 	Protocol          string
 	DestinationPeerID []byte
 	SourcePeerID      []byte
+	Handler           func([]byte) error
 }
 
 type ClaudePacket struct {
@@ -30,6 +33,8 @@ type ClaudePacket struct {
 	CheckSum          uint16
 	Payload           []byte
 }
+
+const BUF_SIZE = 1024
 
 func InitConfig() {
 	peerConfig.InitConfig()
@@ -57,6 +62,10 @@ func NewConnection(protocol string, dest []byte) (*Connection, error) {
 	return nil, errors.New("Not found network")
 }
 
+func (c *Connection) LookUp(distance float32) []*proto.PeerEntry {
+	return nil
+}
+
 func (c *Connection) Ping() {
 	msg := []byte(`Hello world!`)
 	packets := buildPacket(c, msg)
@@ -64,7 +73,7 @@ func (c *Connection) Ping() {
 		log.Printf("Packet is empty")
 		return
 	}
-	buf := make([]byte, 1024)
+	buf := make([]byte, BUF_SIZE)
 	for _, p := range packets {
 		n, err := c.NetConn.Write(p)
 		if err != nil {
@@ -85,6 +94,39 @@ func (c *Connection) Ping() {
 			}
 		}
 	}
+}
+
+func (c *Connection) RegisterHandler(f func([]byte) error) {
+	c.Handler = f
+}
+
+func (c *Connection) Serve() error {
+	c.NetConn.Write([]byte{0x00})
+	for {
+		buf := make([]byte, BUF_SIZE)
+		_, err := c.NetConn.Read(buf)
+		if err != nil {
+			return err
+		} else {
+			resp, err := ParseHeader(buf)
+			if err != nil {
+				return err
+			}
+			if err := c.Handler(resp.Payload); err != nil {
+				return err
+			}
+		}
+	}
+}
+
+func (c *Connection) Write(b []byte) error {
+	packet := buildPacket(c, b)
+	for i := range packet {
+		if _, err := c.NetConn.Write(packet[i]); err != nil {
+			return err
+		}
+	}
+	return nil
 }
 
 type netConnFormat struct {

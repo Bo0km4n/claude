@@ -23,6 +23,6 @@ func ParseHeader(payload []byte) (*ClaudePacket, error) {
 	}
 	copy(cp.SourcePeerID[:], srcID)
 	copy(cp.DestinationPeerID[:], dstID)
-	cp.Payload = payload[66:]
+	cp.Payload = payload[74:]
 	return cp, nil
 }

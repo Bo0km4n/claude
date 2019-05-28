@@ -105,3 +105,23 @@ func (p *LRService) registerRemotePeers(peers []*proto.PeerEntry) {
 		repository.InsertPeerEntry(peer.PeerId, peer)
 	}
 }
+
+func (p *LRService) FetchPeersRPC(ctx context.Context, in *proto.FetchPeersRequest) (*proto.FetchPeersResponse, error) {
+	peers := repository.FetchLocalPeers()
+	return &proto.FetchPeersResponse{
+		Entries: peers,
+	}, nil
+}
+
+func (p *LRService) LookUpPeersRPC(ctx context.Context, in *proto.LookUpPeerRequest) (*proto.LookUpPeerResponse, error) {
+	// forwarded query to Tablet.
+	client, err := newTabletClient()
+	if err != nil {
+		return nil, err
+	}
+	resp, err := client.LookUpPeersRPC(ctx, in)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}

@@ -1,12 +1,15 @@
 package lib
 
 import (
+	"context"
 	"crypto/sha256"
 	"encoding/base64"
 	"encoding/binary"
 	"time"
 
+	"github.com/Bo0km4n/claude/app/common/proto"
 	"github.com/Bo0km4n/claude/app/peer/service"
+	"google.golang.org/grpc"
 )
 
 func ConnectToLR(protocol string) {
@@ -35,4 +38,29 @@ func CryptedID(seed string) []byte {
 func DeserializeID(id string) []byte {
 	b, _ := base64.StdEncoding.DecodeString(id)
 	return b
+}
+
+func LookUpPeers(latitude, longitude, distance float32) ([]*proto.PeerEntry, error) {
+	return invokeLRLookUp(latitude, longitude, distance)
+}
+
+func invokeLRLookUp(latitude, longitude, distance float32) ([]*proto.PeerEntry, error) {
+	conn, err := grpc.Dial(service.RemoteLR.Addr+":"+service.RemoteLR.GrpcPort, grpc.WithInsecure())
+	if err != nil {
+		return nil, err
+	}
+	defer conn.Close()
+	client := proto.NewLRClient(conn)
+
+	req := &proto.LookUpPeerRequest{
+		Latitude:  latitude,
+		Longitude: longitude,
+		Distance:  distance,
+	}
+	resp, err := client.LookUpPeersRPC(context.Background(), req)
+	if err != nil {
+		return nil, err
+	}
+
+	return resp.Entries, nil
 }

@@ -34,8 +34,6 @@ func (ts *TabletService) LRJoinRPC(ctx context.Context, in *proto.LRJoinRequest)
 		return &proto.LREntry{}, err
 	}
 
-	// TODO: Send notification of order that exchange information about peer entries
-	// between each LR
 	go ts.sendNotification(row)
 
 	return row, nil
@@ -53,6 +51,36 @@ func (ts *TabletService) LookUpRPC(ctx context.Context, in *proto.LookUpRequest)
 		return &proto.LREntry{}, errors.New("Not found LR")
 	}
 	return result.Entries[0], nil
+}
+
+func (ts *TabletService) LookUpPeersRPC(ctx context.Context, in *proto.LookUpPeerRequest) (*proto.LookUpPeerResponse, error) {
+	lrs, err := ts.lrRepository.FetchLRsByDistance(ctx, in.Latitude, in.Longitude, in.Distance)
+	if err != nil {
+		return nil, err
+	}
+	peers := ts.fetchPeers(ctx, lrs.Entries)
+	return &proto.LookUpPeerResponse{
+		Entries: peers,
+	}, nil
+}
+
+func (ts *TabletService) fetchPeers(ctx context.Context, lrs []*proto.LREntry) []*proto.PeerEntry {
+	peers := []*proto.PeerEntry{}
+	for _, lr := range lrs {
+		conn, err := grpc.Dial(lr.GlobalIp+":"+lr.GlobalPort, grpc.WithInsecure())
+		if err != nil {
+			continue
+		}
+		defer conn.Close()
+		client := proto.NewLRClient(conn)
+		resp, err := client.FetchPeersRPC(ctx, &proto.FetchPeersRequest{})
+		if err != nil {
+			log.Printf("Failed fetch peers from %s: %v", lr.GlobalIp+":"+lr.GlobalPort, err)
+			continue
+		}
+		peers = append(peers, resp.Entries...)
+	}
+	return peers
 }
 
 // sendNotification sends notification LR nodes neer by argument's entry.

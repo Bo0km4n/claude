@@ -1,10 +1,13 @@
 syntax = "proto3";
 package proto;
 
+import "request.proto";
+import "entry.proto";
 // import "github.com/golang/protobuf/ptypes/timestamp";
 service Tablet {
     rpc LRJoinRPC(LRJoinRequest) returns(LREntry);
-    rpc LookUpRPC(LookUpRequest) returns(LREntry);
+    rpc LookUpRPC(LookUpRequest) returns(LREntry); // look up LR
+    rpc LookUpPeersRPC(LookUpPeerRequest) returns(LookUpPeerResponse); // look up Peer
 }
 
 message LRJoinRequest {
@@ -16,17 +19,6 @@ message LRJoinRequest {
 
 message LookUpRequest {
    uint32 id = 1; 
-}
-
-message LREntry {
-    uint32 id  = 7;
-    string unique_key = 8;
-    string global_ip = 1;
-    string global_port = 2;
-    float latitude = 3;
-    float longitude = 4;
-    int64 created_at = 5;
-    int64 updated_at = 6;
 }
 
 message LREntries {
