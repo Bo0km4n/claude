@@ -38,6 +38,15 @@ func initDaemon() error {
 	return nil
 }
 
+func newTabletClient() (proto.TabletClient, error) {
+	conn, err := grpc.Dial(config.Config.Tablet.IP+":"+config.Config.Tablet.Port, grpc.WithInsecure())
+	if err != nil {
+		return nil, err
+	}
+	client := proto.NewTabletClient(conn)
+	return client, nil
+}
+
 func (t *tabletDaemon) start() error {
 	for {
 		sig := <-t.signal

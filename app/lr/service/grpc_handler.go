@@ -106,9 +106,22 @@ func (p *LRService) registerRemotePeers(peers []*proto.PeerEntry) {
 	}
 }
 
-func (p *LRService) LookUpPeerRPC(ctx context.Context, in *proto.LookUpPeerRequest) (*proto.LookUpPeerResponse, error) {
-	// TODO: implement the geo location query to LR's KVS.
-	// And forwarded query to Tablet.
+func (p *LRService) FetchPeersRPC(ctx context.Context, in *proto.FetchPeersRequest) (*proto.FetchPeersResponse, error) {
+	peers := repository.FetchLocalPeers()
+	return &proto.FetchPeersResponse{
+		Entries: peers,
+	}, nil
+}
 
-	return nil, nil
+func (p *LRService) LookUpPeersRPC(ctx context.Context, in *proto.LookUpPeerRequest) (*proto.LookUpPeerResponse, error) {
+	// forwarded query to Tablet.
+	client, err := newTabletClient()
+	if err != nil {
+		return nil, err
+	}
+	resp, err := client.LookUpPeersRPC(ctx, in)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
 }

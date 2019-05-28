@@ -53,7 +53,7 @@ func invokeLRLookUp(latitude, longitude, distance float32) ([]*proto.PeerEntry, 
 		Longitude: longitude,
 		Distance:  distance,
 	}
-	resp, err := client.LookUpPeerRPC(context.Background(), req)
+	resp, err := client.LookUpPeersRPC(context.Background(), req)
 	if err != nil {
 		return nil, err
 	}

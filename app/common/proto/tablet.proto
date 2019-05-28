@@ -7,7 +7,7 @@ import "entry.proto";
 service Tablet {
     rpc LRJoinRPC(LRJoinRequest) returns(LREntry);
     rpc LookUpRPC(LookUpRequest) returns(LREntry); // look up LR
-    rpc LookUpPeer(LookUpPeerRequest) returns(LookUpPeerResponse); // look up Peer
+    rpc LookUpPeersRPC(LookUpPeerRequest) returns(LookUpPeerResponse); // look up Peer
 }
 
 message LRJoinRequest {

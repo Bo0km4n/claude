@@ -11,3 +11,11 @@ message LookUpPeerRequest {
 message LookUpPeerResponse {
     repeated PeerEntry entries = 1;
 }
+
+message FetchPeersRequest {
+
+}
+
+message FetchPeersResponse {
+    repeated PeerEntry entries = 1;
+}

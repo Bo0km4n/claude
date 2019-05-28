@@ -10,7 +10,8 @@ service LR {
     rpc PeerJoinRPC(PeerJoinRequest) returns(PeerJoinResponse);
     rpc ExchangeEntriesStubRPC(ExchangeEntriesNotification) returns(Empty);
     rpc ExchangeEntriesDriverRPC(ExchangeEntriesRequest) returns(ExchangeEntriesResponse);
-    rpc LookUpPeerRPC(LookUpPeerRequest) returns(LookUpPeerResponse);
+    rpc LookUpPeersRPC(LookUpPeerRequest) returns(LookUpPeerResponse);
+    rpc FetchPeersRPC(FetchPeersRequest) returns(FetchPeersResponse);
 }
 
 message PeerJoinRequest {
