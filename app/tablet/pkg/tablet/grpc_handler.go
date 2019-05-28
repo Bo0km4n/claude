@@ -75,6 +75,7 @@ func (ts *TabletService) fetchPeers(ctx context.Context, lrs []*proto.LREntry) [
 		client := proto.NewLRClient(conn)
 		resp, err := client.FetchPeersRPC(ctx, &proto.FetchPeersRequest{})
 		if err != nil {
+			log.Printf("Failed fetch peers from %s: %v", lr.GlobalIp+":"+lr.GlobalPort, err)
 			continue
 		}
 		peers = append(peers, resp.Entries...)
