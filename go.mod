@@ -3,6 +3,7 @@ module github.com/Bo0km4n/claude
 require (
 	github.com/golang/protobuf v1.3.1
 	github.com/google/gopacket v1.1.16
+	github.com/jinzhu/gorm v1.9.8
 	github.com/k0kubun/pp v2.3.0+incompatible
 	github.com/kelseyhightower/envconfig v1.4.0
 	github.com/mattn/go-colorable v0.1.1

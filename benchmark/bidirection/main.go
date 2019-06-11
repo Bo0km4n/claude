@@ -10,8 +10,14 @@ import (
 
 var data []byte
 var counter int
+var before time.Time
 
 func main() {
+	withProxy()
+	// TODO: withoutProxy()
+}
+
+func withProxy() {
 	lib.InitConfig()
 	lib.ConnectToLR(os.Args[1])
 	quit := make(chan struct{})
@@ -28,7 +34,13 @@ func main() {
 		func(c *lib.Connection, b []byte) error {
 			c.Write(b)
 			counter++
-			log.Println(counter)
+			if counter == 1 {
+				initTime()
+			} else {
+				newTime, elapsed := calcElpasedTime(before)
+				before = newTime
+				log.Printf("[Term %d] Elpased Time: %v\n", counter, elapsed)
+			}
 			if counter >= 100 {
 				quit <- struct{}{}
 			}
@@ -45,6 +57,10 @@ func main() {
 
 func start(conn *lib.Connection) {
 	conn.Write(data)
+}
+
+func initTime() {
+	before = time.Now()
 }
 
 func calcElpasedTime(before time.Time) (time.Time, time.Duration) {
