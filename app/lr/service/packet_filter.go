@@ -165,7 +165,7 @@ func tcpRecvFilter(port string, packet gopacket.Packet) []byte {
 	tcp := tcpLayer.(*layers.TCP)
 	dstPort := tcp.DstPort.String()
 	if dstPort == port && len(tcp.Payload) > 0 {
-		log.Printf("TCP Port is src: %v, dst: %v\n", tcp.SrcPort.String(), dstPort)
+		log.Printf("Packet's TCP Port is src: %v, dst: %v\n", tcp.SrcPort.String(), dstPort)
 		protocol = "tcp"
 		return tcp.Payload
 	}
@@ -177,7 +177,7 @@ func udpRecvFilter(port string, packet gopacket.Packet) []byte {
 	udp := udpLayer.(*layers.UDP)
 	dstPort := udp.DstPort.String()
 	if dstPort == port && len(udp.Payload) > 0 {
-		log.Printf("UDP Port is src: %v, dst: %v\n", udp.SrcPort.String(), dstPort)
+		log.Printf("Packet's UDP Port is src: %v, dst: %v\n", udp.SrcPort.String(), dstPort)
 		protocol = "udp"
 		return udp.Payload
 	}
