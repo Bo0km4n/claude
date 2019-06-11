@@ -21,6 +21,7 @@ var UdpConn *net.UDPConn
 
 func launchPacketFilter() {
 
+	// TCP Listern
 	go func() {
 		listen, err := net.Listen("tcp", ":"+config.Config.Claude.TcpPort)
 		if err != nil {
@@ -44,6 +45,7 @@ func launchPacketFilter() {
 		}
 	}()
 
+	// UDP Listern
 	go func() {
 		laddr, err := net.ResolveUDPAddr("udp", ":"+config.Config.Claude.UdpPort)
 		if err != nil {
