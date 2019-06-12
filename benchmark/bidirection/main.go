@@ -2,10 +2,12 @@ package main
 
 import (
 	"log"
+	"net"
 	"os"
 	"time"
 
 	"github.com/Bo0km4n/claude/lib"
+	"github.com/k0kubun/pp"
 )
 
 var data []byte
@@ -14,7 +16,47 @@ var before time.Time
 
 func main() {
 	withProxy()
-	// TODO: withoutProxy()
+	// withoutProxy()
+}
+
+func withoutProxy() {
+	mode := os.Getenv("MODE")
+	switch mode {
+	case "SERVER":
+		withoutProxyServer()
+	case "CLIENT":
+		withoutProxyClient()
+	}
+}
+
+func withoutProxyServer() {
+	listener, error := net.Listen("tcp", "192.168.10.101:10000")
+	buf := make([]byte, 1024)
+	if error != nil {
+		panic(error)
+	}
+	for {
+		conn, err := listener.Accept()
+		defer conn.Close()
+		if err != nil {
+			panic(err)
+		}
+		conn.Read(buf)
+		pp.Println("READ")
+		conn.Write(buf)
+	}
+}
+
+func withoutProxyClient() {
+	conn, err := net.Dial("tcp", "192.168.10.101:10000")
+	if err != nil {
+		panic(err)
+	}
+	buf := make([]byte, 1024)
+	for {
+		conn.Write(data)
+		conn.Read(buf)
+	}
 }
 
 func withProxy() {
@@ -39,7 +81,7 @@ func withProxy() {
 			} else {
 				newTime, elapsed := calcElpasedTime(before)
 				before = newTime
-				log.Printf("[Term %d] Elpased Time: %v\n", counter, elapsed)
+				log.Printf("[Term %d] Elapsed Time: %v\n", counter, elapsed)
 			}
 			if counter >= 100 {
 				quit <- struct{}{}
