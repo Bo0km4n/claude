@@ -18,6 +18,7 @@ type peerBucket struct {
 func (pb *peerBucket) Store(key string, v *proto.PeerEntry) {
 	pb.mu.Lock()
 	defer pb.mu.Unlock()
+	pp.Printf("Inserted new peer: %s, port=%s\n", key, v.LocalPort)
 	pb.b[key] = v
 }
 
@@ -51,7 +52,6 @@ func InitDB() {
 
 func InsertPeerEntry(key []byte, value *proto.PeerEntry) {
 	keyStr := base64.StdEncoding.EncodeToString(key)
-	pp.Println(">>> new peer:", keyStr, value.LocalPort)
 	peerRepository.Store(keyStr, value)
 }
 

@@ -24,7 +24,7 @@ type Connection struct {
 	Protocol          string
 	DestinationPeerID []byte
 	SourcePeerID      []byte
-	Handler           func([]byte) error
+	Handler           func(*Connection, []byte) error
 }
 
 type ClaudePacket struct {
@@ -96,7 +96,7 @@ func (c *Connection) Ping() {
 	}
 }
 
-func (c *Connection) RegisterHandler(f func([]byte) error) {
+func (c *Connection) RegisterHandler(f func(*Connection, []byte) error) {
 	c.Handler = f
 }
 
@@ -112,7 +112,7 @@ func (c *Connection) Serve() error {
 			if err != nil {
 				return err
 			}
-			if err := c.Handler(resp.Payload); err != nil {
+			if err := c.Handler(c, resp.Payload); err != nil {
 				return err
 			}
 		}

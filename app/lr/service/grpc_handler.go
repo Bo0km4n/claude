@@ -106,6 +106,7 @@ func (p *LRService) registerRemotePeers(peers []*proto.PeerEntry) {
 	}
 }
 
+// Fetch peer entires from in-memory hash table
 func (p *LRService) FetchPeersRPC(ctx context.Context, in *proto.FetchPeersRequest) (*proto.FetchPeersResponse, error) {
 	peers := repository.FetchLocalPeers()
 	return &proto.FetchPeersResponse{
@@ -113,6 +114,7 @@ func (p *LRService) FetchPeersRPC(ctx context.Context, in *proto.FetchPeersReque
 	}, nil
 }
 
+// Fetch peer entries by location query via Tablet server
 func (p *LRService) LookUpPeersRPC(ctx context.Context, in *proto.LookUpPeerRequest) (*proto.LookUpPeerResponse, error) {
 	// forwarded query to Tablet.
 	client, err := newTabletClient()
