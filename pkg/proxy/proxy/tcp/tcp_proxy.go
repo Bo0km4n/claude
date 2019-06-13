@@ -1,4 +1,4 @@
-package proxy
+package tcp
 
 import (
 	"log"
@@ -18,42 +18,54 @@ type TCPProxy struct {
 }
 
 func (tp *TCPProxy) upHandleConn(in *net.TCPConn) {
-	// Register peer information
-	// Set peer handler
 	defer in.Close()
-	peerAddr := in.RemoteAddr().String()
-	idAndConn, ok := repository.FetchIDAndConn(peerAddr)
+	peerAddrStr := in.RemoteAddr().String()
+	peerID, err := getPeerID(net.ParseIP(peerAddrStr).String())
+	if err != nil {
+		log.Println(err)
+		return
+	}
 
-	if !ok {
-		// Init peer connection and remote proxy connection
+	// New pipe connection
+	pipe := &repository.Pipe{
+		Addr:           peerAddrStr,
+		PeerConnection: in,
 	}
-	if idAndConn.ID != "" && idAndConn.RemoteProxyConn == nil {
-		// Peer registered, but not yet connected remote proxy with dest id
+	repository.InsertPipe(peerID, pipe)
+	if err := tp.upRelay(pipe); err != nil {
+		log.Fatal(err)
 	}
-	if idAndConn.ID != "" && idAndConn.RemoteProxyConn != nil {
-		// Relay packet from peer to remote proxy
-		tcpRemoteConn, _ := idAndConn.RemoteProxyConn.(*net.TCPConn)
-		if err := tp.upRelay(in, tcpRemoteConn); err != nil {
-			log.Fatal(err)
-		}
-	}
+	return
 }
 
-func (tp *TCPProxy) upRelay(from, to *net.TCPConn) error {
-	buff := make([]byte, packet.PACKET_SIZE)
+func (tp *TCPProxy) upRelay(pipe *repository.Pipe) error {
+	buf := make([]byte, packet.PACKET_SIZE)
+	defer pipe.PeerConnection.Close()
 	for {
-		n, err := from.Read(buff)
+		n, err := pipe.PeerConnection.Read(buf)
 		if err != nil {
 			log.Println(n, err)
 			return err
 		}
 		log.Println("Read: ", n)
-		b := buff[:n]
+		b := buf[:n]
 
-		_, err = to.Write(b)
+		if pipe.ProxyConnection == nil {
+			// Maybe when first read, proxy connection is not established yet.
+			// So connect to remote proxy and store pipe
+
+			// TODO: set parsed id
+			proxyConn, err := newConnectionToProxy("hoge")
+			if err != nil {
+				return err
+			}
+			pipe.ProxyConnection = proxyConn
+		}
+		n, err = pipe.ProxyConnection.Write(b)
 		if err != nil {
 			return err
 		}
+		log.Println("Write: ", n)
 	}
 }
 
@@ -100,6 +112,6 @@ func (tp *TCPProxy) Serve() {
 	log.Println("Interrupted Proxy Server")
 }
 
-func NewTCPProxy() *TCPProxy {
+func NewProxy() *TCPProxy {
 	return &TCPProxy{}
 }

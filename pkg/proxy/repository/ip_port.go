@@ -11,8 +11,9 @@ type IPPortRepo struct {
 }
 
 type IDAndConn struct {
-	ID              string
-	RemoteProxyConn net.Conn
+	ID             string
+	FromConnection net.Conn
+	ToConnection   net.Conn
 }
 
 var ipPortRepository *IPPortRepo

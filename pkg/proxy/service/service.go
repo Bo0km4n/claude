@@ -7,7 +7,7 @@ import (
 
 	"github.com/Bo0km4n/claude/pkg/common/proto"
 	"github.com/Bo0km4n/claude/pkg/proxy/config"
-	"github.com/Bo0km4n/claude/pkg/proxy/proxy"
+	"github.com/Bo0km4n/claude/pkg/proxy/proxy/tcp"
 	"google.golang.org/grpc"
 )
 
@@ -23,7 +23,7 @@ func LaunchService() {
 	if err := td.syncInit(); err != nil {
 		log.Fatal(err)
 	}
-	proxy.NewTCPProxy().Serve()
+	tcp.NewProxy().Serve()
 }
 
 func launchGRPCService() {

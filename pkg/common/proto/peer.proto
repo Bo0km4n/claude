@@ -5,6 +5,7 @@ import "empty.proto";
 
 service Peer {
     rpc NoticeFromProxyRPC(NoticeFromProxyRequest) returns(Empty);
+    rpc GetPeerID(Empty) returns(GetPeerIDResponse);
 }
 
 message NoticeFromProxyRequest {
@@ -13,4 +14,8 @@ message NoticeFromProxyRequest {
     string tcp_port = 2;
     string udp_port = 3;
     string addr = 4;
+}
+
+message GetPeerIDResponse {
+    string id = 1;
 }

@@ -37,7 +37,7 @@ func (p *ProxyService) PeerJoinRPC(ctx context.Context, in *proto.PeerJoinReques
 		Longitude: in.Longitude,
 		Protocol:  in.Protocol,
 	}
-	repository.InsertPeerEntry(entry.PeerId, entry)
+	// repository.InsertPeerEntry(entry.PeerId, entry)
 	return &proto.PeerJoinResponse{Success: true}, nil
 }
 
