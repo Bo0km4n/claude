@@ -73,6 +73,34 @@ func (tp *TCPProxy) downHandleConn(in *net.TCPConn) {
 
 }
 
+func (tp *TCPProxy) downRelay(in *net.TCPConn) error {
+	buf := make([]byte, packet.PACKET_SIZE)
+	for {
+		n, err := in.Read(buf)
+		if err != nil {
+			return err
+		}
+		log.Println("Read: ", n)
+		// b := buf[:n]
+
+		// TODO: Parse header to claude packet
+		// packets := parseClaudePackets(b)
+		// for _, p := range {
+		// 	tp.relayToPeer(p)
+		// }
+	}
+}
+
+func (tp *TCPProxy) relayToPeer(p *packet.ClaudePacket) {
+	// id := p.GetDestinationPeerID()
+	// pipe, ok := repository.FetchPipe(id)
+	// if !ok {
+	// 	log.Printf("Not found peer: %s\n", id)
+	// 	return
+	// }
+	// pipe.PeerConnection.Write(p.Serialize())
+}
+
 func (tp *TCPProxy) serveUpStream() {
 	listener, err := net.Listen("tcp", "localhost:"+config.Config.Claude.UpTcpPort)
 	if err != nil {
