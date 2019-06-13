@@ -1,7 +1,6 @@
 package main
 
 import (
-	"io"
 	"log"
 	"net"
 )
@@ -20,14 +19,11 @@ func main() {
 			for {
 				buf := make([]byte, 0xffff)
 				n, err := conn.Read(buf)
-				if err != nil && err != io.EOF {
+				if err != nil {
 					panic(err)
 				}
-				if err == io.EOF {
-					break
-				}
-				log.Println(n, string(buf[:15]))
-				conn.Write(buf[:n])
+				log.Println(n, string(buf[:n]))
+				// conn.Write(buf[:n])
 			}
 		}(conn)
 	}

@@ -57,8 +57,8 @@ func (proxys *ProxyService) sendNoticeToPeer(m *message.UDPBcastMessage) {
 	client := proto.NewPeerClient(conn)
 	if _, err := client.NoticeFromProxyRPC(context.Background(), &proto.NoticeFromProxyRequest{
 		Id:       proxys.ID,
-		TcpPort:  config.Config.Claude.TcpPort,
-		UdpPort:  config.Config.Claude.UdpPort,
+		TcpPort:  config.Config.Claude.UpTcpPort,
+		UdpPort:  config.Config.Claude.UpUdpPort,
 		GrpcPort: config.Config.GRPC.Port,
 		Addr:     config.Config.GRPC.Addr,
 	}); err != nil {

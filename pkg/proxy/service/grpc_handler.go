@@ -79,9 +79,9 @@ func (p *ProxyService) ExchangeEntriesDriverRPC(ctx context.Context, in *proto.E
 			LocalPort: func(protocol string) string {
 				switch protocol {
 				case "tcp":
-					return config.Config.Claude.TcpPort
+					return config.Config.Claude.DownTcpPort
 				case "udp":
-					return config.Config.Claude.UdpPort
+					return config.Config.Claude.DownUdpPort
 				default:
 					return ""
 				}

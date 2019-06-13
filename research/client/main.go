@@ -12,25 +12,14 @@ func main() {
 	}
 	laddr := conn.LocalAddr()
 	log.Println(laddr.String())
-	// for i := 0; i < 6000; i++ {
-	// 	var data []byte
-	// 	if i == 0 {
-	// 		data = []byte(`1 Init`)
-	// 	} else {
-	// 		data = []byte(`Hello world!`)
-	// 	}
-	// 	_, err := conn.Write(data)
-	// 	if err != nil {
-	// 		panic(err)
-	// 	}
-	// }
-
-	// for {
-	// 	buf := make([]byte, 0xffff)
-	// 	n, err := conn.Read(buf)
-	// 	if err != nil {
-	// 		log.Fatal(err)
-	// 	}
-	// 	log.Println(n)
-	// }
+	// data, _ := ioutil.ReadFile("dummy.data")
+	// conn.Write(data)
+	for i := 0; i < 100; i++ {
+		data := []byte(`claude_packet payload`)
+		n, err := conn.Write(data)
+		if err != nil {
+			log.Fatal(err)
+		}
+		log.Println(n)
+	}
 }

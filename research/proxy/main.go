@@ -44,8 +44,10 @@ func relay(from, to *net.TCPConn) error {
 	for {
 		n, err := from.Read(buff)
 		if err != nil {
+			log.Println(n, err)
 			return err
 		}
+		log.Println("Read: ", n)
 		b := buff[:n]
 
 		header := []byte(`HEADER`)
