@@ -28,9 +28,11 @@ type UDP struct {
 }
 
 type Claude struct {
-	UniqueKey string
-	TcpPort   string `required:"true" default:"9610"`
-	UdpPort   string `required:"true" default:"9611"`
+	UniqueKey   string
+	UpTcpPort   string `required:"true" default:"9610"`
+	DownTcpPort string `required:"true" default:"8610"`
+	UpUdpPort   string `required:"true" default:"9611"`
+	DownUdpPort string `required:"true" default:"8611"`
 }
 
 type Tablet struct {
