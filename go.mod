@@ -3,7 +3,6 @@ module github.com/Bo0km4n/claude
 go 1.12
 
 require (
-<<<<<<< HEAD
 	github.com/go-sql-driver/mysql v1.4.1
 	github.com/golang/protobuf v1.3.1
 	github.com/google/gopacket v1.1.16
@@ -17,22 +16,10 @@ require (
 	github.com/spf13/cobra v0.0.4
 	github.com/spf13/pflag v1.0.3
 	golang.org/x/net v0.0.0-20190501004415-9ce7a6920f09
+	golang.org/x/sync v0.0.0-20190227155943-e225da77a7e6
 	golang.org/x/sys v0.0.0-20190222171317-cd391775e71e
 	golang.org/x/text v0.3.2
 	google.golang.org/appengine v1.5.0
 	google.golang.org/genproto v0.0.0-20190425155659-357c62f0e4bb
 	google.golang.org/grpc v1.20.1
-=======
-	github.com/golang/protobuf v1.3.1
-	github.com/google/gopacket v1.1.16
-	github.com/jinzhu/gorm v1.9.8
-	github.com/k0kubun/pp v2.3.0+incompatible
-	github.com/kelseyhightower/envconfig v1.4.0
-	github.com/mattn/go-colorable v0.1.1
-	github.com/mattn/go-isatty v0.0.5
-	github.com/spf13/cobra v0.0.4 // indirect
-	golang.org/x/net v0.0.0-20190607181551-461777fb6f67
-	golang.org/x/sys v0.0.0-20190222171317-cd391775e71e
-	google.golang.org/grpc v1.21.1
->>>>>>> e4fbae7d9ca85e21c1f6fb4c10f283610a9e8cbb
 )
