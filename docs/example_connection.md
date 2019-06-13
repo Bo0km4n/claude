@@ -23,7 +23,7 @@ sudo iptables -t nat -A PREROUTING -d 10.10.10.10 -j DNAT --to 200.200.200.200
 
 ## Run example program with proxy
 
-1. start tablet db `cd app/tablet && docker-compose up -d`
-2. start tablet server `go run app/tablet/main.go`
-3. start each proxy server `go run app/lr/main.go --tablet_ip=10.10.10.10 --tablet_port=50051`
+1. start tablet db `cd pkg/tablet && docker-compose up -d`
+2. start tablet server `go run pkg/tablet/main.go`
+3. start each proxy server `go run pkg/proxy/main.go --tablet_ip=10.10.10.10 --tablet_port=50051`
 4. start each peer `go run examples/client/client.go udp(or tcp) xxxxxx(connect peer id)`

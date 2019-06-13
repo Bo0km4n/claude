@@ -67,7 +67,7 @@ var (
 
 func withProxy() {
 	lib.InitConfig()
-	lib.ConnectToLR(os.Args[1])
+	lib.ConnectToProxy(os.Args[1])
 
 	switch *Mode {
 	case "server":

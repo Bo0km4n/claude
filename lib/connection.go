@@ -11,12 +11,12 @@ import (
 	"os"
 	"strconv"
 
-	"github.com/Bo0km4n/claude/app/common/proto"
+	"github.com/Bo0km4n/claude/pkg/common/proto"
 
-	"github.com/Bo0km4n/claude/app/peer/api"
-	peerConfig "github.com/Bo0km4n/claude/app/peer/config"
+	"github.com/Bo0km4n/claude/claude/go/api"
+	peerConfig "github.com/Bo0km4n/claude/claude/go/config"
 
-	"github.com/Bo0km4n/claude/app/peer/service"
+	"github.com/Bo0km4n/claude/claude/go/service"
 )
 
 type Connection struct {
@@ -191,7 +191,7 @@ func (c *Connection) RestoreConnection() error {
 			IP:   ip,
 			Port: port,
 		}
-		raddr, err := net.ResolveTCPAddr("tcp", service.RemoteLR.Addr+":"+service.RemoteLR.TcpPort)
+		raddr, err := net.ResolveTCPAddr("tcp", service.RemoteProxy.Addr+":"+service.RemoteProxy.TcpPort)
 		if err != nil {
 			return err
 		}
@@ -205,7 +205,7 @@ func (c *Connection) RestoreConnection() error {
 			IP:   ip,
 			Port: port,
 		}
-		raddr, err := net.ResolveUDPAddr("udp", service.RemoteLR.Addr+":"+service.RemoteLR.TcpPort)
+		raddr, err := net.ResolveUDPAddr("udp", service.RemoteProxy.Addr+":"+service.RemoteProxy.TcpPort)
 		if err != nil {
 			return err
 		}

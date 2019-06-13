@@ -21,12 +21,12 @@ func TestCalcCheckSum(t *testing.T) {
 func TestBuildHeader(t *testing.T) {
 	srcPeerID := sha256.Sum256([]byte("abcd"))
 	dstPeerID := sha256.Sum256([]byte("efgh"))
-	srcLRID := []byte{0x00, 0x00, 0x00, 0x01}
-	dstLRID := []byte{0x00, 0x00, 0x00, 0x02}
+	srcProxyID := []byte{0x00, 0x00, 0x00, 0x01}
+	dstProxyID := []byte{0x00, 0x00, 0x00, 0x02}
 
 	in := &Connection{
-		SourcePeerID:      append(srcLRID, srcPeerID[:]...),
-		DestinationPeerID: append(dstLRID, dstPeerID[:]...),
+		SourcePeerID:      append(srcProxyID, srcPeerID[:]...),
+		DestinationPeerID: append(dstProxyID, dstPeerID[:]...),
 	}
 
 	header, err := buildHeader(in)
@@ -44,11 +44,11 @@ func TestWrapHeader(t *testing.T) {
 	}
 	srcPeerID := sha256.Sum256([]byte("abcd"))
 	dstPeerID := sha256.Sum256([]byte("efgh"))
-	srcLRID := []byte{0x00, 0x00, 0x00, 0x01}
-	dstLRID := []byte{0x00, 0x00, 0x00, 0x02}
+	srcProxyID := []byte{0x00, 0x00, 0x00, 0x01}
+	dstProxyID := []byte{0x00, 0x00, 0x00, 0x02}
 	conn := &Connection{
-		SourcePeerID:      append(srcLRID, srcPeerID[:]...),
-		DestinationPeerID: append(dstLRID, dstPeerID[:]...),
+		SourcePeerID:      append(srcProxyID, srcPeerID[:]...),
+		DestinationPeerID: append(dstProxyID, dstPeerID[:]...),
 	}
 	packets, err := addHeader(conn, in)
 	if err != nil {

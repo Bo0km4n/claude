@@ -7,12 +7,12 @@ import (
 	"encoding/binary"
 	"time"
 
-	"github.com/Bo0km4n/claude/app/common/proto"
-	"github.com/Bo0km4n/claude/app/peer/service"
+	"github.com/Bo0km4n/claude/pkg/common/proto"
+	"github.com/Bo0km4n/claude/claude/go/service"
 	"google.golang.org/grpc"
 )
 
-func ConnectToLR(protocol string) {
+func ConnectToProxy(protocol string) {
 	done := make(chan int)
 	go service.LaunchGRPCService(done, protocol)
 	<-done
@@ -20,7 +20,7 @@ func ConnectToLR(protocol string) {
 	time.Sleep(2)
 	service.UDPBcast()
 	for {
-		if service.IsCompletedJoinToLR {
+		if service.IsCompletedJoinToProxy {
 			return
 		}
 		time.Sleep(1)
@@ -29,9 +29,9 @@ func ConnectToLR(protocol string) {
 
 func CryptedID(seed string) []byte {
 	seed256 := sha256.Sum256([]byte(seed))
-	lrID := make([]byte, 4)
-	binary.BigEndian.PutUint32(lrID, service.RemoteLR.ID)
-	dest := append(lrID, seed256[:]...)
+	proxyID := make([]byte, 4)
+	binary.BigEndian.PutUint32(proxyID, service.RemoteProxy.ID)
+	dest := append(proxyID, seed256[:]...)
 	return dest
 }
 
@@ -41,16 +41,16 @@ func DeserializeID(id string) []byte {
 }
 
 func LookUpPeers(latitude, longitude, distance float32) ([]*proto.PeerEntry, error) {
-	return invokeLRLookUp(latitude, longitude, distance)
+	return invokeProxyLookUp(latitude, longitude, distance)
 }
 
-func invokeLRLookUp(latitude, longitude, distance float32) ([]*proto.PeerEntry, error) {
-	conn, err := grpc.Dial(service.RemoteLR.Addr+":"+service.RemoteLR.GrpcPort, grpc.WithInsecure())
+func invokeProxyLookUp(latitude, longitude, distance float32) ([]*proto.PeerEntry, error) {
+	conn, err := grpc.Dial(service.RemoteProxy.Addr+":"+service.RemoteProxy.GrpcPort, grpc.WithInsecure())
 	if err != nil {
 		return nil, err
 	}
 	defer conn.Close()
-	client := proto.NewLRClient(conn)
+	client := proto.NewProxyClient(conn)
 
 	req := &proto.LookUpPeerRequest{
 		Latitude:  latitude,
