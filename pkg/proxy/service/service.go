@@ -3,19 +3,15 @@ package service
 import (
 	"log"
 	"net"
-	"os"
-	"os/signal"
 	"time"
 
 	"github.com/Bo0km4n/claude/pkg/common/proto"
 	"github.com/Bo0km4n/claude/pkg/proxy/config"
+	"github.com/Bo0km4n/claude/pkg/proxy/proxy"
 	"google.golang.org/grpc"
 )
 
 func LaunchService() {
-	quit := make(chan os.Signal)
-	signal.Notify(quit, os.Interrupt)
-
 	initService()
 	initDaemon()
 	go ProxySvc.ListenUDPBcastFromPeer()
@@ -27,9 +23,7 @@ func LaunchService() {
 	if err := td.syncInit(); err != nil {
 		log.Fatal(err)
 	}
-
-	<-quit
-	log.Println("Interrupted Proxy Server")
+	proxy.NewTCPProxy().Serve()
 }
 
 func launchGRPCService() {

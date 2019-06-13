@@ -30,8 +30,8 @@ type UDP struct {
 type Claude struct {
 	UniqueKey   string
 	UpTcpPort   string `required:"true" default:"9610"`
-	DownTcpPort string `required:"true" default:"8610"`
-	UpUdpPort   string `required:"true" default:"9611"`
+	DownTcpPort string `required:"true" default:"9611"`
+	UpUdpPort   string `required:"true" default:"8610"`
 	DownUdpPort string `required:"true" default:"8611"`
 }
 
