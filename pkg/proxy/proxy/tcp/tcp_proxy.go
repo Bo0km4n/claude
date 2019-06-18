@@ -20,9 +20,9 @@ type TCPProxy struct {
 func (tp *TCPProxy) upHandleConn(in *net.TCPConn) {
 	defer in.Close()
 	peerAddrStr := in.RemoteAddr().String()
-	peerID, err := getPeerID(net.ParseIP(peerAddrStr).String())
-	if err != nil {
-		log.Println(err)
+	peerID, ok := pipe.FetchIdByIp(net.ParseIP(peerAddrStr).String())
+	if !ok {
+		log.Printf("Not found ip: %s", net.ParseIP(peerAddrStr).String())
 		return
 	}
 
@@ -105,7 +105,7 @@ func (tp *TCPProxy) relayToPeer(p *packet.ClaudePacket) {
 }
 
 func (tp *TCPProxy) serveUpStream() {
-	listener, err := net.Listen("tcp", "localhost:"+config.Config.Claude.UpTcpPort)
+	listener, err := net.Listen("tcp", ":"+config.Config.Claude.UpTcpPort)
 	if err != nil {
 		panic(err)
 	}
@@ -120,7 +120,7 @@ func (tp *TCPProxy) serveUpStream() {
 }
 
 func (tp *TCPProxy) serveDownStream() {
-	listener, err := net.Listen("tcp", "localhost:"+config.Config.Claude.DownTcpPort)
+	listener, err := net.Listen("tcp", ":"+config.Config.Claude.DownTcpPort)
 	if err != nil {
 		panic(err)
 	}

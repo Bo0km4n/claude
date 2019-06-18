@@ -6,7 +6,6 @@ import (
 	"net"
 
 	"github.com/Bo0km4n/claude/pkg/common/message"
-	"github.com/Bo0km4n/claude/claude/go/config"
 )
 
 func UDPBcast() {
@@ -48,6 +47,6 @@ func UDPBcast() {
 
 func buildRequest() *message.UDPBcastMessage {
 	return &message.UDPBcastMessage{
-		ListenPort: config.Config.GRPC.Port,
+		ListenPort: "50051",
 	}
 }

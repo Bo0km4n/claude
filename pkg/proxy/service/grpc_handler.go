@@ -2,7 +2,12 @@ package service
 
 import (
 	"context"
+	"crypto/sha256"
+	"encoding/base64"
+	"encoding/binary"
+	"errors"
 	"log"
+	"net"
 	"time"
 
 	"github.com/Bo0km4n/claude/pkg/common/proto"
@@ -10,6 +15,7 @@ import (
 	"github.com/Bo0km4n/claude/pkg/proxy/repository/remotepeer"
 	"github.com/k0kubun/pp"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/peer"
 )
 
 var ProxySvc *ProxyService
@@ -126,4 +132,25 @@ func (p *ProxyService) LookUpPeersRPC(ctx context.Context, in *proto.LookUpPeerR
 		return nil, err
 	}
 	return resp, nil
+}
+
+func (p *ProxyService) GeneratePeerID(ctx context.Context, in *proto.GeneratePeerIDRequest) (*proto.GeneratePeerIDResponse, error) {
+	b := sha256.Sum256([]byte(in.Seed))
+	idBytes := make([]byte, 4)
+	binary.BigEndian.PutUint32(idBytes, p.ID)
+	idBytes = append(idBytes, b[:]...)
+	idStr := base64.StdEncoding.EncodeToString(idBytes[:])
+
+	var addr string
+	if pr, ok := peer.FromContext(ctx); ok {
+		addr = pr.Addr.String()
+		pipe.Insert(idStr, &pipe.Pipe{
+			Addr: addr,
+		})
+		pipe.InsertIPAndID(net.ParseIP(addr).String(), idStr)
+		return &proto.GeneratePeerIDResponse{
+			Id: idStr,
+		}, nil
+	}
+	return nil, errors.New("Failed insert peer information")
 }

@@ -9,8 +9,9 @@ import (
 
 // Instead local peer connection repository
 type PipeRepo struct {
-	Map map[string]*Pipe // Key: ID, Value: Pipe connection
-	mu  sync.Mutex
+	Map    map[string]*Pipe // Key: ID, Value: Pipe connection
+	IpToId map[string]string
+	mu     sync.Mutex
 }
 
 type Pipe struct {
@@ -21,8 +22,9 @@ type Pipe struct {
 
 func InitRepo() {
 	pipeRepo = &PipeRepo{
-		Map: map[string]*Pipe{},
-		mu:  sync.Mutex{},
+		Map:    map[string]*Pipe{},
+		IpToId: map[string]string{},
+		mu:     sync.Mutex{},
 	}
 }
 
@@ -52,4 +54,17 @@ func FetchLocalPeers() []*model.Peer {
 		})
 	}
 	return r
+}
+
+func InsertIPAndID(ip, id string) {
+	pipeRepo.mu.Lock()
+	defer pipeRepo.mu.Unlock()
+	pipeRepo.IpToId[ip] = id
+}
+
+func FetchIdByIp(ip string) (string, bool) {
+	pipeRepo.mu.Lock()
+	defer pipeRepo.mu.Unlock()
+	v, ok := pipeRepo.IpToId[ip]
+	return v, ok
 }

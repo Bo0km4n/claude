@@ -1,13 +1,12 @@
 package service
 
 import (
-	"crypto/sha256"
-	"encoding/base64"
-	"encoding/binary"
+	"context"
 	"log"
 	"net"
 
-	"github.com/Bo0km4n/claude/claude/go/config"
+	"github.com/Bo0km4n/claude/pkg/common/proto"
+	"google.golang.org/grpc"
 )
 
 func getLocalIP(dev string) string {
@@ -35,16 +34,18 @@ func getLocalIP(dev string) string {
 	return addr.IP.String()
 }
 
-func getPeerID() []byte {
-	proxyID := make([]byte, 4)
-	id := sha256.Sum256([]byte(config.Config.Claude.Credential))
-	binary.BigEndian.PutUint32(proxyID, RemoteProxy.ID)
-	peerID := append([]byte{}, proxyID[:]...)
-	peerID = append(peerID, id[:]...)
-	return peerID[0:36]
-}
-
-func getPeerIDString() string {
-	id := getPeerID()
-	return base64.StdEncoding.EncodeToString(id)
+func getPeerIDString(proxy *remoteProxy, seed string) (string, error) {
+	conn, err := grpc.Dial(proxy.Addr+":"+proxy.GrpcPort, grpc.WithInsecure())
+	if err != nil {
+		return "", err
+	}
+	defer conn.Close()
+	client := proto.NewProxyClient(conn)
+	resp, err := client.GeneratePeerID(context.Background(), &proto.GeneratePeerIDRequest{
+		Seed: seed,
+	})
+	if err != nil {
+		return "", err
+	}
+	return resp.Id, nil
 }

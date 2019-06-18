@@ -7,6 +7,7 @@ import "request.proto";
 // import "github.com/golang/protobuf/ptypes/timestamp";
 service Proxy {
     rpc Heartbeat(Empty) returns(Empty);
+    rpc GeneratePeerID(GeneratePeerIDRequest) returns(GeneratePeerIDResponse);
     rpc ExchangeEntriesStubRPC(ExchangeEntriesNotification) returns(Empty);
     rpc ExchangeEntriesDriverRPC(ExchangeEntriesRequest) returns(ExchangeEntriesResponse);
     rpc LookUpPeersRPC(LookUpPeerRequest) returns(LookUpPeerResponse);
@@ -36,4 +37,12 @@ message ExchangeEntriesRequest {
 
 message ExchangeEntriesResponse {
     repeated PeerEntry entries = 1;
+}
+
+message GeneratePeerIDRequest {
+    string seed = 1;
+}
+
+message GeneratePeerIDResponse {
+    string id = 1;
 }

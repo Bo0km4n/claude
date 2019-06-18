@@ -5,7 +5,6 @@ import "empty.proto";
 
 service Peer {
     rpc NoticeFromProxyRPC(NoticeFromProxyRequest) returns(Empty);
-    rpc GetPeerID(Empty) returns(GetPeerIDResponse);
 }
 
 message NoticeFromProxyRequest {
