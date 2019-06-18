@@ -8,7 +8,7 @@ import (
 )
 
 // Instead local peer connection repository
-type IDRepo struct {
+type PipeRepo struct {
 	Map map[string]*Pipe // Key: ID, Value: Pipe connection
 	mu  sync.Mutex
 }
@@ -20,30 +20,30 @@ type Pipe struct {
 }
 
 func InitRepo() {
-	idRepo = &IDRepo{
+	pipeRepo = &PipeRepo{
 		Map: map[string]*Pipe{},
 		mu:  sync.Mutex{},
 	}
 }
 
-var idRepo *IDRepo
+var pipeRepo *PipeRepo
 
 func Insert(key string, value *Pipe) {
-	idRepo.mu.Lock()
-	defer idRepo.mu.Unlock()
-	idRepo.Map[key] = value
+	pipeRepo.mu.Lock()
+	defer pipeRepo.mu.Unlock()
+	pipeRepo.Map[key] = value
 }
 
 func Fetch(key string) (*Pipe, bool) {
-	idRepo.mu.Lock()
-	defer idRepo.mu.Unlock()
-	v, ok := idRepo.Map[key]
+	pipeRepo.mu.Lock()
+	defer pipeRepo.mu.Unlock()
+	v, ok := pipeRepo.Map[key]
 	return v, ok
 }
 
 func FetchLocalPeers() []*model.Peer {
 	r := []*model.Peer{}
-	for k, v := range idRepo.Map {
+	for k, v := range pipeRepo.Map {
 		r = append(r, &model.Peer{
 			ID:   k,
 			Addr: v.Addr,
