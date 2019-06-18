@@ -48,24 +48,25 @@ func (tp *TCPProxy) upRelay(p *pipe.Pipe) error {
 			return err
 		}
 		log.Println("Read: ", n)
-		b := buf[:n]
-
-		if p.ProxyConnection == nil {
-			// Maybe when first read, proxy connection is not established yet.
-			// So connect to remote proxy and store pipe
-
-			// TODO: set parsed id
-			proxyConn, err := newConnectionToProxy("hoge")
-			if err != nil {
-				return err
-			}
-			p.ProxyConnection = proxyConn
-		}
-		n, err = p.ProxyConnection.Write(b)
+		packets, err := packet.Parse(buf[:n])
 		if err != nil {
 			return err
 		}
-		log.Println("Write: ", n)
+		for _, pac := range packets {
+			destID := pac.GetDestinationID()
+			proxyConn, ok := p.ProxyConnectionMap[destID]
+			if !ok {
+				newProxyConn, err := newConnectionToProxy(destID)
+				if err != nil {
+					return err
+				}
+				p.ProxyConnectionMap[destID] = newProxyConn
+				proxyConn = newProxyConn
+			}
+			if _, err := proxyConn.Write(pac.Serialize()); err != nil {
+				return err
+			}
+		}
 	}
 }
 

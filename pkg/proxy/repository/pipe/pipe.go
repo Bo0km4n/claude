@@ -14,9 +14,9 @@ type IDRepo struct {
 }
 
 type Pipe struct {
-	Addr            string // IP:Port
-	PeerConnection  net.Conn
-	ProxyConnection net.Conn
+	Addr               string // IP:Port
+	PeerConnection     net.Conn
+	ProxyConnectionMap map[string]net.Conn // <destID, proxy connection>
 }
 
 func InitRepo() {
