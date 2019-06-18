@@ -8,6 +8,7 @@ import (
 	"github.com/Bo0km4n/claude/pkg/common/proto"
 	"github.com/Bo0km4n/claude/pkg/proxy/repository/pipe"
 	"github.com/Bo0km4n/claude/pkg/proxy/repository/remotepeer"
+	"github.com/k0kubun/pp"
 	"google.golang.org/grpc"
 )
 
@@ -28,6 +29,7 @@ func (p *ProxyService) Heartbeat(ctx context.Context, in *proto.Empty) (*proto.E
 	return &proto.Empty{}, nil
 }
 
+// Called from Tablet server to exchange peer information with other proxy
 func (p *ProxyService) ExchangeEntriesStubRPC(ctx context.Context, in *proto.ExchangeEntriesNotification) (*proto.Empty, error) {
 	localPeers := pipe.FetchLocalPeers()
 	protoPeers := []*proto.PeerEntry{}
@@ -44,6 +46,9 @@ func (p *ProxyService) ExchangeEntriesStubRPC(ctx context.Context, in *proto.Exc
 		Entries: protoPeers,
 	}
 	for _, dst := range in.Destinations {
+		if dst.GlobalIp == p.GlobalIp {
+			continue
+		}
 		conn, err := grpc.Dial(dst.GlobalIp+":"+dst.GlobalPort, grpc.WithInsecure())
 		if err != nil {
 			log.Printf("Connection create failed: %v", err)
@@ -52,6 +57,7 @@ func (p *ProxyService) ExchangeEntriesStubRPC(ctx context.Context, in *proto.Exc
 		defer conn.Close()
 		client := proto.NewProxyClient(conn)
 		resp, err := client.ExchangeEntriesDriverRPC(ctx, req)
+		pp.Println("Get others peers", resp)
 		if err != nil {
 			log.Printf("client.ExchangeEntriesDriverRPC: %v", err)
 			continue
@@ -61,6 +67,8 @@ func (p *ProxyService) ExchangeEntriesStubRPC(ctx context.Context, in *proto.Exc
 	return &proto.Empty{}, nil
 }
 
+// Called from other proxy to exchange peer inforamtion
+// Actually,(proxyA) ExchangeEntriesStubRPC => (proxyB)ExchangeEntriesDriverRPC
 func (p *ProxyService) ExchangeEntriesDriverRPC(ctx context.Context, in *proto.ExchangeEntriesRequest) (*proto.ExchangeEntriesResponse, error) {
 	p.registerRemotePeers(in.Entries)
 	localPeers := pipe.FetchLocalPeers()
@@ -75,6 +83,7 @@ func (p *ProxyService) ExchangeEntriesDriverRPC(ctx context.Context, in *proto.E
 		protoPeers = append(protoPeers, peer)
 	}
 
+	pp.Println("Exchange", protoPeers)
 	res := &proto.ExchangeEntriesResponse{
 		Entries: protoPeers,
 	}
