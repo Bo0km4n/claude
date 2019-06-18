@@ -3,8 +3,9 @@ package remotepeer
 import "sync"
 
 type RemoteProxyRepo struct {
-	mu   sync.Mutex
-	dict map[string]string // key: Remote Peer ID, value: remote proxy ip
+	mu          sync.Mutex
+	dict        map[string]string // key: Remote Peer ID, value: remote proxy ip
+	reverseDict map[string]string // key: Remote Proxy IP, value: Remote Peer ID
 }
 
 var remoteProxyRepo *RemoteProxyRepo

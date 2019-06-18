@@ -70,7 +70,9 @@ func (tp *TCPProxy) upRelay(p *pipe.Pipe) error {
 }
 
 func (tp *TCPProxy) downHandleConn(in *net.TCPConn) {
-
+	if err := tp.downRelay(in); err != nil {
+		log.Fatal(err)
+	}
 }
 
 func (tp *TCPProxy) downRelay(in *net.TCPConn) error {
@@ -81,24 +83,24 @@ func (tp *TCPProxy) downRelay(in *net.TCPConn) error {
 			return err
 		}
 		log.Println("Read: ", n)
-		// b := buf[:n]
-
-		// TODO: Parse header to claude packet
-		// packets := parseClaudePackets(b)
-		// for _, p := range {
-		// 	tp.relayToPeer(p)
-		// }
+		packets, err := packet.Parse(buf[:n])
+		if err != nil {
+			return err
+		}
+		for _, p := range packets {
+			tp.relayToPeer(p)
+		}
 	}
 }
 
 func (tp *TCPProxy) relayToPeer(p *packet.ClaudePacket) {
-	// id := p.GetDestinationPeerID()
-	// pipe, ok := repository.FetchPipe(id)
-	// if !ok {
-	// 	log.Printf("Not found peer: %s\n", id)
-	// 	return
-	// }
-	// pipe.PeerConnection.Write(p.Serialize())
+	id := p.GetDestinationID()
+	pipe, ok := pipe.Fetch(id)
+	if !ok {
+		log.Printf("Not found peer: %s\n", id)
+		return
+	}
+	pipe.PeerConnection.Write(p.Serialize())
 }
 
 func (tp *TCPProxy) serveUpStream() {
