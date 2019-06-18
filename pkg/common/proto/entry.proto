@@ -3,13 +3,10 @@ package proto;
 
 
 message PeerEntry {
-    bytes peer_id = 1;
-    string local_ip = 2;
-    string local_port = 3;
+    string peer_id = 1;
+    string proxy_ip = 2;
     float latitude = 4;
     float longitude = 5; 
-    bool is_remote = 6;
-    string protocol = 7;
 }
 
 message ProxyEntry {

@@ -8,6 +8,7 @@ import (
 	"github.com/Bo0km4n/claude/pkg/common/proto"
 	"github.com/Bo0km4n/claude/pkg/proxy/config"
 	"github.com/Bo0km4n/claude/pkg/proxy/repository"
+	"github.com/Bo0km4n/claude/pkg/proxy/repository/pipe"
 	"google.golang.org/grpc"
 )
 
@@ -28,21 +29,8 @@ func (p *ProxyService) Heartbeat(ctx context.Context, in *proto.Empty) (*proto.E
 	return &proto.Empty{}, nil
 }
 
-func (p *ProxyService) PeerJoinRPC(ctx context.Context, in *proto.PeerJoinRequest) (*proto.PeerJoinResponse, error) {
-	entry := &proto.PeerEntry{
-		PeerId:    in.PeerId,
-		LocalIp:   in.LocalIp,
-		LocalPort: in.LocalPort,
-		Latitude:  in.Latitude,
-		Longitude: in.Longitude,
-		Protocol:  in.Protocol,
-	}
-	// repository.InsertPeerEntry(entry.PeerId, entry)
-	return &proto.PeerJoinResponse{Success: true}, nil
-}
-
 func (p *ProxyService) ExchangeEntriesStubRPC(ctx context.Context, in *proto.ExchangeEntriesNotification) (*proto.Empty, error) {
-	localPeers := repository.FetchLocalPeers()
+	localPeers := pipe.FetchLocalPeers()
 	req := &proto.ExchangeEntriesRequest{
 		Entries: localPeers,
 	}

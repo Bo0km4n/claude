@@ -9,7 +9,7 @@ import (
 
 	"github.com/Bo0km4n/claude/claude/go/packet"
 	"github.com/Bo0km4n/claude/pkg/proxy/config"
-	"github.com/Bo0km4n/claude/pkg/proxy/repository"
+	"github.com/Bo0km4n/claude/pkg/proxy/repository/pipe"
 	"golang.org/x/xerrors"
 )
 
@@ -27,22 +27,22 @@ func (tp *TCPProxy) upHandleConn(in *net.TCPConn) {
 	}
 
 	// New pipe connection
-	pipe := &repository.Pipe{
+	p := &pipe.Pipe{
 		Addr:           peerAddrStr,
 		PeerConnection: in,
 	}
-	repository.InsertPipe(peerID, pipe)
-	if err := tp.upRelay(pipe); err != nil {
+	pipe.Insert(peerID, p)
+	if err := tp.upRelay(p); err != nil {
 		log.Fatal(err)
 	}
 	return
 }
 
-func (tp *TCPProxy) upRelay(pipe *repository.Pipe) error {
+func (tp *TCPProxy) upRelay(p *pipe.Pipe) error {
 	buf := make([]byte, packet.PACKET_SIZE)
-	defer pipe.PeerConnection.Close()
+	defer p.PeerConnection.Close()
 	for {
-		n, err := pipe.PeerConnection.Read(buf)
+		n, err := p.PeerConnection.Read(buf)
 		if err != nil {
 			log.Println(n, err)
 			return err
@@ -50,7 +50,7 @@ func (tp *TCPProxy) upRelay(pipe *repository.Pipe) error {
 		log.Println("Read: ", n)
 		b := buf[:n]
 
-		if pipe.ProxyConnection == nil {
+		if p.ProxyConnection == nil {
 			// Maybe when first read, proxy connection is not established yet.
 			// So connect to remote proxy and store pipe
 
@@ -59,9 +59,9 @@ func (tp *TCPProxy) upRelay(pipe *repository.Pipe) error {
 			if err != nil {
 				return err
 			}
-			pipe.ProxyConnection = proxyConn
+			p.ProxyConnection = proxyConn
 		}
-		n, err = pipe.ProxyConnection.Write(b)
+		n, err = p.ProxyConnection.Write(b)
 		if err != nil {
 			return err
 		}

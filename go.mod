@@ -16,9 +16,10 @@ require (
 	github.com/spf13/cobra v0.0.4
 	github.com/spf13/pflag v1.0.3
 	golang.org/x/net v0.0.0-20190501004415-9ce7a6920f09
-	golang.org/x/sync v0.0.0-20190227155943-e225da77a7e6
+	golang.org/x/sync v0.0.0-20190423024810-112230192c58
 	golang.org/x/sys v0.0.0-20190222171317-cd391775e71e
 	golang.org/x/text v0.3.2
+	golang.org/x/tools v0.0.0-20190617190820-da514acc4774 // indirect
 	golang.org/x/xerrors v0.0.0-20190513163551-3ee3066db522
 	google.golang.org/appengine v1.5.0
 	google.golang.org/genproto v0.0.0-20190425155659-357c62f0e4bb

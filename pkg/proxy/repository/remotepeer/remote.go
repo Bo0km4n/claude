@@ -1,4 +1,4 @@
-package repository
+package remotepeer
 
 import (
 	"net"
@@ -18,15 +18,25 @@ type IDAndConn struct {
 
 var ipPortRepository *IPPortRepo
 
-func FetchIDAndConn(key string) (*IDAndConn, bool) {
+func Fetch(key string) (*IDAndConn, bool) {
 	ipPortRepository.mu.Lock()
 	defer ipPortRepository.mu.Unlock()
 	v, ok := ipPortRepository.Map[key]
 	return v, ok
 }
 
-func InsertIDAndConn(key string, value *IDAndConn) {
+func Insert(key string, value *IDAndConn) {
 	ipPortRepository.mu.Lock()
 	defer ipPortRepository.mu.Unlock()
 	ipPortRepository.Map[key] = value
+}
+
+func AllEntries() []*IDAndConn {
+	ipPortRepository.mu.Lock()
+	defer ipPortRepository.mu.Unlock()
+	r := []*IDAndConn{}
+	for _, v := range ipPortRepository.Map {
+		r = append(r, v)
+	}
+	return r
 }
