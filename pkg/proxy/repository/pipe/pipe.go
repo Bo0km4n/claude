@@ -19,6 +19,13 @@ type Pipe struct {
 	ProxyConnection net.Conn
 }
 
+func InitRepo() {
+	idRepo = &IDRepo{
+		Map: map[string]*Pipe{},
+		mu:  sync.Mutex{},
+	}
+}
+
 var idRepo *IDRepo
 
 func Insert(key string, value *Pipe) {

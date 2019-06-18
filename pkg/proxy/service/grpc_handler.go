@@ -6,9 +6,8 @@ import (
 	"time"
 
 	"github.com/Bo0km4n/claude/pkg/common/proto"
-	"github.com/Bo0km4n/claude/pkg/proxy/config"
-	"github.com/Bo0km4n/claude/pkg/proxy/repository"
 	"github.com/Bo0km4n/claude/pkg/proxy/repository/pipe"
+	"github.com/Bo0km4n/claude/pkg/proxy/repository/remotepeer"
 	"google.golang.org/grpc"
 )
 
@@ -31,8 +30,18 @@ func (p *ProxyService) Heartbeat(ctx context.Context, in *proto.Empty) (*proto.E
 
 func (p *ProxyService) ExchangeEntriesStubRPC(ctx context.Context, in *proto.ExchangeEntriesNotification) (*proto.Empty, error) {
 	localPeers := pipe.FetchLocalPeers()
+	protoPeers := []*proto.PeerEntry{}
+	for _, v := range localPeers {
+		peer := &proto.PeerEntry{
+			PeerId:    v.ID,
+			ProxyIp:   p.GlobalIp + ":" + p.GlobalPort,
+			Latitude:  v.Latitude,
+			Longitude: v.Longitude,
+		}
+		protoPeers = append(protoPeers, peer)
+	}
 	req := &proto.ExchangeEntriesRequest{
-		Entries: localPeers,
+		Entries: protoPeers,
 	}
 	for _, dst := range in.Destinations {
 		conn, err := grpc.Dial(dst.GlobalIp+":"+dst.GlobalPort, grpc.WithInsecure())
@@ -49,56 +58,50 @@ func (p *ProxyService) ExchangeEntriesStubRPC(ctx context.Context, in *proto.Exc
 		}
 		p.registerRemotePeers(resp.Entries)
 	}
-	repository.Dump()
 	return &proto.Empty{}, nil
 }
 
 func (p *ProxyService) ExchangeEntriesDriverRPC(ctx context.Context, in *proto.ExchangeEntriesRequest) (*proto.ExchangeEntriesResponse, error) {
 	p.registerRemotePeers(in.Entries)
-	localPeers := repository.FetchLocalPeers()
-
-	duplicatedLocalPeers := make([]*proto.PeerEntry, 0)
-
-	// rewrite peer information
-	for _, peer := range localPeers {
-		dupPeer := &proto.PeerEntry{
-			PeerId:  peer.PeerId,
-			LocalIp: ProxySvc.GlobalIp,
-			LocalPort: func(protocol string) string {
-				switch protocol {
-				case "tcp":
-					return config.Config.Claude.DownTcpPort
-				case "udp":
-					return config.Config.Claude.DownUdpPort
-				default:
-					return ""
-				}
-			}(peer.Protocol),
-			Latitude:  peer.Latitude,
-			Longitude: peer.Longitude,
-			Protocol:  peer.Protocol,
+	localPeers := pipe.FetchLocalPeers()
+	protoPeers := []*proto.PeerEntry{}
+	for _, v := range localPeers {
+		peer := &proto.PeerEntry{
+			PeerId:    v.ID,
+			ProxyIp:   p.GlobalIp + ":" + p.GlobalPort,
+			Latitude:  v.Latitude,
+			Longitude: v.Longitude,
 		}
-		duplicatedLocalPeers = append(duplicatedLocalPeers, dupPeer)
+		protoPeers = append(protoPeers, peer)
 	}
 
 	res := &proto.ExchangeEntriesResponse{
-		Entries: duplicatedLocalPeers,
+		Entries: protoPeers,
 	}
 	return res, nil
 }
 
 func (p *ProxyService) registerRemotePeers(peers []*proto.PeerEntry) {
 	for _, peer := range peers {
-		peer.IsRemote = true
-		repository.InsertPeerEntry(peer.PeerId, peer)
+		remotepeer.InsertRemotePeer(peer.PeerId, peer.ProxyIp)
 	}
 }
 
 // Fetch peer entires from in-memory hash table
 func (p *ProxyService) FetchPeersRPC(ctx context.Context, in *proto.FetchPeersRequest) (*proto.FetchPeersResponse, error) {
-	peers := repository.FetchLocalPeers()
+	localPeers := pipe.FetchLocalPeers()
+	protoPeers := []*proto.PeerEntry{}
+	for _, v := range localPeers {
+		peer := &proto.PeerEntry{
+			PeerId:    v.ID,
+			ProxyIp:   p.GlobalIp + ":" + p.GlobalPort,
+			Latitude:  v.Latitude,
+			Longitude: v.Longitude,
+		}
+		protoPeers = append(protoPeers, peer)
+	}
 	return &proto.FetchPeersResponse{
-		Entries: peers,
+		Entries: protoPeers,
 	}, nil
 }
 

@@ -6,7 +6,7 @@ import (
 	"net"
 
 	"github.com/Bo0km4n/claude/pkg/common/proto"
-	"github.com/Bo0km4n/claude/pkg/proxy/repository"
+	"github.com/Bo0km4n/claude/pkg/proxy/repository/remotepeer"
 	"google.golang.org/grpc"
 )
 
@@ -24,7 +24,7 @@ func getPeerID(addr string) (string, error) {
 }
 
 func newConnectionToProxy(id string) (net.Conn, error) {
-	ip, ok := repository.FetchRemoteProxyIP(id)
+	ip, ok := remotepeer.FetchRemoteProxyIP(id)
 	if !ok {
 		// TODO: fetch proxy information from tablet
 		return nil, errors.New("Not found proxy")

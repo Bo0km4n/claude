@@ -7,7 +7,6 @@ import "request.proto";
 // import "github.com/golang/protobuf/ptypes/timestamp";
 service Proxy {
     rpc Heartbeat(Empty) returns(Empty);
-    rpc PeerJoinRPC(PeerJoinRequest) returns(PeerJoinResponse);
     rpc ExchangeEntriesStubRPC(ExchangeEntriesNotification) returns(Empty);
     rpc ExchangeEntriesDriverRPC(ExchangeEntriesRequest) returns(ExchangeEntriesResponse);
     rpc LookUpPeersRPC(LookUpPeerRequest) returns(LookUpPeerResponse);

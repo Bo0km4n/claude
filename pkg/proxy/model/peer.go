@@ -6,3 +6,5 @@ type Peer struct {
 	Longitude float32
 	Latitude  float32
 }
+
+type Peers []*Peer
