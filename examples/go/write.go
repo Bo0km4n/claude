@@ -24,7 +24,7 @@ func main() {
 
 	w := cio.NewWriter(conn)
 	if _, err := w.Send(
-		"AAAAAYjUJm/U5jONE7hF/PKJV50gnIl4I7khfaPhYZNvAxWJ",
+		"AAAAAuXgiKC2YWOgompeBT0qRJbcFqtuDj3RrfLRaqhKB4yd",
 		[]byte(`hello world`)); err != nil {
 		log.Fatal(err)
 	}

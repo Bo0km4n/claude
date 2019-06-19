@@ -4,6 +4,7 @@ import (
 	"errors"
 	"net"
 
+	"github.com/Bo0km4n/claude/pkg/proxy/config"
 	"github.com/Bo0km4n/claude/pkg/proxy/repository/remotepeer"
 )
 
@@ -13,7 +14,7 @@ func newConnectionToProxy(id string) (net.Conn, error) {
 		// TODO: fetch proxy information from tablet
 		return nil, errors.New("Not found proxy")
 	}
-	conn, err := net.Dial("tcp", ip)
+	conn, err := net.Dial("tcp", ip+":"+config.Config.Claude.DownTcpPort)
 	if err != nil {
 		return nil, err
 	}

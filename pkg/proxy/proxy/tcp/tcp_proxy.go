@@ -28,8 +28,9 @@ func (tp *TCPProxy) upHandleConn(in *net.TCPConn) {
 
 	// New pipe connection
 	p := &pipe.Pipe{
-		Addr:           peerAddrStr,
-		PeerConnection: in,
+		Addr:               peerAddrStr,
+		PeerConnection:     in,
+		ProxyConnectionMap: map[string]net.Conn{},
 	}
 	pipe.Insert(peerID, p)
 	if err := tp.upRelay(p); err != nil {
@@ -48,7 +49,7 @@ func (tp *TCPProxy) upRelay(p *pipe.Pipe) error {
 			log.Println(n, err)
 			return err
 		}
-		log.Println("Read: ", n)
+		log.Println("upRelay read | ", n)
 		packets, err := packet.Parse(buf[:n])
 		if err != nil {
 			return err
@@ -84,7 +85,7 @@ func (tp *TCPProxy) downRelay(in *net.TCPConn) error {
 		if err != nil {
 			return err
 		}
-		log.Println("Read: ", n)
+		log.Println("downRelay read | ", n)
 		packets, err := packet.Parse(buf[:n])
 		if err != nil {
 			return err
@@ -99,10 +100,13 @@ func (tp *TCPProxy) relayToPeer(p *packet.ClaudePacket) {
 	id := p.GetDestinationID()
 	pipe, ok := pipe.Fetch(id)
 	if !ok {
-		log.Printf("Not found peer: %s\n", id)
+		log.Printf("%+v", xerrors.Errorf("Not found peer: %s", id))
 		return
 	}
-	pipe.PeerConnection.Write(p.Serialize())
+	if _, err := pipe.PeerConnection.Write(p.Serialize()); err != nil {
+		log.Printf("%+v", xerrors.Errorf("%+v", err))
+		return
+	}
 }
 
 func (tp *TCPProxy) serveUpStream() {
