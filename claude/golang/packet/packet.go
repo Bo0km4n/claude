@@ -11,6 +11,7 @@ import (
 const (
 	PACKET_SIZE   = 0xFFFF // this size includes header length
 	HEADER_LENGTH = 0x4e   // Decimal = 78
+	ID_LENGTH     = 36
 )
 
 const (
@@ -25,8 +26,8 @@ type ClaudePacket struct {
 
 type claudeHeader struct {
 	ControlFlag       uint16
-	DestinationPeerID [36]byte
-	SourcePeerID      [36]byte
+	DestinationPeerID [ID_LENGTH]byte
+	SourcePeerID      [ID_LENGTH]byte
 	CheckSum          uint16
 	PayloadLen        uint16
 }
@@ -81,13 +82,59 @@ func GeneratePingPacket() *ClaudePacket {
 	return &ClaudePacket{
 		header: &claudeHeader{
 			ControlFlag:       CONTROL_FLAG_PING,
-			DestinationPeerID: [36]byte{},
-			SourcePeerID:      [36]byte{},
+			DestinationPeerID: [ID_LENGTH]byte{},
+			SourcePeerID:      [ID_LENGTH]byte{},
 			CheckSum:          0,
 			PayloadLen:        0,
 		},
 		payload: []byte{},
 	}
+}
+
+func GeneratePacket() *ClaudePacket {
+	return &ClaudePacket{
+		header: &claudeHeader{
+			ControlFlag:       CONTROL_FLAG_NORMAL,
+			DestinationPeerID: [ID_LENGTH]byte{},
+			SourcePeerID:      [ID_LENGTH]byte{},
+			CheckSum:          0,
+			PayloadLen:        0,
+		},
+		payload: []byte{},
+	}
+}
+
+func (cp *ClaudePacket) SetToID(id string) error {
+	idBytes, err := base64.StdEncoding.DecodeString(id)
+	if err != nil {
+		return err
+	}
+	if len(idBytes) != ID_LENGTH {
+		return fmt.Errorf("Not matched id length=%d", len(idBytes))
+	}
+	copy(cp.header.DestinationPeerID[:], idBytes[:])
+	return nil
+}
+
+func (cp *ClaudePacket) SetFromID(id string) error {
+	idBytes, err := base64.StdEncoding.DecodeString(id)
+	if err != nil {
+		return err
+	}
+	if len(idBytes) != ID_LENGTH {
+		return fmt.Errorf("Not matched id length=%d", len(idBytes))
+	}
+	copy(cp.header.SourcePeerID[:], idBytes[:])
+	return nil
+}
+
+func (cp *ClaudePacket) SetPayload(p []byte) error {
+	if len(p) > PACKET_SIZE-HEADER_LENGTH {
+		return fmt.Errorf("Too large payload size=%d", len(p))
+	}
+	cp.header.PayloadLen = uint16(len(p))
+	cp.payload = p
+	return nil
 }
 
 func (cp *ClaudePacket) GetDestinationID() string {

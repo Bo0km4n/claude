@@ -5,7 +5,7 @@ import (
 	"net"
 	"os"
 
-	"github.com/Bo0km4n/claude/claude/golang"
+	"github.com/Bo0km4n/claude/claude/golang/cio"
 	"github.com/Bo0km4n/claude/claude/golang/service"
 )
 
@@ -22,6 +22,10 @@ func main() {
 		panic(err)
 	}
 
-	w := golang.NewWriter(conn)
-	w.Write([]byte(`hello world`))
+	w := cio.NewWriter(conn)
+	if _, err := w.Send(
+		"AAAAAYjUJm/U5jONE7hF/PKJV50gnIl4I7khfaPhYZNvAxWJ",
+		[]byte(`hello world`)); err != nil {
+		log.Fatal(err)
+	}
 }
