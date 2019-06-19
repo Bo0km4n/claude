@@ -3,7 +3,7 @@ package api
 import (
 	"encoding/base64"
 
-	"github.com/Bo0km4n/claude/claude/go/service"
+	"github.com/Bo0km4n/claude/claude/golang/service"
 )
 
 func GetPeerIDString() string {

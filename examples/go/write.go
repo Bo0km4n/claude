@@ -5,7 +5,8 @@ import (
 	"net"
 	"os"
 
-	"github.com/Bo0km4n/claude/claude/go/service"
+	"github.com/Bo0km4n/claude/claude/golang"
+	"github.com/Bo0km4n/claude/claude/golang/service"
 )
 
 func main() {
@@ -21,5 +22,6 @@ func main() {
 		panic(err)
 	}
 
-	conn.Write([]byte(`hello world!`))
+	w := golang.NewWriter(conn)
+	w.Write([]byte(`hello world`))
 }

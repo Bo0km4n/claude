@@ -7,7 +7,7 @@ import (
 	"os/signal"
 	"sync"
 
-	"github.com/Bo0km4n/claude/claude/go/packet"
+	"github.com/Bo0km4n/claude/claude/golang/packet"
 	"github.com/Bo0km4n/claude/pkg/proxy/config"
 	"github.com/Bo0km4n/claude/pkg/proxy/repository/pipe"
 	"golang.org/x/xerrors"
@@ -33,7 +33,8 @@ func (tp *TCPProxy) upHandleConn(in *net.TCPConn) {
 	}
 	pipe.Insert(peerID, p)
 	if err := tp.upRelay(p); err != nil {
-		log.Fatal(err)
+		log.Println(err)
+		return
 	}
 	return
 }

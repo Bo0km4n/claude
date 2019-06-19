@@ -82,7 +82,7 @@ func (p *ProxyService) ExchangeEntriesDriverRPC(ctx context.Context, in *proto.E
 	for _, v := range localPeers {
 		peer := &proto.PeerEntry{
 			PeerId:    v.ID,
-			ProxyIp:   p.GlobalIp + ":" + p.GlobalPort,
+			ProxyIp:   p.GlobalIp,
 			Latitude:  v.Latitude,
 			Longitude: v.Longitude,
 		}
