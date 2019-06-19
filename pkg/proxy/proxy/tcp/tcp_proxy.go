@@ -1,6 +1,7 @@
 package tcp
 
 import (
+	"io"
 	"log"
 	"net"
 	"os"
@@ -82,6 +83,9 @@ func (tp *TCPProxy) downRelay(in *net.TCPConn) error {
 	buf := make([]byte, packet.PACKET_SIZE)
 	for {
 		n, err := in.Read(buf)
+		if err == io.EOF {
+			return nil
+		}
 		if err != nil {
 			return err
 		}

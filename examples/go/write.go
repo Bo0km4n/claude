@@ -10,7 +10,7 @@ import (
 )
 
 func main() {
-	if len(os.Args) != 2 {
+	if len(os.Args) != 3 {
 		log.Fatalf("Unexpected len(os.Args)=%d", len(os.Args))
 	}
 	seed := os.Args[1]
@@ -24,7 +24,7 @@ func main() {
 
 	w := cio.NewWriter(conn)
 	if _, err := w.Send(
-		"AAAAAuXgiKC2YWOgompeBT0qRJbcFqtuDj3RrfLRaqhKB4yd",
+		os.Args[2],
 		[]byte(`hello world`)); err != nil {
 		log.Fatal(err)
 	}
