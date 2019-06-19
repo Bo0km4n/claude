@@ -1,0 +1,26 @@
+syntax = "proto3";
+package proto;
+
+import "request.proto";
+import "entry.proto";
+// import "github.com/golang/protobuf/ptypes/timestamp";
+service Tablet {
+    rpc ProxyJoinRPC(ProxyJoinRequest) returns(ProxyEntry);
+    rpc LookUpRPC(LookUpRequest) returns(ProxyEntry); // look up Proxy
+    rpc LookUpPeersRPC(LookUpPeerRequest) returns(LookUpPeerResponse); // look up Peer
+}
+
+message ProxyJoinRequest {
+    string unique_key = 1;
+    string global_port = 2;
+    float latitude = 3;
+    float longitude = 4;
+}
+
+message LookUpRequest {
+   uint32 id = 1; 
+}
+
+message ProxyEntries {
+    repeated ProxyEntry entries = 1;
+}

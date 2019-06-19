@@ -40,5 +40,8 @@
 # Ignore all local history of files
 .history
 .vscode/
-
+*.data
+./proxy
+./tablet
+./peer
 # End of https://www.gitignore.io/api/go,vagrant,visualstudiocode

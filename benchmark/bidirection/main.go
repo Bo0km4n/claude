@@ -1,6 +1,7 @@
 package main
 
 import (
+	"flag"
 	"log"
 	"net"
 	"os"
@@ -59,42 +60,46 @@ func withoutProxyClient() {
 	}
 }
 
+var (
+	Mode     = flag.String("m", "server", "application mode")
+	DataPath = flag.String("d", "data path", "dummy data file")
+)
+
 func withProxy() {
 	lib.InitConfig()
-	lib.ConnectToLR(os.Args[1])
-	quit := make(chan struct{})
-	dest := lib.DeserializeID(os.Args[2])
+	lib.ConnectToProxy(os.Args[1])
 
-	// Wait another peer connect
-	time.Sleep(5)
+	switch *Mode {
+	case "server":
+		quit := make(chan struct{})
+		// Wait another peer connect
+		time.Sleep(5)
 
-	conn, err := lib.NewConnection(os.Args[1], dest[:])
-	if err != nil {
-		log.Fatal(err)
+		conn, err := lib.NewConnection(os.Args[1], dest[:])
+		if err != nil {
+			log.Fatal(err)
+		}
+		conn.RegisterHandler(
+			func(c *lib.Connection, b []byte) error {
+				c.Write(b)
+				counter++
+				if counter == 1 {
+					initTime()
+				} else {
+					newTime, elapsed := calcElpasedTime(before)
+					before = newTime
+					log.Printf("[Term %d] Elapsed Time: %v\n", counter, elapsed)
+				}
+				if counter >= 100 {
+					quit <- struct{}{}
+				}
+				return nil
+			})
+		go conn.Serve()
+		<-quit
+	case "client":
+		dest := lib.DeserializeID(os.Args[2])
 	}
-	conn.RegisterHandler(
-		func(c *lib.Connection, b []byte) error {
-			c.Write(b)
-			counter++
-			if counter == 1 {
-				initTime()
-			} else {
-				newTime, elapsed := calcElpasedTime(before)
-				before = newTime
-				log.Printf("[Term %d] Elapsed Time: %v\n", counter, elapsed)
-			}
-			if counter >= 100 {
-				quit <- struct{}{}
-			}
-			return nil
-		})
-	go conn.Serve()
-
-	if os.Getenv("START") == "on" {
-		start(conn)
-	}
-
-	<-quit
 }
 
 func start(conn *lib.Connection) {
