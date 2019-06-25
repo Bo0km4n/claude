@@ -7,12 +7,15 @@ import (
 	"os"
 	"os/signal"
 	"sync"
+	"time"
 
 	"github.com/Bo0km4n/claude/claude/golang/packet"
 	"github.com/Bo0km4n/claude/pkg/proxy/config"
 	"github.com/Bo0km4n/claude/pkg/proxy/repository/pipe"
 	"golang.org/x/xerrors"
 )
+
+var idleTimeout = 60
 
 type TCPProxy struct {
 	wg sync.WaitGroup
@@ -50,6 +53,7 @@ func (tp *TCPProxy) upRelay(p *pipe.Pipe) error {
 			log.Println(n, err)
 			return err
 		}
+		p.PeerConnection.SetDeadline(time.Now().Add(idleTimeout))
 		log.Println("upRelay read | ", n)
 		packets, err := packet.Parse(buf[:n])
 		if err != nil {
@@ -89,6 +93,7 @@ func (tp *TCPProxy) downRelay(in *net.TCPConn) error {
 		if err != nil {
 			return err
 		}
+		p.PeerConnection.SetDeadline(time.Now().Add(idleTimeout))
 		log.Println("downRelay read | ", n)
 		packets, err := packet.Parse(buf[:n])
 		if err != nil {
@@ -124,6 +129,7 @@ func (tp *TCPProxy) serveUpStream() {
 			log.Fatal(xerrors.Errorf("%+v", err))
 		}
 		tcpConn, _ := conn.(*net.TCPConn)
+		tcpConn.SetDeadline(time.Now().Add(idleTimeout))
 		go tp.upHandleConn(tcpConn)
 	}
 }
@@ -139,6 +145,7 @@ func (tp *TCPProxy) serveDownStream() {
 			log.Fatal(xerrors.Errorf("%+v", err))
 		}
 		tcpConn, _ := conn.(*net.TCPConn)
+		tcpConn.SetDeadline(time.Now().Add(idleTimeout))
 		go tp.downHandleConn(tcpConn)
 	}
 }
