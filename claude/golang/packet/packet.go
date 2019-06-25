@@ -9,7 +9,7 @@ import (
 )
 
 const (
-	PACKET_SIZE   = 0xFFFF // this size includes header length
+	PACKET_SIZE   = 0xffff // this size includes header length
 	HEADER_LENGTH = 0x4e   // Decimal = 78
 	ID_LENGTH     = 36
 )
@@ -49,7 +49,7 @@ func Parse(b []byte) ([]*ClaudePacket, error) {
 		if err == io.EOF {
 			return packets, nil
 		}
-		h := parseHeader(hbuf)
+		h := ParseHeader(hbuf)
 		payload := make([]byte, h.PayloadLen)
 		_, err = r.Read(payload)
 		if err != nil && err != io.EOF {
@@ -67,7 +67,7 @@ func Parse(b []byte) ([]*ClaudePacket, error) {
 	return packets, nil
 }
 
-func parseHeader(header []byte) *claudeHeader {
+func ParseHeader(header []byte) *claudeHeader {
 	h := &claudeHeader{
 		ControlFlag: binary.BigEndian.Uint16(header[0:2]),
 		CheckSum:    binary.BigEndian.Uint16(header[74:76]),
@@ -137,6 +137,10 @@ func (cp *ClaudePacket) SetPayload(p []byte) error {
 	return nil
 }
 
+func (cp *ClaudePacket) SetHeader(h *claudeHeader) {
+	cp.header = h
+}
+
 func (cp *ClaudePacket) GetDestinationID() string {
 	return base64.StdEncoding.EncodeToString(cp.header.DestinationPeerID[:])
 }
@@ -154,4 +158,12 @@ func (cp *ClaudePacket) Serialize() []byte {
 	b = append(b, u16Bytes...)
 	b = append(b, cp.payload...)
 	return b
+}
+
+func (cp *ClaudePacket) PayloadLen() uint16 {
+	return cp.header.PayloadLen
+}
+
+type PacketBuffer struct {
+	Buffer chan []byte
 }
