@@ -1,6 +1,8 @@
 package cio
 
-import "net"
+import (
+	"net"
+)
 
 type Reader interface {
 	Read(b []byte) (int, error)

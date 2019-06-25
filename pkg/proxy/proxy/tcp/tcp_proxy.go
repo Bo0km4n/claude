@@ -15,7 +15,7 @@ import (
 	"golang.org/x/xerrors"
 )
 
-var idleTimeout = 60
+var idleTimeout = time.Second * 2400
 
 type TCPProxy struct {
 	wg sync.WaitGroup
@@ -45,35 +45,35 @@ func (tp *TCPProxy) upHandleConn(in *net.TCPConn) {
 }
 
 func (tp *TCPProxy) upRelay(p *pipe.Pipe) error {
-	buf := make([]byte, packet.PACKET_SIZE)
 	defer p.PeerConnection.Close()
 	for {
-		n, err := p.PeerConnection.Read(buf)
-		if err != nil {
-			log.Println(n, err)
+		headerBuf := make([]byte, packet.HEADER_LENGTH)
+		if _, err := io.ReadFull(p.PeerConnection, headerBuf); err != nil {
 			return err
 		}
-		p.PeerConnection.SetDeadline(time.Now().Add(idleTimeout))
-		log.Println("upRelay read | ", n)
-		packets, err := packet.Parse(buf[:n])
-		if err != nil {
+		header := packet.ParseHeader(headerBuf)
+		payloadBuf := make([]byte, int(header.PayloadLen))
+		if _, err := io.ReadFull(p.PeerConnection, payloadBuf); err != nil {
 			return err
 		}
-		for _, pac := range packets {
-			destID := pac.GetDestinationID()
-			proxyConn, ok := p.ProxyConnectionMap[destID]
-			if !ok {
-				newProxyConn, err := newConnectionToProxy(destID)
-				if err != nil {
-					return err
-				}
-				p.ProxyConnectionMap[destID] = newProxyConn
-				proxyConn = newProxyConn
-			}
-			if _, err := proxyConn.Write(pac.Serialize()); err != nil {
+		newPacket := packet.GeneratePacket()
+		newPacket.SetPayload(payloadBuf)
+		newPacket.SetHeader(header)
+		destID := newPacket.GetDestinationID()
+		proxyConn, ok := p.ProxyConnectionMap[destID]
+		if !ok {
+			newProxyConn, err := newConnectionToProxy(destID)
+			if err != nil {
 				return err
 			}
+			p.ProxyConnectionMap[destID] = newProxyConn
+			proxyConn = newProxyConn
 		}
+		n, err := proxyConn.Write(newPacket.Serialize())
+		if err != nil {
+			return err
+		}
+		log.Printf("upRelay write: %d\n", n)
 	}
 }
 
@@ -84,24 +84,20 @@ func (tp *TCPProxy) downHandleConn(in *net.TCPConn) {
 }
 
 func (tp *TCPProxy) downRelay(in *net.TCPConn) error {
-	buf := make([]byte, packet.PACKET_SIZE)
 	for {
-		n, err := in.Read(buf)
-		if err == io.EOF {
-			return nil
-		}
-		if err != nil {
+		headerBuf := make([]byte, packet.HEADER_LENGTH)
+		if _, err := io.ReadFull(in, headerBuf); err != nil {
 			return err
 		}
-		p.PeerConnection.SetDeadline(time.Now().Add(idleTimeout))
-		log.Println("downRelay read | ", n)
-		packets, err := packet.Parse(buf[:n])
-		if err != nil {
+		header := packet.ParseHeader(headerBuf)
+		payloadBuf := make([]byte, int(header.PayloadLen))
+		if _, err := io.ReadFull(in, payloadBuf); err != nil {
 			return err
 		}
-		for _, p := range packets {
-			tp.relayToPeer(p)
-		}
+		newPacket := packet.GeneratePacket()
+		newPacket.SetPayload(payloadBuf)
+		newPacket.SetHeader(header)
+		tp.relayToPeer(newPacket)
 	}
 }
 
@@ -112,10 +108,12 @@ func (tp *TCPProxy) relayToPeer(p *packet.ClaudePacket) {
 		log.Printf("%+v", xerrors.Errorf("Not found peer: %s", id))
 		return
 	}
-	if _, err := pipe.PeerConnection.Write(p.Serialize()); err != nil {
+	n, err := pipe.PeerConnection.Write(p.Serialize())
+	if err != nil {
 		log.Printf("%+v", xerrors.Errorf("%+v", err))
 		return
 	}
+	log.Printf("downRelay write: %d\n", n)
 }
 
 func (tp *TCPProxy) serveUpStream() {

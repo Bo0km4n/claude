@@ -1,19 +1,26 @@
 package main
 
 import (
+	"io/ioutil"
 	"log"
 	"net"
 	"os"
 
 	"github.com/Bo0km4n/claude/claude/golang/cio"
-	"github.com/Bo0km4n/claude/claude/golang/packet"
 	"github.com/Bo0km4n/claude/claude/golang/service"
-	"github.com/k0kubun/pp"
 )
 
 func main() {
-	if len(os.Args) != 2 {
-		log.Fatalf("Unexpected len(os.Args)=%d", len(os.Args))
+	if len(os.Args) < 4 {
+		log.Fatal("Arguments too short")
+	}
+	f, err := os.Open(os.Args[3])
+	if err != nil {
+		panic(err)
+	}
+	data, err := ioutil.ReadAll(f)
+	if err != nil {
+		panic(err)
 	}
 	seed := os.Args[1]
 	service.SetProxyInformation(seed)
@@ -24,13 +31,10 @@ func main() {
 		panic(err)
 	}
 
-	r := cio.NewReader(conn)
-	for {
-		buf := make([]byte, packet.PACKET_SIZE)
-		n, err := r.Read(buf)
-		if err != nil {
-			log.Fatal(err)
-		}
-		pp.Println(n)
+	w := cio.NewWriter(conn)
+	if _, err := w.Send(
+		os.Args[2],
+		data); err != nil {
+		log.Fatal(err)
 	}
 }
