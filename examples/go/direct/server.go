@@ -7,7 +7,7 @@ import (
 )
 
 func main() {
-	listen, _ := net.Listen("tcp", ":9000")
+	listen, _ := net.Listen("tcp", ":50051")
 	for {
 		conn, _ := listen.Accept()
 		go func(c net.Conn) {
