@@ -7,12 +7,13 @@ import (
 	"github.com/spf13/cobra"
 )
 
-type runOptions struct {
-	TabletIP   string
-	TabletPort string
+type RunOptions struct {
+	TabletIP       string
+	TabletPort     string
+	IsUDPMulticast bool
 }
 
-var ro = &runOptions{}
+var ro = &RunOptions{}
 
 var runCmd = &cobra.Command{
 	Use:   "run",
@@ -30,16 +31,17 @@ var runCmd = &cobra.Command{
 		repository.InitDB()
 	},
 	Run: func(cmd *cobra.Command, args []string) {
-		run()
+		run(ro)
 	},
 }
 
-func run() {
-	service.LaunchService()
+func run(ro *RunOptions) {
+	service.LaunchService(ro.IsUDPMulticast)
 }
 
 func init() {
 	rootCmd.AddCommand(runCmd)
 	runCmd.Flags().StringVarP(&ro.TabletIP, "tablet_ip", "", ro.TabletIP, "tablet ip")
 	runCmd.Flags().StringVarP(&ro.TabletPort, "tablet_port", "", ro.TabletPort, "tablet port")
+	runCmd.Flags().BoolVarP(&ro.IsUDPMulticast, "is_udp_multicast", "", false, "use udp multicast")
 }

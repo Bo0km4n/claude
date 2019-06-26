@@ -11,10 +11,10 @@ import (
 	"google.golang.org/grpc"
 )
 
-func LaunchService() {
+func LaunchService(isUDPMulticast bool) {
 	initService()
 	initDaemon()
-	go ProxySvc.ListenUDPBcastFromPeer()
+	go ProxySvc.ListenUDPFromPeer(isUDPMulticast)
 	go td.start()
 
 	go launchGRPCService()

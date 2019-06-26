@@ -14,7 +14,7 @@ import (
 	"google.golang.org/grpc"
 )
 
-func (proxys *ProxyService) ListenUDPBcastFromPeer() {
+func (proxys *ProxyService) ListenUDPFromPeer(isMulticast bool) {
 	addr := fmt.Sprintf("%s:%s", config.Config.UDP.Address, config.Config.UDP.Port)
 	log.Printf("UDP Process is Running at %s\n", addr)
 	udpAddr, err := net.ResolveUDPAddr("udp", addr)
@@ -26,9 +26,19 @@ func (proxys *ProxyService) ListenUDPBcastFromPeer() {
 		panic(err)
 	}
 
-	conn, err := net.ListenMulticastUDP("udp", inf, udpAddr)
-	if err != nil {
-		panic(err)
+	var conn *net.UDPConn
+	if isMulticast {
+		udpConn, err := net.ListenMulticastUDP("udp", inf, udpAddr)
+		if err != nil {
+			panic(err)
+		}
+		conn = udpConn
+	} else {
+		udpConn, err := net.ListenUDP("udp", udpAddr)
+		if err != nil {
+			panic(err)
+		}
+		conn = udpConn
 	}
 	defer conn.Close()
 
