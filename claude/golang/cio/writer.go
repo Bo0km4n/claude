@@ -5,7 +5,6 @@ import (
 
 	"github.com/Bo0km4n/claude/claude/golang/packet"
 	"github.com/Bo0km4n/claude/claude/golang/service"
-	"github.com/k0kubun/pp"
 )
 
 type Writer interface {
@@ -53,7 +52,7 @@ func (w *writer) Send(to string, body []byte) (int, error) {
 	num := 0
 	// split packet
 	for {
-		pp.Println(to, start, offset, offset-start)
+		// pp.Println(to, start, offset, offset-start)
 		if offset > len(body) {
 			offset = len(body)
 			n, err := w.send(to, body[start:offset])
