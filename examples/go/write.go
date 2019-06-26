@@ -32,7 +32,7 @@ func main() {
 
 	w := cio.NewWriter(conn)
 	if _, err := w.Send(
-		to,
+		*to,
 		[]byte(`hello world`)); err != nil {
 		log.Fatal(err)
 	}
