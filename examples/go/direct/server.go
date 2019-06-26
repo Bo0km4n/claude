@@ -26,7 +26,7 @@ func main() {
 					break
 				}
 			}
-			log.Println("Finished", time.Now().Unix())
+			log.Println("Finished", time.Now().UTC().UnixNano())
 			return
 		}(conn)
 	}
