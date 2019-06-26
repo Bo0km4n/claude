@@ -12,11 +12,11 @@ import (
 )
 
 func main() {
-	if len(os.Args) != 2 {
+	if len(os.Args) != 3 {
 		log.Fatalf("Unexpected len(os.Args)=%d", len(os.Args))
 	}
 	seed := os.Args[1]
-	service.SetProxyInformation(seed)
+	service.SetProxyInformation(seed, os.Args[2])
 
 	proxyTcpAddr := service.GetProxyTCPAddr()
 	conn, err := net.Dial("tcp", proxyTcpAddr)

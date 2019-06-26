@@ -8,14 +8,14 @@ import (
 	"github.com/Bo0km4n/claude/pkg/common/message"
 )
 
-func UDPBcast() {
+func UDPBcast(iface string) {
 	remoteUDPAddr, err := net.ResolveUDPAddr("udp", "224.0.0.1:9000")
 	if err != nil {
 		log.Fatal(err)
 	}
 
 	// Get local eth1 address
-	ief, err := net.InterfaceByName("eth1")
+	ief, err := net.InterfaceByName(iface)
 	if err != nil {
 		log.Fatal(err)
 	}
