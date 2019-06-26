@@ -42,6 +42,7 @@ func main() {
 		}
 		readSize += n
 		if readSize >= limit {
+			conn.Close()
 			break
 		}
 	}
