@@ -6,6 +6,7 @@ import (
 	"log"
 	"net"
 	"os"
+	"time"
 
 	"github.com/Bo0km4n/claude/claude/golang/cio"
 	"github.com/Bo0km4n/claude/claude/golang/service"
@@ -36,6 +37,7 @@ func main() {
 	w := cio.NewWriter(conn)
 	f, _ := os.Open(*file)
 	data, _ := ioutil.ReadAll(f)
+	log.Println("Start", time.Now().Unix())
 	if _, err := w.Send(
 		*to,
 		data); err != nil {

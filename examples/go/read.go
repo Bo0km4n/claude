@@ -4,11 +4,11 @@ import (
 	"flag"
 	"log"
 	"net"
+	"time"
 
 	"github.com/Bo0km4n/claude/claude/golang/cio"
 	"github.com/Bo0km4n/claude/claude/golang/packet"
 	"github.com/Bo0km4n/claude/claude/golang/service"
-	"github.com/k0kubun/pp"
 )
 
 var (
@@ -32,12 +32,19 @@ func main() {
 	}
 
 	r := cio.NewReader(conn)
+	limit := 1024000000
+	readSize := 0
 	for {
 		buf := make([]byte, packet.PACKET_SIZE)
 		n, err := r.Read(buf)
 		if err != nil {
 			log.Fatal(err)
 		}
-		pp.Println(n)
+		readSize += n
+		if readSize >= limit {
+			break
+		}
 	}
+
+	log.Println("Finished", time.Now().Unix())
 }
