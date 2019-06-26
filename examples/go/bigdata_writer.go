@@ -34,7 +34,7 @@ func main() {
 	}
 
 	w := cio.NewWriter(conn)
-	f, _ := os.Open(file)
+	f, _ := os.Open(*file)
 	data, _ := ioutil.ReadAll(f)
 	if _, err := w.Send(
 		*to,
