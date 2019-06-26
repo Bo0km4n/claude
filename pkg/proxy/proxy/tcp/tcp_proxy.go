@@ -78,8 +78,13 @@ func (tp *TCPProxy) upRelay(p *pipe.Pipe) error {
 }
 
 func (tp *TCPProxy) downHandleConn(in *net.TCPConn) {
-	if err := tp.downRelay(in); err != nil {
-		log.Fatal(err)
+	err := tp.downRelay(in)
+	if err == io.EOF {
+		in.Close()
+		return
+	}
+	if err != nil {
+		log.Fatal("downHandleConn: ", err)
 	}
 }
 
