@@ -16,7 +16,6 @@ import (
 
 func (proxys *ProxyService) ListenUDPFromPeer(isMulticast bool) {
 	addr := fmt.Sprintf("%s:%s", config.Config.UDP.Address, config.Config.UDP.Port)
-	log.Printf("UDP Process is Running at %s\n", addr)
 	udpAddr, err := net.ResolveUDPAddr("udp", addr)
 	if err != nil {
 		panic(err)
@@ -33,12 +32,15 @@ func (proxys *ProxyService) ListenUDPFromPeer(isMulticast bool) {
 			panic(err)
 		}
 		conn = udpConn
+		log.Printf("UDP Multicast Process is Running at %s\n", addr)
 	} else {
 		udpConn, err := net.ListenUDP("udp", udpAddr)
 		if err != nil {
 			panic(err)
 		}
 		conn = udpConn
+		log.Printf("UDP Unicast Process is Running at %s\n", addr)
+
 	}
 	defer conn.Close()
 
