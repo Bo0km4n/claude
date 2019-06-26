@@ -19,6 +19,7 @@ func main() {
 				if err != nil {
 					panic(err)
 				}
+				log.Println(n)
 				readSize += n
 				if readSize >= limit {
 					c.Close()
