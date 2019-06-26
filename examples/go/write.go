@@ -4,7 +4,6 @@ import (
 	"flag"
 	"log"
 	"net"
-	"os"
 
 	"github.com/Bo0km4n/claude/claude/golang/cio"
 	"github.com/Bo0km4n/claude/claude/golang/service"
@@ -15,6 +14,7 @@ var (
 	proxyAddr    = flag.String("proxy_addr", "", "proxy addr")
 	iface        = flag.String("iface", "en0", "interface")
 	seed         = flag.String("seed", "", "seed id")
+	to           = flag.String("to", "", "remote peer id")
 )
 
 func init() {
@@ -32,7 +32,7 @@ func main() {
 
 	w := cio.NewWriter(conn)
 	if _, err := w.Send(
-		os.Args[2],
+		to,
 		[]byte(`hello world`)); err != nil {
 		log.Fatal(err)
 	}
