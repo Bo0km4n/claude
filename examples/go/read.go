@@ -1,9 +1,9 @@
 package main
 
 import (
+	"flag"
 	"log"
 	"net"
-	"os"
 
 	"github.com/Bo0km4n/claude/claude/golang/cio"
 	"github.com/Bo0km4n/claude/claude/golang/packet"
@@ -11,12 +11,19 @@ import (
 	"github.com/k0kubun/pp"
 )
 
+var (
+	useMulticast = flag.Bool("use_multicast", false, "use multicast udp")
+	proxyAddr    = flag.String("proxy_addr", "", "proxy addr")
+	iface        = flag.String("iface", "en0", "interface")
+	seed         = flag.String("seed", "", "seed id")
+)
+
+func init() {
+	flag.Parse()
+}
+
 func main() {
-	if len(os.Args) != 3 {
-		log.Fatalf("Unexpected len(os.Args)=%d", len(os.Args))
-	}
-	seed := os.Args[1]
-	service.SetProxyInformation(seed, os.Args[2])
+	service.SetProxyInformation(*seed, *iface, *proxyAddr, *useMulticast)
 
 	proxyTcpAddr := service.GetProxyTCPAddr()
 	conn, err := net.Dial("tcp", proxyTcpAddr)

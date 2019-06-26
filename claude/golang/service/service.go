@@ -64,13 +64,17 @@ func (p *PeerService) NoticeFromProxyRPC(ctx context.Context, in *proto.NoticeFr
 	return &proto.Empty{}, nil
 }
 
-func SetProxyInformation(seed string, iface string) {
+func SetProxyInformation(seed string, iface string, proxyAddr string, useMulticast bool) {
 	done := make(chan struct{})
 	go LaunchGRPCService(done, seed)
 	<-done
 
 	time.Sleep(2)
-	UDPBcast(iface)
+	if useMulticast {
+		UDPBcast(iface)
+	} else {
+		UDPUnicast(iface, proxyAddr)
+	}
 	for {
 		if IsCompletedJoinToProxy {
 			return

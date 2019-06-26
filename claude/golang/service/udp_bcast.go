@@ -45,6 +45,43 @@ func UDPBcast(iface string) {
 	log.Println("Send multicast")
 }
 
+func UDPUnicast(iface string, to string) {
+	remoteUDPAddr, err := net.ResolveUDPAddr("udp", to)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	// Get local eth1 address
+	ief, err := net.InterfaceByName(iface)
+	if err != nil {
+		log.Fatal(err)
+	}
+	addrs, err := ief.Addrs()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	localUDPAddr := &net.UDPAddr{
+		IP: addrs[0].(*net.IPNet).IP,
+	}
+
+	conn, err := net.DialUDP("udp", localUDPAddr, remoteUDPAddr)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer conn.Close()
+
+	msg, err := json.Marshal(buildRequest())
+	if err != nil {
+		log.Fatal(err)
+	}
+	_, err = conn.Write(msg)
+	if err != nil {
+		log.Fatal(err)
+	}
+	log.Println("Send udp unicast")
+}
+
 func buildRequest() *message.UDPBcastMessage {
 	return &message.UDPBcastMessage{
 		ListenPort: "50051",
