@@ -1,6 +1,7 @@
 package main
 
 import (
+	"flag"
 	"io/ioutil"
 	"log"
 	"net"
@@ -10,20 +11,21 @@ import (
 	"github.com/Bo0km4n/claude/claude/golang/service"
 )
 
+var (
+	useMulticast = flag.Bool("use_multicast", false, "use multicast udp")
+	proxyAddr    = flag.String("proxy_addr", "", "proxy addr")
+	iface        = flag.String("iface", "en0", "interface")
+	seed         = flag.String("seed", "", "seed id")
+	to           = flag.String("to", "", "remote peer id")
+	file         = flag.String("file", "", "dummy data path")
+)
+
+func init() {
+	flag.Parse()
+}
+
 func main() {
-	if len(os.Args) < 4 {
-		log.Fatal("Arguments too short")
-	}
-	f, err := os.Open(os.Args[3])
-	if err != nil {
-		panic(err)
-	}
-	data, err := ioutil.ReadAll(f)
-	if err != nil {
-		panic(err)
-	}
-	seed := os.Args[1]
-	service.SetProxyInformation(seed)
+	service.SetProxyInformation(*seed, *iface, *proxyAddr, *useMulticast)
 
 	proxyTcpAddr := service.GetProxyTCPAddr()
 	conn, err := net.Dial("tcp", proxyTcpAddr)
@@ -32,8 +34,10 @@ func main() {
 	}
 
 	w := cio.NewWriter(conn)
+	f, _ := os.Open(file)
+	data, _ := ioutil.ReadAll(f)
 	if _, err := w.Send(
-		os.Args[2],
+		*to,
 		data); err != nil {
 		log.Fatal(err)
 	}
