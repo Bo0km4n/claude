@@ -26,7 +26,7 @@ func main() {
 	f, _ := os.Open(*file)
 	data, _ := ioutil.ReadAll(f)
 	log.Println("Start", time.Now().Unix())
-	_, err := conn.Write(data)
+	_, err = conn.Write(data)
 	if err != nil {
 		panic(err)
 	}
