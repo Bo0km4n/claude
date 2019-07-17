@@ -6,6 +6,7 @@ require (
 	github.com/golang/protobuf v1.3.1
 	github.com/google/gopacket v1.1.16 // indirect
 	github.com/jinzhu/gorm v1.9.5
+	github.com/k0kubun/colorstring v0.0.0-20150214042306-9440f1994b88 // indirect
 	github.com/k0kubun/pp v2.3.0+incompatible
 	github.com/kelseyhightower/envconfig v1.3.0
 	github.com/mattn/go-colorable v0.1.1 // indirect
