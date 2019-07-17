@@ -9,7 +9,7 @@ import (
 )
 
 const (
-	PACKET_SIZE   = 0xffffffff // this size includes header length
+	PACKET_SIZE   = 1073741824 // this size includes header length
 	HEADER_LENGTH = 0x50       // Decimal = 80
 	ID_LENGTH     = 36
 )
