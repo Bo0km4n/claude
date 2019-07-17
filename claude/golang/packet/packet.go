@@ -10,7 +10,7 @@ import (
 
 const (
 	PACKET_SIZE   = 0xffffffff // this size includes header length
-	HEADER_LENGTH = 0x4e       // Decimal = 78
+	HEADER_LENGTH = 0x50       // Decimal = 80
 	ID_LENGTH     = 36
 )
 
@@ -29,7 +29,7 @@ type claudeHeader struct {
 	DestinationPeerID [ID_LENGTH]byte
 	SourcePeerID      [ID_LENGTH]byte
 	CheckSum          uint16
-	PayloadLen        uint16
+	PayloadLen        uint32
 }
 
 type payload []byte
@@ -71,7 +71,7 @@ func ParseHeader(header []byte) *claudeHeader {
 	h := &claudeHeader{
 		ControlFlag: binary.BigEndian.Uint16(header[0:2]),
 		CheckSum:    binary.BigEndian.Uint16(header[74:76]),
-		PayloadLen:  binary.BigEndian.Uint16(header[76:78]),
+		PayloadLen:  binary.BigEndian.Uint32(header[76:80]),
 	}
 	copy(h.DestinationPeerID[:], header[2:38])
 	copy(h.SourcePeerID[:], header[38:74])
@@ -132,7 +132,7 @@ func (cp *ClaudePacket) SetPayload(p []byte) error {
 	if len(p) > PACKET_SIZE-HEADER_LENGTH {
 		return fmt.Errorf("Too large payload size=%d", len(p))
 	}
-	cp.header.PayloadLen = uint16(len(p))
+	cp.header.PayloadLen = uint32(len(p))
 	cp.payload = p
 	return nil
 }
@@ -154,13 +154,15 @@ func (cp *ClaudePacket) Serialize() []byte {
 	b = append(b, cp.header.SourcePeerID[:]...)
 	binary.BigEndian.PutUint16(u16Bytes, cp.header.CheckSum)
 	b = append(b, u16Bytes...)
-	binary.BigEndian.PutUint16(u16Bytes, cp.header.PayloadLen)
-	b = append(b, u16Bytes...)
+
+	u32Bytes := make([]byte, 4)
+	binary.BigEndian.PutUint32(u32Bytes, cp.header.PayloadLen)
+	b = append(b, u32Bytes...)
 	b = append(b, cp.payload...)
 	return b
 }
 
-func (cp *ClaudePacket) PayloadLen() uint16 {
+func (cp *ClaudePacket) PayloadLen() uint32 {
 	return cp.header.PayloadLen
 }
 
