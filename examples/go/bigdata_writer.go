@@ -43,4 +43,5 @@ func main() {
 		data); err != nil {
 		log.Fatal(err)
 	}
+	time.Sleep(100)
 }
