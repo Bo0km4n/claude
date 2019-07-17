@@ -47,5 +47,5 @@ func main() {
 		}
 	}
 
-	log.Println("Finished", time.Now().UTC().UnixNano())
+	log.Println("Finished", time.Now().UTC().Unix())
 }

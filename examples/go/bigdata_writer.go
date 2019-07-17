@@ -37,7 +37,7 @@ func main() {
 	w := cio.NewWriter(conn)
 	f, _ := os.Open(*file)
 	data, _ := ioutil.ReadAll(f)
-	log.Println("Start", time.Now().UTC().UnixNano())
+	log.Println("Start", time.Now().UTC().Unix())
 	if _, err := w.Send(
 		*to,
 		data); err != nil {
