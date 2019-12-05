@@ -67,7 +67,10 @@ type BindResponse struct {
 }
 
 func client() {
-	conn, err := net.Dial("tcp", *host)
+	laddr, _ := net.ResolveTCPAddr("tcp", "0.0.0.0:32000")
+	raddr, _ := net.ResolveTCPAddr("tcp", *host)
+
+	conn, err := net.DialTCP("tcp", laddr, raddr)
 	if err != nil {
 		log.Fatal(err)
 	}
