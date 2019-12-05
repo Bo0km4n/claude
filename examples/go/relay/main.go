@@ -76,16 +76,17 @@ func client() {
 	if err != nil {
 		log.Fatal(err)
 	}
+	translatedIP := strings.Split(string(l), ":")[0]
 	translatedPort := strings.Split(string(l), ":")[1]
 	pp.Println(string(l), conn.LocalAddr().String())
 	localAddrs := strings.Split(conn.LocalAddr().String(), ":")
 	bindedLocalPort := localAddrs[1]
 
 	conn.Close()
-	listenRelayServer(bindedLocalPort, translatedPort)
+	listenRelayServer(bindedLocalPort, translatedIP, translatedPort)
 }
 
-func listenRelayServer(port, translatedPort string) {
+func listenRelayServer(port, translatedIP, translatedPort string) {
 	r := gin.Default()
 	r.GET("/ping", func(c *gin.Context) {
 		log.Printf("[PING:Remote] %s", c.Request.RemoteAddr)
@@ -93,5 +94,5 @@ func listenRelayServer(port, translatedPort string) {
 	})
 
 	log.Printf("Local Port: %s <---> Translated Port: %s", port, translatedPort)
-	r.Run(fmt.Sprintf(":%s", port))
+	r.Run(fmt.Sprintf("0.0.0.0:%s", port))
 }
