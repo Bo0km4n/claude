@@ -94,5 +94,5 @@ func listenRelayServer(port, translatedIP, translatedPort string) {
 	})
 
 	log.Printf("Local Port: %s <---> Translated Port: %s", port, translatedPort)
-	r.Run(fmt.Sprintf("0.0.0.0:%s", port))
+	r.Run(fmt.Sprintf(":%s", port))
 }
