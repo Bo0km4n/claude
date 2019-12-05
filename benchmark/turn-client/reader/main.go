@@ -9,12 +9,16 @@ import (
 
 	"flag"
 
+	"time"
+
 	"gortc.io/turnc"
 )
 
 var (
-	turnServer = flag.String("turn", "127.0.0.1:3678", "turn server addr")
-	dd         = flag.String("dd", "./dd.data", "dummy data file path")
+	turnHost = flag.String("turn", "127.0.0.1", "turn server addr")
+	turnPort = flag.String("p", "9610", "turn server port")
+	dd       = flag.String("dd", "./dd.data", "dummy data file path")
+	dataSize = flag.Int("ds", 1, "1 * GigaByte")
 )
 
 func init() {
@@ -23,7 +27,7 @@ func init() {
 
 func main() {
 	// Resolving to TURN server.
-	raddr, err := net.ResolveUDPAddr("udp", "10.128.0.8:9610")
+	raddr, err := net.ResolveUDPAddr("udp", fmt.Sprintf("%s:%s", *turnHost, *turnPort))
 	if err != nil {
 		panic(err)
 	}
@@ -31,6 +35,7 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
+
 	client, clientErr := turnc.New(turnc.Options{
 		Conn: c,
 		// Credentials:
@@ -46,13 +51,14 @@ func main() {
 	}
 	log.Println("allocated relay addr:", a.Relayed().String())
 
-	log.Println("Type peer ip:port")
+	log.Println("Type peer port")
 	scanner := bufio.NewScanner(os.Stdin)
 
 	scanner.Scan()
-	addrStr := scanner.Text()
+	portStr := scanner.Text()
 
-	peerAddr, resolveErr := net.ResolveUDPAddr("udp", addrStr)
+	peerAddr, resolveErr := net.ResolveUDPAddr("udp", fmt.Sprintf("0.0.0.0:%s", portStr))
+	// peerAddr, resolveErr := net.ResolveUDPAddr("udp", "10.0.0.1:34587")
 	if resolveErr != nil {
 		panic(resolveErr)
 	}
@@ -60,22 +66,29 @@ func main() {
 	if createErr != nil {
 		panic(createErr)
 	}
+
 	conn, err := permission.CreateUDP(peerAddr)
+	defer conn.Close()
 	if err != nil {
 		panic(err)
 	}
 	// Connection implements net.Conn.
-	if _, writeRrr := fmt.Fprint(conn, "hello world!"); writeRrr != nil {
-		panic(writeRrr)
+	limit := *dataSize
+	readSize := 0
+	log.Println("Enter read loop")
+	for {
+		buf := make([]byte, 1492)
+		n, err := conn.Read(buf)
+		if err != nil {
+			log.Fatal(err)
+		}
+		readSize += n
+		log.Println("read", n)
+		if readSize >= limit {
+			log.Println("Overed limit", readSize, limit)
+			conn.Close()
+			break
+		}
 	}
-	buf := make([]byte, 1500)
-	n, readErr := conn.Read(buf)
-	if readErr != nil {
-		panic(readErr)
-	}
-	log.Printf("got message: %s", string(buf[:n]))
-	// Also you can use ChannelData messages to reduce overhead:
-	if err := conn.Bind(); err != nil {
-		panic(err)
-	}
+	log.Println("Finished", time.Now().UTC().UnixNano()/int64(time.Millisecond))
 }
