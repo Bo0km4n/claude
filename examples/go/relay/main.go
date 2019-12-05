@@ -36,11 +36,11 @@ func main() {
 }
 
 func server() {
-	listen, err := net.Listen("tcp", "127.0.0.1:8080")
+	listen, err := net.Listen("tcp", "0.0.0.0:9610")
 	if err != nil {
-		log.Fatal("tcp://127.0.0.1:8888のリッスンに失敗しました")
+		log.Fatal("tcp://0.0.0.0:9610のリッスンに失敗しました")
 	}
-	fmt.Println("127.0.0.1:8888で受付開始しました")
+	fmt.Println("0.0.0.0:9610で受付開始しました")
 
 	// コネクションを受け付ける
 	for {
