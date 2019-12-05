@@ -82,7 +82,9 @@ func client() {
 	localAddrs := strings.Split(conn.LocalAddr().String(), ":")
 	bindedLocalPort := localAddrs[1]
 
-	conn.Close()
+	if err := conn.Close(); err != nil {
+		log.Fatal(err)
+	}
 	listenRelayServer(bindedLocalPort, translatedIP, translatedPort)
 }
 
