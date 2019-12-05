@@ -10,8 +10,6 @@ import (
 
 	"bufio"
 
-	"time"
-
 	"github.com/gin-gonic/gin"
 	"github.com/k0kubun/pp"
 )
@@ -87,8 +85,6 @@ func client() {
 	if err := conn.Close(); err != nil {
 		log.Fatal(err)
 	}
-	log.Println("sleep 10s")
-	time.Sleep(10 * time.Second)
 
 	listenRelayServer(bindedLocalPort, translatedIP, translatedPort)
 }
