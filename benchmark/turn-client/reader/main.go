@@ -18,6 +18,7 @@ var (
 	turnHost = flag.String("turn", "127.0.0.1", "turn server addr")
 	turnPort = flag.String("p", "9610", "turn server port")
 	dd       = flag.String("dd", "./dd.data", "dummy data file path")
+	minute   = flag.Int("minute", 5, "minute")
 	dataSize = flag.Int("ds", 1, "1 * GigaByte")
 )
 
@@ -88,7 +89,7 @@ func main() {
 			}
 			if !first {
 				first = true
-				ticker = time.NewTicker(time.Minute * 5)
+				ticker = time.NewTicker(time.Minute * time.Duration(*minute))
 				defer ticker.Stop()
 			}
 			readSize += n
