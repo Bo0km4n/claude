@@ -77,7 +77,7 @@ func main() {
 	go func() {
 		for {
 			buf := make([]byte, chunkSize)
-			n, err := conn.Write(buf[:chunkSize])
+			n, err := conn.Write(buf[:512])
 			if err != nil {
 				log.Fatal(err)
 			}
