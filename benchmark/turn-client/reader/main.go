@@ -73,22 +73,31 @@ func main() {
 		panic(err)
 	}
 	// Connection implements net.Conn.
-	limit := *dataSize
+	// limit := *dataSize
 	readSize := 0
 	log.Println("Enter read loop")
-	for {
-		buf := make([]byte, 1492)
-		n, err := conn.Read(buf)
-		if err != nil {
-			log.Fatal(err)
+
+	first := false
+	var ticker *time.Ticker
+	go func() {
+		for {
+			buf := make([]byte, 1492)
+			n, err := conn.Read(buf)
+			if err != nil {
+				log.Fatal(err)
+			}
+			if !first {
+				first = true
+				ticker = time.NewTicker(time.Minute * 5)
+				defer ticker.Stop()
+			}
+			readSize += n
+			fmt.Fprintf(os.Stdout, "\rread size: %d", readSize)
 		}
-		readSize += n
-		log.Println("read", n)
-		if readSize >= limit {
-			log.Println("Overed limit", readSize, limit)
-			conn.Close()
-			break
-		}
+	}()
+
+	select {
+	case <-ticker.C:
+		log.Println("Finished", time.Now().UTC().UnixNano()/int64(time.Millisecond), readSize)
 	}
-	log.Println("Finished", time.Now().UTC().UnixNano()/int64(time.Millisecond))
 }

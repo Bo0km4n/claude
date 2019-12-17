@@ -4,7 +4,6 @@ import (
 	"bufio"
 	"flag"
 	"fmt"
-	"io"
 	"log"
 	"net"
 	"os"
@@ -75,22 +74,24 @@ func main() {
 	}
 
 	chunkSize := 1492
-	for {
-		buf := make([]byte, chunkSize)
-		n, err := f.Read(buf)
-		if err == io.EOF {
-			break
-		}
-		if err != nil {
-			log.Fatal(err)
-		}
-		n, err = conn.Write(buf[:n])
-		if err != nil {
-			log.Fatal(err)
-		}
-		log.Println("write", n)
-	}
-	log.Printf("Finished write data at: %d\n", time.Now().UTC().UnixNano()/int64(time.Millisecond))
+	writedSize := 0
+	ticker := time.NewTicker(time.Minute * 5)
+	defer ticker.Stop()
 
-	time.Sleep(1000)
+	go func() {
+		for {
+			buf := make([]byte, chunkSize)
+			n, err := conn.Write(buf[:chunkSize])
+			if err != nil {
+				log.Fatal(err)
+			}
+			writedSize += n
+			fmt.Fprintf(os.Stdout, "\rwrite: %d", writedSize)
+		}
+	}()
+
+	select {
+	case <-ticker.C:
+		log.Printf("Finished write data at: %d, size: %d\n", time.Now().UTC().UnixNano()/int64(time.Millisecond), writedSize)
+	}
 }
