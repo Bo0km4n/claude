@@ -68,11 +68,6 @@ func main() {
 		panic(err)
 	}
 	// Connection implements net.Conn.
-	f, err := os.Open(*dd)
-	if err != nil {
-		log.Fatal(err)
-	}
-
 	chunkSize := 1492
 	writedSize := 0
 	ticker := time.NewTicker(time.Minute * 5)
