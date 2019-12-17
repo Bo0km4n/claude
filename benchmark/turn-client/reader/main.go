@@ -78,7 +78,7 @@ func main() {
 	log.Println("Enter read loop")
 
 	first := false
-	var ticker *time.Ticker
+	ticker := time.NewTicker(time.Minute * 5)
 	go func() {
 		for {
 			buf := make([]byte, 1492)
