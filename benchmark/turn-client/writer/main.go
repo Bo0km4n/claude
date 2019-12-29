@@ -17,6 +17,7 @@ var (
 	turnHost = flag.String("turn", "127.0.0.1", "turn server addr")
 	turnPort = flag.String("p", "9610", "turn server port")
 	tcp      = flag.Bool("tcp", false, "use tcp")
+	chunk    = flag.Int("chunk", 512, "chunk data size")
 	minute   = flag.Int("minute", 5, "minute")
 )
 
@@ -91,15 +92,14 @@ func main() {
 		log.Println("establish turn connection with UDP")
 	}
 
-	chunkSize := 1492
 	writedSize := 0
 	ticker := time.NewTicker(time.Minute * time.Duration(*minute))
 	defer ticker.Stop()
 
 	go func() {
 		for {
-			buf := make([]byte, chunkSize)
-			n, err := turnConn.Write(buf[:512])
+			buf := make([]byte, *chunk)
+			n, err := turnConn.Write(buf[:*chunk])
 			if err != nil {
 				log.Fatal(err)
 			}
