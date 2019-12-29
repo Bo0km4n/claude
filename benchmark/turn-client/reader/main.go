@@ -18,6 +18,7 @@ var (
 	turnHost = flag.String("turn", "127.0.0.1", "turn server addr")
 	turnPort = flag.String("p", "9610", "turn server port")
 	tcp      = flag.Bool("tcp", false, "use tcp")
+	chunk    = flag.Int("chunk", 512, "read buffer")
 	minute   = flag.Int("minute", 5, "minute")
 )
 
@@ -132,7 +133,7 @@ func main() {
 	ticker := time.NewTicker(time.Minute * time.Duration(*minute))
 	go func() {
 		for {
-			buf := make([]byte, 4096)
+			buf := make([]byte, *chunk)
 			n, err := turnConn.Read(buf)
 			if err != nil {
 				log.Fatal(err)
