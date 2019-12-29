@@ -14,11 +14,12 @@ import (
 )
 
 var (
-	turnHost = flag.String("turn", "127.0.0.1", "turn server addr")
-	turnPort = flag.String("p", "9610", "turn server port")
-	tcp      = flag.Bool("tcp", false, "use tcp")
-	chunk    = flag.Int("chunk", 512, "chunk data size")
-	minute   = flag.Int("minute", 5, "minute")
+	turnHost  = flag.String("turn", "127.0.0.1", "turn server addr")
+	turnPort  = flag.String("p", "9610", "turn server port")
+	tcp       = flag.Bool("tcp", false, "use tcp")
+	chunk     = flag.Int("chunk", 512, "chunk data size")
+	frequency = flag.Int("f", 50, "write frequency")
+	minute    = flag.Int("minute", 5, "minute")
 )
 
 func init() {
@@ -136,7 +137,7 @@ func main() {
 			}
 			writedSize += n
 			fmt.Fprintf(os.Stdout, "\rwrite: %d", writedSize)
-			time.Sleep(45 * time.Millisecond)
+			time.Sleep(time.Duration(*frequency) * time.Millisecond)
 		}
 	}()
 
