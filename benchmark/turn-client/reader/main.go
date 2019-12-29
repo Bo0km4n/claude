@@ -103,7 +103,7 @@ func main() {
 	ticker := time.NewTicker(time.Minute * time.Duration(*minute))
 	go func() {
 		for {
-			buf := make([]byte, 1492)
+			buf := make([]byte, 4096)
 			n, err := turnConn.Read(buf)
 			if err != nil {
 				log.Fatal(err)
