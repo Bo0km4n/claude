@@ -136,7 +136,7 @@ func main() {
 			}
 			writedSize += n
 			fmt.Fprintf(os.Stdout, "\rwrite: %d", writedSize)
-			time.Sleep(100 * time.Millisecond)
+			time.Sleep(45 * time.Millisecond)
 		}
 	}()
 
