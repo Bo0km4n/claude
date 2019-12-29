@@ -72,6 +72,7 @@ func main() {
 			panic(err)
 		}
 		turnConn = conn
+		log.Println("establish turn connection with TCP")
 	} else {
 		peerAddr, resolveErr := net.ResolveUDPAddr("udp", fmt.Sprintf("%s", addr))
 		if resolveErr != nil {
@@ -87,6 +88,7 @@ func main() {
 			panic(err)
 		}
 		turnConn = conn
+		log.Println("establish turn connection with UDP")
 	}
 
 	// Connection implements net.Conn.
