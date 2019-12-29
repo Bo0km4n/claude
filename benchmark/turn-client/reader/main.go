@@ -19,7 +19,6 @@ var (
 	turnPort = flag.String("p", "9610", "turn server port")
 	tcp      = flag.Bool("tcp", false, "use tcp")
 	minute   = flag.Int("minute", 5, "minute")
-	dataSize = flag.Int("ds", 1, "1 * GigaByte")
 )
 
 func init() {
@@ -28,29 +27,59 @@ func init() {
 
 func main() {
 	// Resolving to TURN server.
-	raddr, err := net.ResolveUDPAddr("udp", fmt.Sprintf("%s:%s", *turnHost, *turnPort))
-	if err != nil {
-		panic(err)
-	}
-	c, err := net.DialUDP("udp", nil, raddr)
-	if err != nil {
-		panic(err)
-	}
+	var alloc *turnc.Allocation
 
-	client, clientErr := turnc.New(turnc.Options{
-		Conn: c,
-		// Credentials:
-		Username: "user1",
-		Password: "pass1",
-	})
-	if clientErr != nil {
-		panic(clientErr)
+	if *tcp {
+		raddr, err := net.ResolveTCPAddr("tcp", fmt.Sprintf("%s:%s", *turnHost, *turnPort))
+		if err != nil {
+			panic(err)
+		}
+		c, err := net.DialTCP("tcp", nil, raddr)
+		if err != nil {
+			panic(err)
+		}
+
+		client, clientErr := turnc.New(turnc.Options{
+			Conn: c,
+			// Credentials:
+			Username: "user1",
+			Password: "pass1",
+		})
+		if clientErr != nil {
+			panic(clientErr)
+		}
+		a, allocErr := client.Allocate()
+		if allocErr != nil {
+			panic(allocErr)
+		}
+		alloc = a
+		log.Println("allocated relay addr:", a.Relayed().String())
+	} else {
+		raddr, err := net.ResolveUDPAddr("udp", fmt.Sprintf("%s:%s", *turnHost, *turnPort))
+		if err != nil {
+			panic(err)
+		}
+		c, err := net.DialUDP("udp", nil, raddr)
+		if err != nil {
+			panic(err)
+		}
+
+		client, clientErr := turnc.New(turnc.Options{
+			Conn: c,
+			// Credentials:
+			Username: "user1",
+			Password: "pass1",
+		})
+		if clientErr != nil {
+			panic(clientErr)
+		}
+		a, allocErr := client.Allocate()
+		if allocErr != nil {
+			panic(allocErr)
+		}
+		alloc = a
+		log.Println("allocated relay addr:", a.Relayed().String())
 	}
-	a, allocErr := client.Allocate()
-	if allocErr != nil {
-		panic(allocErr)
-	}
-	log.Println("allocated relay addr:", a.Relayed().String())
 
 	log.Println("Type peer address (IP:Port)")
 	scanner := bufio.NewScanner(os.Stdin)
@@ -65,7 +94,7 @@ func main() {
 		if resolveErr != nil {
 			panic(resolveErr)
 		}
-		permission, createErr := a.Create(peerAddr.IP)
+		permission, createErr := alloc.Create(peerAddr.IP)
 		if createErr != nil {
 			panic(createErr)
 		}
@@ -81,7 +110,7 @@ func main() {
 		if resolveErr != nil {
 			panic(resolveErr)
 		}
-		permission, createErr := a.Create(peerAddr.IP)
+		permission, createErr := alloc.Create(peerAddr.IP)
 		if createErr != nil {
 			panic(createErr)
 		}
