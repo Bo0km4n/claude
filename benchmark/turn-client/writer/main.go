@@ -55,7 +55,7 @@ func main() {
 	scanner.Scan()
 	portStr := scanner.Text()
 
-	peerAddr, resolveErr := net.ResolveUDPAddr("udp", fmt.Sprintf("0.0.0.0:%s", portStr))
+	peerAddr, resolveErr := net.ResolveUDPAddr("udp", fmt.Sprintf("%s:%s", a.Relayed().IP.String(), portStr))
 	if resolveErr != nil {
 		panic(resolveErr)
 	}
