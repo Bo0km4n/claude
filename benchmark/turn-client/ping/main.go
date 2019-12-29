@@ -16,6 +16,7 @@ import (
 var (
 	turnHost  = flag.String("turn", "127.0.0.1", "turn server addr")
 	turnPort  = flag.String("p", "9610", "turn server port")
+	tcp       = flag.Bool("tcp", false, "use tcp")
 	frequency = flag.Int("f", 1, "second")
 )
 
@@ -54,19 +55,40 @@ func main() {
 	scanner.Scan()
 	addr := scanner.Text()
 
-	peerAddr, resolveErr := net.ResolveUDPAddr("udp", fmt.Sprintf("%s", addr))
-	if resolveErr != nil {
-		panic(resolveErr)
+	var turnConn *turnc.Connection
+
+	if *tcp {
+		peerAddr, resolveErr := net.ResolveTCPAddr("tcp", fmt.Sprintf("%s", addr))
+		if resolveErr != nil {
+			panic(resolveErr)
+		}
+		permission, createErr := a.Create(peerAddr.IP)
+		if createErr != nil {
+			panic(createErr)
+		}
+		conn, err := permission.CreateTCP(peerAddr)
+		defer conn.Close()
+		if err != nil {
+			panic(err)
+		}
+		turnConn = conn
+	} else {
+		peerAddr, resolveErr := net.ResolveUDPAddr("udp", fmt.Sprintf("%s", addr))
+		if resolveErr != nil {
+			panic(resolveErr)
+		}
+		permission, createErr := a.Create(peerAddr.IP)
+		if createErr != nil {
+			panic(createErr)
+		}
+		conn, err := permission.CreateUDP(peerAddr)
+		defer conn.Close()
+		if err != nil {
+			panic(err)
+		}
+		turnConn = conn
 	}
-	permission, createErr := a.Create(peerAddr.IP)
-	if createErr != nil {
-		panic(createErr)
-	}
-	conn, err := permission.CreateUDP(peerAddr)
-	defer conn.Close()
-	if err != nil {
-		panic(err)
-	}
+
 	// Connection implements net.Conn.
 	ticker := time.NewTicker(time.Second * time.Duration(*frequency))
 	defer ticker.Stop()
@@ -74,7 +96,7 @@ func main() {
 	for {
 		select {
 		case <-ticker.C:
-			_, err := conn.Write([]byte("ping"))
+			_, err := turnConn.Write([]byte("ping"))
 			if err != nil {
 				log.Fatal(err)
 			}

@@ -17,7 +17,7 @@ import (
 var (
 	turnHost = flag.String("turn", "127.0.0.1", "turn server addr")
 	turnPort = flag.String("p", "9610", "turn server port")
-	dd       = flag.String("dd", "./dd.data", "dummy data file path")
+	tcp      = flag.Bool("tcp", false, "use tcp")
 	minute   = flag.Int("minute", 5, "minute")
 	dataSize = flag.Int("ds", 1, "1 * GigaByte")
 )
@@ -58,23 +58,38 @@ func main() {
 	scanner.Scan()
 	addr := scanner.Text()
 
-	peerAddr, resolveErr := net.ResolveUDPAddr("udp", fmt.Sprintf("%s", addr))
-	if resolveErr != nil {
-		panic(resolveErr)
-	}
-	// peerAddr, resolveErr := net.ResolveUDPAddr("udp", "10.0.0.1:34587")
-	if resolveErr != nil {
-		panic(resolveErr)
-	}
-	permission, createErr := a.Create(peerAddr.IP)
-	if createErr != nil {
-		panic(createErr)
-	}
+	var turnConn *turnc.Connection
 
-	conn, err := permission.CreateUDP(peerAddr)
-	defer conn.Close()
-	if err != nil {
-		panic(err)
+	if *tcp {
+		peerAddr, resolveErr := net.ResolveTCPAddr("tcp", fmt.Sprintf("%s", addr))
+		if resolveErr != nil {
+			panic(resolveErr)
+		}
+		permission, createErr := a.Create(peerAddr.IP)
+		if createErr != nil {
+			panic(createErr)
+		}
+		conn, err := permission.CreateTCP(peerAddr)
+		defer conn.Close()
+		if err != nil {
+			panic(err)
+		}
+		turnConn = conn
+	} else {
+		peerAddr, resolveErr := net.ResolveUDPAddr("udp", fmt.Sprintf("%s", addr))
+		if resolveErr != nil {
+			panic(resolveErr)
+		}
+		permission, createErr := a.Create(peerAddr.IP)
+		if createErr != nil {
+			panic(createErr)
+		}
+		conn, err := permission.CreateUDP(peerAddr)
+		defer conn.Close()
+		if err != nil {
+			panic(err)
+		}
+		turnConn = conn
 	}
 	// Connection implements net.Conn.
 	// limit := *dataSize
@@ -86,7 +101,7 @@ func main() {
 	go func() {
 		for {
 			buf := make([]byte, 1492)
-			n, err := conn.Read(buf)
+			n, err := turnConn.Read(buf)
 			if err != nil {
 				log.Fatal(err)
 			}
