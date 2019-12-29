@@ -48,13 +48,13 @@ func main() {
 	}
 	log.Println("allocated relay addr:", a.Relayed().String())
 
-	log.Println("Type peer port")
+	log.Println("Type peer address (IP:Port)")
 	scanner := bufio.NewScanner(os.Stdin)
 
 	scanner.Scan()
-	portStr := scanner.Text()
+	addr := scanner.Text()
 
-	peerAddr, resolveErr := net.ResolveUDPAddr("udp", fmt.Sprintf("%s:%s", a.Relayed().IP.String(), portStr))
+	peerAddr, resolveErr := net.ResolveUDPAddr("udp", fmt.Sprintf("%s", addr))
 	if resolveErr != nil {
 		panic(resolveErr)
 	}
